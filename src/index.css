@@ -63,7 +63,7 @@ body::after {
 
 /* rate-board ticker */
 .ticker { overflow: hidden; }
-.ticker-run { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+.ticker-run { display: flex; width: max-content; animation: marquee 36s linear infinite; will-change: transform; }
 .ticker:hover .ticker-run { animation-play-state: paused; }
 
 /* scroll reveals — only when JS runs, so crawlers always see content */

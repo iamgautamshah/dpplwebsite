@@ -60,7 +60,7 @@ export function Ticker() {
   return (
     <div className="ticker border-b border-silver/10 bg-gradient-to-b from-[#141A28] to-[#0C111C]" aria-label="Today's silver rate board">
       <div className="ticker-run">
-        <Run /><Run />
+        <Run /><Run /><Run /><Run />
       </div>
     </div>
   );

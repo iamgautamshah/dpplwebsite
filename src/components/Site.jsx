@@ -72,7 +72,7 @@ function Nav() {
   const links = [['#home', 'HOME'], ['#products', 'PRODUCTS'], ['#articles', 'ARTICLES'], ['#about', 'ABOUT US'], ['#contact', 'CONTACT']];
 
   return (
-    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/92 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
+    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-gold" aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
         <a href="#home" className="flex items-center gap-3" onClick={() => setOpen(false)}>
@@ -105,7 +105,7 @@ function Nav() {
 
       {/* mobile drawer — absolute under the bar, above everything */}
       <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
-        <ul className="bg-[#080C14]/98 backdrop-blur-xl border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
+        <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
           {links.map(([href, label]) => (
             <li key={href}>
               <a
