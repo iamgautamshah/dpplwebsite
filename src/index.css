@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
+::selection { @apply bg-gold text-void; }
+
+@layer components {
+  .eyebrow { @apply text-[0.68rem] tracking-[0.4em] uppercase text-steel; }
+  .btn-gold { @apply inline-block bg-gold text-[#141005] border border-gold font-medium text-xs tracking-[0.16em] uppercase px-7 py-4 rounded-full transition-all duration-300 hover:bg-gold-light hover:-translate-y-0.5 text-center; }
+  .btn-line { @apply inline-block border border-silver/30 text-silver text-xs tracking-[0.16em] uppercase px-7 py-4 rounded-full transition-colors duration-300 hover:border-gold hover:text-gold text-center; }
+  .btn-wa { @apply inline-flex items-center justify-center gap-2 bg-[#1FA855] text-white font-medium text-xs tracking-[0.12em] uppercase px-6 py-3.5 rounded-full transition-all duration-300 hover:bg-[#25C263] hover:-translate-y-0.5; }
+  .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-3xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
+}
+
+.ov { opacity: 0; transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
+.ov.is-on { opacity: 1; }
+.ov:not(.is-on) * { pointer-events: none !important; }
+
+/* ---------- award-pass design system ---------- */
+
+/* film grain — the material feel of struck metal */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  opacity: 0.035; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* hallmark glyph — the assay stamp, used as section mark */
+.hallmark {
+  width: 11px; height: 11px; flex: none;
+  transform: rotate(45deg);
+  border: 1px solid rgba(216, 179, 106, 0.85);
+  position: relative;
+}
+.hallmark::after {
+  content: ''; position: absolute; inset: 3px;
+  background: rgba(216, 179, 106, 0.85);
+}
+
+/* metallic assay plate — gradient hairline frame */
+.plate {
+  padding: 1px; border-radius: 1.5rem;
+  background: linear-gradient(140deg, #8f97a8, #e8ecf2 25%, #6b7890 50%, #dfe4ec 75%, #8f97a8);
+}
+.plate-in {
+  border-radius: calc(1.5rem - 1px);
+  background: rgba(7, 12, 22, 0.94);
+}
+
+/* outlined watermark type */
+.wm {
+  position: absolute; pointer-events: none; user-select: none;
+  font-family: Marcellus, Georgia, serif; line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px currentColor;
+}
+
+/* engraved display headings — struck from above */
+.engraved { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 -1px 0 rgba(0, 0, 0, 0.45); }
+
+/* rate-board ticker */
+.ticker { overflow: hidden; }
+.ticker-run { display: flex; width: max-content; animation: marquee 28s linear infinite; }
+.ticker:hover .ticker-run { animation-play-state: paused; }
+
+/* scroll reveals — only when JS runs, so crawlers always see content */
+html[data-js] [data-rv] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+html[data-js] [data-rv].in { opacity: 1; transform: none; }
+html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.08s; }
+html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.16s; }
+html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.24s; }
+
+/* intro entrance — one orchestrated moment */
+html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+html[data-js] .stag > *:nth-child(2) { animation-delay: 0.12s; }
+html[data-js] .stag > *:nth-child(3) { animation-delay: 0.24s; }
+html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
+@keyframes stag-rise { to { opacity: 1; transform: none; } }
+
+/* quality floor */
+:focus-visible { outline: 2px solid #d8b36a; outline-offset: 3px; border-radius: 4px; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #d8b36a; color: #141005; padding: 0.7rem 1.2rem; border-radius: 999px; font-size: 0.75rem; letter-spacing: 0.1em; transition: top 0.2s; }
+.skip-link:focus { top: 1rem; }
+.tnum { font-variant-numeric: tabular-nums; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #0a0e16; }
+::-webkit-scrollbar-thumb { background: #2a3346; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #d8b36a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-run { animation: none; }
+  html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
+}
+
+/* ---------- DPPL map (Leaflet, night-gold) ---------- */
+.dppl-map { background: #0d1a29; z-index: 0; }
+.dppl-map .leaflet-tile { filter: saturate(0.85) brightness(0.96); }
+.dppl-map .leaflet-control-zoom a { background: #0a1322; color: #c9d1de; border-color: rgba(201, 209, 222, 0.2); }
+.dppl-map .leaflet-control-zoom a:hover { background: #141a28; color: #d8b36a; }
+.dppl-map .leaflet-control-attribution { background: rgba(10, 14, 22, 0.7); color: #6b7890; font-size: 9px; }
+.dppl-map .leaflet-control-attribution a { color: #8a96ac; }
+
+.dppl-marker { position: relative; width: 0; height: 0; }
+.dppl-pulse {
+  position: absolute; left: -26px; top: -26px; width: 52px; height: 52px;
+  border: 2px solid rgba(216, 179, 106, 0.65); border-radius: 50%;
+  animation: dppl-pulse 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+.dppl-pulse-2 { animation-delay: 1.2s; }
+@keyframes dppl-pulse {
+  0% { transform: scale(0.35); opacity: 1; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+.dppl-core {
+  position: absolute; left: -13px; top: -13px; width: 26px; height: 26px;
+  background: #0a1322; border: 1.5px solid #d8b36a; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 18px rgba(216, 179, 106, 0.55);
+}
+.dppl-diamond { width: 8px; height: 8px; background: #e8c47a; transform: rotate(45deg); }
+
+.dppl-map .leaflet-popup-content-wrapper {
+  background: rgba(8, 13, 24, 0.94); border: 1px solid rgba(216, 179, 106, 0.45);
+  border-radius: 14px; color: #c9d1de; box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+}
+.dppl-map .leaflet-popup-tip { background: rgba(8, 13, 24, 0.94); }
+.dppl-pop { font-family: Jost, sans-serif; font-weight: 300; padding: 2px 4px; }
+.dppl-pop-tag { font-family: 'Spline Sans Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: Marcellus, serif; font-weight: 400; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
+.dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
+.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d8b36a; text-decoration: none; border-bottom: 1px solid rgba(216, 179, 106, 0.5); padding-bottom: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .dppl-pulse { animation: none; opacity: 0; } }
