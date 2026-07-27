@@ -1,20 +1,3 @@
-/**
- * Cloudflare Pages Function: GET /api/silver
- * -------------------------------------------
- * Primary source:  https://kagosida.org.np/  (Kathmandu Gold & Silver Dealers)
- *   The React app's backend API is auto-discovered from its JS bundle and the
- *   working endpoint is remembered in KV. BOTH the sale and purchase prices
- *   are read directly from KAGOSIDA — no artificial margin is applied.
- * Fallback source: https://www.fenegosida.org/ (reference/sale price only —
- *   purchase is then estimated from the last known KAGOSIDA sale↔purchase
- *   ratio, since FENEGOSIDA does not publish a buyback price).
- *
- * Caching/schedule (Asia/Kathmandu): scraped after 10:55 AM, retried at most
- * every 15 min until the price changes (or 3 PM), then cached in KV and
- * served for the whole day. On failure the last good rate keeps serving.
- *
- * Debug: GET /api/silver?debug=1 returns a trace of every step.
- */
 
 const KAGOSIDA = 'https://kagosida.org.np';
 const FENEGOSIDA_SOURCES = ['https://www.fenegosida.org/', 'https://fenegosida.org/'];

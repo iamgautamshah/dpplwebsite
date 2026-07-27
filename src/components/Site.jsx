@@ -103,8 +103,7 @@ function Nav() {
         </button>
       </div>
 
-      {/* mobile drawer — absolute under the bar, above everything */}
-      <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
+            <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
           {links.map(([href, label]) => (
             <li key={href}>
@@ -125,12 +124,11 @@ function Nav() {
 
 function AdSlot() {
   useEffect(() => {
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch { /* ok */ }
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
   }, []);
   return (
     <div className="mt-10 min-h-[90px] flex items-center justify-center border border-dashed border-silver/15 rounded-xl">
-      {/* Replace data-ad-slot with your real slot ID from the AdSense console */}
-      <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot="0000000000" data-ad-format="auto" data-full-width-responsive="true" />
+            <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot="0000000000" data-ad-format="auto" data-full-width-responsive="true" />
     </div>
   );
 }
@@ -143,8 +141,7 @@ export default function Site() {
       <Nav />
       <Ticker />
 
-      {/* HOME */}
-      <section id="home" className="px-4 sm:px-5 md:px-16 pt-8 sm:pt-14 pb-16 sm:pb-20 bg-[radial-gradient(1100px_560px_at_82%_-12%,rgba(216,179,106,0.13),transparent_60%),linear-gradient(180deg,#0A0F1A_0%,#111624_60%,#101520_100%)]">
+            <section id="home" className="px-4 sm:px-5 md:px-16 pt-8 sm:pt-14 pb-16 sm:pb-20 bg-[radial-gradient(1100px_560px_at_82%_-12%,rgba(216,179,106,0.13),transparent_60%),linear-gradient(180deg,#0A0F1A_0%,#111624_60%,#101520_100%)]">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-7xl mx-auto">
           <div data-rv className="order-2 lg:order-1">
             <Ledger>Rates · New Road ledger</Ledger>
@@ -167,8 +164,7 @@ export default function Site() {
         </div>
       </section>
 
-      {/* PRODUCTS */}
-      <section id="products" className="bg-ivory text-[#1C222E] px-5 md:px-16 py-20">
+            <section id="products" className="bg-ivory text-[#1C222E] px-5 md:px-16 py-20">
         <div className="max-w-7xl mx-auto relative">
           <span className="wm text-[#1C222E]/[0.06] text-[clamp(6rem,17vw,14rem)] -top-8 right-0" lang="ne" aria-hidden="true">चाँदी</span>
           <div data-rv>
@@ -195,8 +191,7 @@ export default function Site() {
         </div>
       </section>
 
-      {/* ARTICLES */}
-      <section id="articles" className="bg-panel px-5 md:px-16 py-20">
+            <section id="articles" className="bg-panel px-5 md:px-16 py-20">
         <div className="max-w-7xl mx-auto">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
@@ -219,8 +214,7 @@ export default function Site() {
         </div>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" className="bg-graphite px-5 md:px-16 py-20">
+            <section id="about" className="bg-graphite px-5 md:px-16 py-20">
         <div className="max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-12 items-start">
           <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
@@ -244,25 +238,36 @@ export default function Site() {
         </div>
       </section>
 
-      {/* CONTACT */}
-      <section id="contact" className="bg-gradient-to-b from-graphite to-[#0A0F1A] px-5 md:px-16 py-20">
+            <section id="contact" className="bg-gradient-to-b from-graphite to-[#0A0F1A] px-5 md:px-16 py-20">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Visit the counter.</h2>
-            <p className="mt-6 text-lg leading-loose text-silver/85">
+            <address className="mt-6 not-italic text-lg leading-relaxed text-silver/85">
               <b className="text-gold font-medium">DPPL</b><br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600, Nepal
-            </p>
-            <p className="mt-4 text-sm leading-loose text-steel">
-              Sunday – Friday · 10:30 – 18:00 NPT<br />Closed Saturdays and public holidays — call ahead for large orders.<br />
-              Counter: 01-5915052 · Mobile / WhatsApp: +977 980-561-7932 · dppl2080@gmail.com
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3.5">
-              <a href="tel:+97715915052" className="btn-gold inline-flex items-center gap-2"><PhoneIcon /> CALL 01-5915052</a>
-              <a href="tel:+9779805617932" className="btn-line inline-flex items-center gap-2"><PhoneIcon /> CALL 980-561-7932</a>
+            </address>
+            <ul className="mt-6 space-y-3.5 text-[0.95rem] text-silver/85">
+              <li className="flex gap-4">
+                <span className="w-[4.5rem] shrink-0 pt-1 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">HOURS</span>
+                <span>Sun – Fri · 10:30 – 18:00 NPT<br /><span className="text-steel text-sm">Closed Saturdays and public holidays</span></span>
+              </li>
+              <li className="flex gap-4 items-center">
+                <span className="w-[4.5rem] shrink-0 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">COUNTER</span>
+                <a href="tel:+97715915052" className="tnum transition-colors hover:text-gold">01-5915052</a>
+              </li>
+              <li className="flex gap-4 items-center">
+                <span className="w-[4.5rem] shrink-0 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">MOBILE</span>
+                <a href="tel:+9779805617932" className="tnum transition-colors hover:text-gold">+977 980-561-7932</a>
+              </li>
+              <li className="flex gap-4 items-center">
+                <span className="w-[4.5rem] shrink-0 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">EMAIL</span>
+                <a href="mailto:dppl2080@gmail.com" className="break-all transition-colors hover:text-gold">dppl2080@gmail.com</a>
+              </li>
+            </ul>
+            <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+              <a href="tel:+97715915052" className="btn-gold inline-flex items-center justify-center gap-2"><PhoneIcon /> CALL US</a>
               <a href={WA('Hello DPPL, I have an enquiry.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP</a>
-              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-line">GOOGLE MAPS ↗</a>
-              <a href="mailto:dppl2080@gmail.com" className="btn-line">EMAIL US</a>
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-line inline-flex items-center justify-center">GOOGLE MAPS ↗</a>
             </div>
           </div>
           <div className="border border-gold/30 rounded-2xl overflow-hidden min-h-[340px] relative bg-[#0A0E15]">

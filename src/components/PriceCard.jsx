@@ -27,6 +27,7 @@ const I18N = {
   },
 };
 
+// shown until /api/silver responds
 const FALLBACK = { tolaSale: 4360, tolaPurchase: 4300, g10Sale: 3738, g10Purchase: 3686.5 };
 
 export default function PriceCard() {
@@ -45,7 +46,7 @@ export default function PriceCard() {
         if (!res.ok) throw 0;
         const d = await res.json();
         if (alive) { setPrices(d); setLive(true); setNow(new Date()); }
-      } catch { /* fallback values stand */ }
+      } catch {}
     }
     load();
     const id = setInterval(load, 30 * 60 * 1000);
@@ -74,7 +75,6 @@ export default function PriceCard() {
     </button>
   );
 
-  /* equal centred columns — headers sit dead-centre over their pills */
   const COLS = 'grid grid-cols-[1fr_1.15fr_1.15fr] items-center gap-2 sm:gap-3';
 
   const Pill = ({ v, buy }) => (
@@ -92,15 +92,13 @@ export default function PriceCard() {
 
   return (
     <div className="relative">
-      {/* aura — draws the eye to the board */}
-      <div className="absolute -inset-5 rounded-[2rem] bg-gold/20 blur-3xl opacity-30 animate-[pulse_5s_ease-in-out_infinite] pointer-events-none" aria-hidden="true" />
+            <div className="absolute -inset-5 rounded-[2rem] bg-gold/20 blur-3xl opacity-30 animate-[pulse_5s_ease-in-out_infinite] pointer-events-none" aria-hidden="true" />
 
       <div className="plate relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
         <div className="plate-in relative p-4 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
           <span className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.62rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
 
-          {/* header */}
-          <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <h2 className={`font-display text-silverhi tracking-wide text-[clamp(1.25rem,3vw,1.6rem)] ${np ? 'font-np' : ''}`}>{t.head}</h2>
               <p className={`mt-1 text-[0.68rem] tracking-[0.3em] uppercase text-steel ${np ? 'font-np tracking-[0.18em]' : ''}`}>{t.sub}</p>
@@ -112,14 +110,12 @@ export default function PriceCard() {
             </span>
           </div>
 
-          {/* date / language tabs */}
-          <div className="grid grid-cols-2 gap-2.5 mb-5" role="tablist" aria-label="Choose date and language">
+                    <div className="grid grid-cols-2 gap-2.5 mb-5" role="tablist" aria-label="Choose date and language">
             <Tab id="en" label={formatAD(now)} />
             <Tab id="np" label={formatBS(now)} ne />
           </div>
 
-          {/* the board */}
-          <div className={np ? 'font-np' : ''}>
+                    <div className={np ? 'font-np' : ''}>
             <div className={`${COLS} mb-2`}>
               <span className="text-[0.68rem] tracking-[0.24em] uppercase text-steel">{t.fine}</span>
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>

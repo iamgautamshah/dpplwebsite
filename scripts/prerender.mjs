@@ -1,9 +1,3 @@
-/**
- * Build-time prerender: renders the full <Site/> to static HTML and injects it
- * into dist/index.html. Crawlers and the AdSense reviewer see the complete
- * page content (prices section, products, articles, address) without needing
- * JavaScript; React replaces it with the live app on load.
- */
 import { buildSync } from 'esbuild';
 import { readFileSync, writeFileSync, rmSync } from 'fs';
 import { createRequire } from 'module';

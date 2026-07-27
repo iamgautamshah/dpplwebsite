@@ -1,8 +1,3 @@
-/**
- * AD → Bikram Sambat (B.S.) conversion.
- * Reference anchor: 1 Baishakh 2080 B.S. = 14 April 2023 A.D.
- * Extend BS_DATA with new years as official calendars are published.
- */
 const BS_REF = new Date(2023, 3, 14);
 const BS_START_YEAR = 2080;
 
@@ -31,11 +26,9 @@ export const NP_DAYS = [
 
 const NP_DIGITS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
 
-/** 1234 -> "१२३४" (works on strings with commas too) */
 export const toNepaliDigits = (n) =>
   String(n).replace(/\d/g, (d) => NP_DIGITS[d]);
 
-/** Convert a JS Date to { year, month(0-11), day } in B.S., or null if out of table range. */
 export function toBS(date) {
   let days = Math.floor((date - BS_REF) / 864e5);
   if (days < 0) return null;
@@ -55,14 +48,12 @@ export function toBS(date) {
   return { year: BS_START_YEAR + y, month: m, day: days + 1 };
 }
 
-/** "मंगलबार, ३० असार २०८३" */
 export function formatBS(date) {
   const bs = toBS(date);
   if (!bs) return '—';
   return `${NP_DAYS[date.getDay()]}, ${toNepaliDigits(bs.day)} ${NP_MONTHS[bs.month]} ${toNepaliDigits(bs.year)}`;
 }
 
-/** "Tuesday, 14 July 2026" */
 export function formatAD(date) {
   return date.toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',

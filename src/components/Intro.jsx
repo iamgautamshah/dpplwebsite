@@ -3,7 +3,6 @@ import KathmanduMap from './KathmanduMap.jsx';
 
 const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
 
-/** Static starfield — drawn once, zero per-frame cost. */
 function Stars() {
   const ref = useRef(null);
   useEffect(() => {
@@ -65,22 +64,18 @@ export default function Intro({ onEnter }) {
 
   return (
     <div className="fixed inset-0 z-[1] overflow-hidden bg-void">
-      {/* backdrop: night gradient with a warm gold glow rising from below */}
-      <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
       <Stars />
 
-      {/* Kathmandu map — the arrival scene */}
-      <div className={`absolute inset-0 transition-opacity duration-[1100ms] ease-out ${phase === 'arrive' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`absolute inset-0 transition-opacity duration-[1100ms] ease-out ${phase === 'arrive' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <KathmanduMap className="w-full h-full" />
       </div>
 
-      {/* skip */}
-      <button onClick={onEnter} className="absolute top-5 right-5 z-[6] text-[0.7rem] tracking-[0.28em] uppercase text-silver border border-silver/25 rounded-full px-4 py-2.5 bg-[#0A1322]/45 backdrop-blur transition-colors hover:border-gold hover:text-gold">
+            <button onClick={onEnter} className="absolute top-5 right-5 z-[6] text-[0.7rem] tracking-[0.28em] uppercase text-silver border border-silver/25 rounded-full px-4 py-2.5 bg-[#0A1322]/45 backdrop-blur transition-colors hover:border-gold hover:text-gold">
         Skip intro →
       </button>
 
-      {/* hero */}
-      <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
+            <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
         <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
         <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
           Hello, <span className="text-gold">Investors.</span>
@@ -96,8 +91,7 @@ export default function Intro({ onEnter }) {
         </button>
       </section>
 
-      {/* captions */}
-      <section className={`ov ${on('cap1')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
+            <section className={`ov ${on('cap1')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
         <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
           Four hundred kilometres above the Himalaya, night is falling on the valley.
           <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">27.7041° N · 85.3125° E</small>
@@ -110,8 +104,7 @@ export default function Intro({ onEnter }) {
         </div>
       </section>
 
-      {/* arrival card */}
-      <aside className={`ov ${on('arrive')} absolute left-1/2 -translate-x-1/2 bottom-[max(4.5vh,2rem)] z-[5] w-[min(92vw,460px)] glass p-6 text-left pointer-events-none [&.is-on]:pointer-events-auto`}>
+            <aside className={`ov ${on('arrive')} absolute left-1/2 -translate-x-1/2 bottom-[max(4.5vh,2rem)] z-[5] w-[min(92vw,460px)] glass p-6 text-left pointer-events-none [&.is-on]:pointer-events-auto`}>
         <div className="flex items-center gap-4">
           <img src="/images/logo.webp" alt="DPPL seal" className="w-14 h-14 rounded-full" />
           <div>

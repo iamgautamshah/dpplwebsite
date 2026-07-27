@@ -1,16 +1,9 @@
 import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 
-/** Official DPPL Google listing — resolved from maps.app.goo.gl/vi1fuUN78UcsuRTA7 */
 export const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
 const DPPL = [27.7032447, 85.3111961];
 
-/**
- * Designed map, accurate data: Leaflet over CARTO's dark basemap (real
- * OpenStreetMap streets of the New Road quarter), in the site's night-gold
- * palette, with a pulsing hallmark marker on DPPL's exact listed position.
- * Fully interactive; the corner button opens the official Google listing.
- */
 export default function KathmanduMap({ className = '' }) {
   const ref = useRef(null);
 

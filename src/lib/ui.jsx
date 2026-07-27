@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-/** Scroll-reveal: adds .in to [data-rv] elements as they enter the viewport. */
 export function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll('[data-rv]');
@@ -19,10 +18,7 @@ export function useReveal() {
   }, []);
 }
 
-/**
- * The rate board — an engraved ticker of today's live prices, the way a
- * New Road counter announces them. Pauses on hover.
- */
+// live rate strip under the nav, pauses on hover
 export function Ticker() {
   const [p, setP] = useState(null);
   useEffect(() => {
