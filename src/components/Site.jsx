@@ -172,6 +172,10 @@ export default function Site() {
             <h2 className="font-display text-[#141821] text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
           </div>
           <p className="mt-3 max-w-xl text-[#4A4F5C] leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap BUY to order directly on WhatsApp.</p>
+          <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold-deep/35 bg-[#FBF7EA] px-4 py-3.5 text-sm leading-relaxed text-[#4A4F5C]">
+            <span className="hallmark mt-1" aria-hidden="true" />
+            <span><b className="text-[#141821] font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
+          </p>
           <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-[#FDFBF5] border border-[#E4DECC] rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gold-deep/50 hover:shadow-[0_22px_44px_-18px_rgba(28,34,46,0.25)]">
@@ -183,7 +187,8 @@ export default function Site() {
                   <h3 className="font-display text-xl text-[#141821]">{p.name}</h3>
                   <p className="text-[0.64rem] tracking-[0.3em] uppercase text-gold-deep my-2">999 fine · sealed &amp; stamped</p>
                   <p className="text-sm text-[#5A5F6C] leading-relaxed flex-1">{p.desc}</p>
-                  <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-5">{p.label}</a>
+                  {p.name.includes('Bar') && <p className="mt-4 text-[0.7rem] tracking-wide text-[#8A8271]">Rate by weight · making charges extra</p>}
+                  <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-4">{p.label}</a>
                 </div>
               </article>
             ))}
