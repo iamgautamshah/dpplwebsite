@@ -141,8 +141,8 @@ export default function Site() {
       <Nav />
       <Ticker />
 
-            <section id="home" className="px-4 sm:px-5 md:px-16 pt-8 sm:pt-14 pb-16 sm:pb-20 bg-[radial-gradient(1100px_560px_at_82%_-12%,rgba(216,179,106,0.13),transparent_60%),linear-gradient(180deg,#0A0F1A_0%,#111624_60%,#101520_100%)]">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-7xl mx-auto">
+            <section id="home" className="px-3 sm:px-6 md:px-12 pt-5 sm:pt-10 pb-8 sm:pb-12 bg-[radial-gradient(1100px_560px_at_82%_-12%,rgba(216,179,106,0.13),transparent_60%),linear-gradient(180deg,#0A0F1A_0%,#111624_60%,#101520_100%)]">
+        <div className="frame grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv className="order-2 lg:order-1">
             <Ledger>Rates · New Road ledger</Ledger>
             <p className="eyebrow mb-6">Silver bullion · <b className="text-gold font-medium">999 fine</b> · Weighed before your eyes</p>
@@ -158,15 +158,15 @@ export default function Site() {
             </div>
           </div>
           <div className="relative order-1 lg:order-2" data-rv data-rv-d="1">
-            <span className="wm text-silver/[0.05] text-[clamp(7rem,18vw,13rem)] -top-14 -right-4" aria-hidden="true">999</span>
+            <span className="wm hidden sm:block text-silver/[0.05] text-[clamp(6rem,14vw,11rem)] top-1 right-2" aria-hidden="true">999</span>
             <PriceCard />
           </div>
         </div>
       </section>
 
-            <section id="products" className="bg-ivory text-[#1C222E] px-5 md:px-16 py-20">
-        <div className="max-w-7xl mx-auto relative">
-          <span className="wm text-[#1C222E]/[0.06] text-[clamp(6rem,17vw,14rem)] -top-8 right-0" lang="ne" aria-hidden="true">चाँदी</span>
+            <section id="products" className="bg-ivory text-[#1C222E] px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame-light max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
+          <span className="wm hidden sm:block text-[#1C222E]/[0.06] text-[clamp(5rem,13vw,11rem)] top-1 right-3" lang="ne" aria-hidden="true">चाँदी</span>
           <div data-rv>
             <Ledger light>The collection</Ledger>
             <h2 className="font-display text-[#141821] text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
@@ -196,8 +196,8 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="articles" className="bg-panel px-5 md:px-16 py-20">
-        <div className="max-w-7xl mx-auto">
+            <section id="articles" className="bg-panel px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Understand silver before you buy it.</h2>
@@ -219,8 +219,8 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="about" className="bg-graphite px-5 md:px-16 py-20">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-12 items-start">
+            <section id="about" className="bg-graphite px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
           <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
@@ -243,8 +243,8 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="contact" className="bg-gradient-to-b from-graphite to-[#0A0F1A] px-5 md:px-16 py-20">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
+            <section id="contact" className="bg-gradient-to-b from-graphite to-[#0A0F1A] px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Visit the counter.</h2>
