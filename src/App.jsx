@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { lazy, Suspense } from 'react';
 const Intro = lazy(() => import('./components/Intro.jsx'));
 import Site from './components/Site.jsx';
@@ -16,10 +16,16 @@ export default function App() {
   );
   const [flash, setFlash] = useState(false);
 
+  const entering = useRef(false);
   const enter = useCallback(() => {
+    if (entering.current) return;          // the auto timer and the card button share this
+    entering.current = true;
     setFlash(true);
     setTimeout(() => {
       setEntered(true);
+      // land on /#home without pushing a history entry, so Back leaves the site
+      // rather than replaying the intro
+      history.replaceState(null, '', '/#home');
       scrollTo(0, 0);
       setTimeout(() => setFlash(false), 80);
     }, 650);

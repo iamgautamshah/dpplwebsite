@@ -1,7 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
-import KathmanduMap from './KathmanduMap.jsx';
 
 const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
+
+// the first caption follows the clock in Kathmandu, not the visitor's timezone
+function openingLine() {
+  let hour = new Date().getHours();
+  try {
+    hour = Number(new Intl.DateTimeFormat('en-GB', {
+      hour: 'numeric', hour12: false, timeZone: 'Asia/Kathmandu',
+    }).format(new Date()));
+  } catch { /* fall back to local time */ }
+
+  if (hour >= 5 && hour < 11) return 'the morning sun is rising over the valley.';
+  if (hour >= 11 && hour < 16) return 'the afternoon sun stands high above the valley.';
+  if (hour >= 16 && hour < 19) return 'evening is settling over the valley.';
+  return 'night has fallen across the valley.';
+}
 
 function Stars() {
   const ref = useRef(null);
@@ -29,51 +43,32 @@ function Stars() {
 
 export default function Intro({ onEnter }) {
   const [phase, setPhase] = useState('hero'); // hero → cap1 → cap2 → arrive
-  const started = useRef(false);
-  const timers = useRef([]);
+  const line = useRef(openingLine());
 
-  const descend = () => {
-    if (started.current) return;
-    started.current = true;
+  useEffect(() => {
+    const timers = [];
+    const run = (fn, ms) => timers.push(setTimeout(fn, ms));
+
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setPhase('arrive');
-      return;
+      run(onEnter, 1600);
+    } else {
+      run(() => setPhase('cap1'), 3400);
+      run(() => setPhase('cap2'), 6000);
+      run(() => setPhase('arrive'), 8600);
+      run(onEnter, 12600);
     }
-    setPhase('cap1');
-    timers.current.push(setTimeout(() => setPhase('cap2'), 2600));
-    timers.current.push(setTimeout(() => setPhase('arrive'), 5200));
-  };
-
-  // scrolling, swiping, or pressing ↓ / Space also starts the landing
-  useEffect(() => {
-    const kick = () => descend();
-    const key = (e) => { if (['ArrowDown', 'PageDown', ' '].includes(e.key)) descend(); };
-    addEventListener('wheel', kick, { passive: true });
-    addEventListener('touchmove', kick, { passive: true });
-    addEventListener('keydown', key);
-    const t = timers.current;
-    return () => {
-      removeEventListener('wheel', kick);
-      removeEventListener('touchmove', kick);
-      removeEventListener('keydown', key);
-      t.forEach(clearTimeout);
-    };
-  }, []);
+    return () => timers.forEach(clearTimeout);
+  }, [onEnter]);
 
   const on = (p) => (phase === p ? 'is-on' : '');
 
   return (
     <div className="fixed inset-0 z-[1] overflow-hidden bg-void">
-            <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
+      <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'arrive' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
       <Stars />
 
-            <div className={`absolute inset-0 transition-opacity duration-[1100ms] ease-out ${phase === 'arrive' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <KathmanduMap className="w-full h-full" />
-      </div>
-
-            <button onClick={onEnter} className="absolute top-5 right-5 z-[6] text-[0.7rem] tracking-[0.28em] uppercase text-silver border border-silver/25 rounded-full px-4 py-2.5 bg-[#0A1322]/45 backdrop-blur transition-colors hover:border-gold hover:text-gold">
-        Skip intro →
-      </button>
 
             <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
         <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
@@ -83,17 +78,11 @@ export default function Intro({ onEnter }) {
         <p className="mt-5 max-w-xl px-6 text-silver/75 tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
           Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine silver is being weighed, sealed, and priced for today. Let us take you there.
         </p>
-        <button onClick={descend} className="pointer-events-auto mt-12 flex flex-col items-center gap-4 group cursor-pointer" aria-label="Scroll to land — play the landing">
-          <span className="w-16 h-16 rounded-full border border-silver/35 bg-[#0A1322]/35 backdrop-blur flex items-center justify-center animate-bob transition-all group-hover:border-gold group-hover:scale-110 group-hover:shadow-[0_0_24px_rgba(216,179,106,0.25)]">
-            <svg className="w-5 h-5 text-silverhi" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 4v16M5 13l7 7 7-7" /></svg>
-          </span>
-          <span className="text-[0.68rem] tracking-[0.38em] uppercase text-steel transition-colors group-hover:text-gold">Scroll to land</span>
-        </button>
       </section>
 
             <section className={`ov ${on('cap1')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
         <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
-          Four hundred kilometres above the Himalaya, night is falling on the valley.
+          Four hundred kilometres above the Himalaya, {line.current}
           <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">27.7041° N · 85.3125° E</small>
         </div>
       </section>
