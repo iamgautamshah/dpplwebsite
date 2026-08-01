@@ -290,9 +290,14 @@ export default function Site() {
             <span className="font-display text-silver tracking-[0.14em] text-sm">DPPL</span><br />Est. 2080 B.S.
           </p>
         </div>
-          <p className="text-xs text-steel leading-relaxed tracking-wide text-right">
-            5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 DPPL. All rights reserved.
-          </p>
+          <div className="text-xs text-steel leading-relaxed tracking-wide sm:text-right">
+            <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 DPPL. All rights reserved.</p>
+            <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
+              <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
+              <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
+              <a href="mailto:dppl2080@gmail.com" className="transition-colors hover:text-gold">dppl2080@gmail.com</a>
+            </p>
+          </div>
         </div>
       </footer>
     </main>

@@ -2,10 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { lazy, Suspense } from 'react';
 const Intro = lazy(() => import('./components/Intro.jsx'));
 import Site from './components/Site.jsx';
+import { Privacy, Terms } from './components/Legal.jsx';
 
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
 
 export default function App() {
+  const path = typeof location !== 'undefined' ? location.pathname : '/';
+  if (path.startsWith('/privacy')) return <Privacy />;
+  if (path.startsWith('/terms')) return <Terms />;
+
   const [entered, setEntered] = useState(
     () => isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
   );

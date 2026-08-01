@@ -1,0 +1,261 @@
+const UPDATED = '1 August 2026';
+
+function Shell({ title, updated, children }) {
+  return (
+    <main className="relative z-10 bg-graphite min-h-screen">
+      <nav className="sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10">
+        <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
+          <a href="/" className="flex items-center gap-3">
+            <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
+            <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
+              DP<span className="text-gold">PL</span>
+              <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
+            </span>
+          </a>
+          <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-steel transition-colors hover:text-gold">← Back to site</a>
+        </div>
+      </nav>
+
+      <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <article className="frame max-w-4xl mx-auto p-5 sm:p-8 md:p-12">
+          <p className="flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase text-steel">
+            <span className="hallmark" aria-hidden="true" />
+            <span>Legal</span>
+            <span className="flex-1 h-px bg-silver/15" aria-hidden="true" />
+          </p>
+          <h1 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.6vw,2.9rem)]">{title}</h1>
+          <p className="mt-3 font-mono text-[0.68rem] tracking-[0.24em] uppercase text-gold/80">Last updated · {updated}</p>
+          <div className="mt-8 space-y-8">{children}</div>
+
+          <div className="mt-12 pt-8 border-t border-silver/10 flex flex-wrap gap-3">
+            <a href="/" className="btn-line">← Back to DPPL</a>
+            <a href="mailto:dppl2080@gmail.com" className="btn-line">dppl2080@gmail.com</a>
+          </div>
+        </article>
+      </div>
+
+      <footer className="bg-[#080C14] border-t border-silver/[0.07] px-5 md:px-16 py-8">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <p className="text-xs text-steel tracking-wide">© 2026 DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
+          <p className="flex gap-5 text-xs text-steel tracking-wide">
+            <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
+            <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
+          </p>
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+function Section({ heading, children }) {
+  return (
+    <section>
+      <h2 className="font-display text-silverhi text-[clamp(1.15rem,2.6vw,1.45rem)] mb-3">{heading}</h2>
+      <div className="space-y-3 text-[0.95rem] leading-relaxed text-silver/80">{children}</div>
+    </section>
+  );
+}
+
+export function Privacy() {
+  return (
+    <Shell title="Privacy Policy" updated={UPDATED}>
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
+        This policy explains what information is collected when you visit dppl.com.np, why it is collected, and what
+        choices you have. DPPL operates a silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
+        an information and enquiry channel — it does not sell online, take payments, or hold accounts.
+      </p>
+
+      <Section heading="Information we collect">
+        <p>
+          <b className="text-silverhi font-medium">We do not ask you to create an account, and there is no checkout, payment form, or login on this site.</b>{' '}
+          The website itself collects no name, address, or payment information from you.
+        </p>
+        <p>
+          Like almost all websites, our hosting provider (Cloudflare) records standard technical data for every visit —
+          IP address, browser and device type, referring page, and the time of the request. This is used to serve the
+          site, keep it secure, and defend against abuse.
+        </p>
+        <p>
+          If you contact us by WhatsApp, phone, or email using the links on this site, we receive whatever you choose to
+          send: your phone number or email address, and the content of your message. We use that information only to
+          answer your enquiry and, where an order follows, to prepare your invoice as Nepali law requires.
+        </p>
+      </Section>
+
+      <Section heading="Cookies and similar technologies">
+        <p>
+          A cookie is a small file placed on your device by a website. DPPL does not set any cookies of its own for
+          tracking or profiling, and the site works fully without them.
+        </p>
+        <p>
+          However, third parties whose services appear on this site may set cookies in your browser, as described below.
+          You can block or delete cookies at any time in your browser settings; doing so will not prevent you from using
+          this site.
+        </p>
+      </Section>
+
+      <Section heading="Advertising — Google AdSense">
+        <p>
+          This site displays advertising served by Google. Third-party vendors, including Google, use cookies to serve
+          ads based on your prior visits to this and other websites.
+        </p>
+        <p>
+          Google's use of advertising cookies enables it and its partners to serve ads to you based on your visit to this
+          site and/or other sites on the Internet. You may opt out of personalised advertising by visiting{' '}
+          <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-gold border-b border-gold/40 hover:border-gold">Google Ads Settings</a>.
+          You can also opt out of a third-party vendor's use of cookies for personalised advertising at{' '}
+          <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-gold border-b border-gold/40 hover:border-gold">aboutads.info</a>.
+        </p>
+        <p>
+          Third-party ad servers or ad networks may use cookies, JavaScript, or web beacons in the advertisements shown
+          on this site. They receive your IP address automatically when this occurs. DPPL has no access to or control
+          over cookies used by third-party advertisers.
+        </p>
+      </Section>
+
+      <Section heading="Analytics">
+        <p>
+          We may use privacy-respecting analytics to understand how many people visit the site and which pages are read,
+          in aggregate. This tells us, for example, that the daily price page is popular — it does not tell us who you
+          are. We do not sell or share analytics data.
+        </p>
+      </Section>
+
+      <Section heading="Live price data">
+        <p>
+          The silver rates shown on this site are fetched by our server from the published Kathmandu bullion market
+          reference. Your browser requests the rate from us; no information about you is sent to any rate provider.
+        </p>
+      </Section>
+
+      <Section heading="Maps">
+        <p>
+          Our location is displayed using map tiles from OpenStreetMap and CARTO. When the map loads, those providers
+          receive the request needed to deliver the map imagery, including your IP address. Following our Google Maps
+          link takes you to Google, where Google's own privacy policy applies.
+        </p>
+      </Section>
+
+      <Section heading="How long we keep enquiry information">
+        <p>
+          Messages you send us are kept only as long as needed to serve you. Invoices and transaction records are
+          retained as required by Nepali tax and accounting law. We do not build marketing profiles, and we do not sell,
+          rent, or trade your information to anyone.
+        </p>
+      </Section>
+
+      <Section heading="Children">
+        <p>
+          This site is intended for adults transacting in bullion and is not directed at children. We do not knowingly
+          collect information from children. If you believe a child has sent us information, please contact us and we
+          will delete it.
+        </p>
+      </Section>
+
+      <Section heading="Your choices">
+        <p>
+          You can browse this site without contacting us or identifying yourself. You may block cookies in your browser,
+          opt out of personalised ads through the links above, and ask us to delete any enquiry correspondence we hold
+          by emailing dppl2080@gmail.com.
+        </p>
+      </Section>
+
+      <Section heading="Changes to this policy">
+        <p>
+          If this policy changes, the revised version will be posted on this page with a new "last updated" date.
+        </p>
+      </Section>
+
+      <Section heading="Contact">
+        <p>
+          DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
+          Counter: 01-5915052 · Mobile: +977 980-561-7932 · Email: dppl2080@gmail.com
+        </p>
+      </Section>
+    </Shell>
+  );
+}
+
+export function Terms() {
+  return (
+    <Shell title="Terms of Use" updated={UPDATED}>
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
+        These terms govern your use of dppl.com.np. By using the site, you accept them.
+      </p>
+
+      <Section heading="About this site">
+        <p>
+          This website provides information about DPPL and publishes the daily silver rate for reference. It is not an
+          online shop: no purchase, sale, payment, or reservation can be completed through this site. All transactions
+          take place in person at our counter on New Road, Kathmandu.
+        </p>
+      </Section>
+
+      <Section heading="Prices shown">
+        <p>
+          Silver rates published here are drawn from the official Kathmandu bullion market reference and are provided
+          for information only. They are indicative — the rate applied to any transaction is the rate confirmed at the
+          counter at the time of that transaction.
+        </p>
+        <p>
+          <b className="text-silverhi font-medium">Bar and grain prices follow the published rate by weight and are exclusive of making charges</b>,
+          which are added at the counter and itemised on your invoice. Rates may change during the day and can be
+          affected by market movement.
+        </p>
+      </Section>
+
+      <Section heading="No investment advice">
+        <p>
+          Nothing on this site is investment, financial, tax, or legal advice. Articles are general information about
+          silver and its history. The value of precious metals can fall as well as rise. You are responsible for your own
+          decisions, and you should seek independent professional advice where appropriate.
+        </p>
+      </Section>
+
+      <Section heading="Products and purchases">
+        <p>
+          All bullion sold by DPPL is 999 fine silver, weighed on calibrated scales in the presence of the customer and
+          supplied with a full VAT invoice. Availability of any weight or format is subject to stock at the time of
+          purchase. We buy back documented bullion we have sold at the purchase rate published on the day of the
+          buy-back.
+        </p>
+      </Section>
+
+      <Section heading="Accuracy and availability">
+        <p>
+          We take care to keep this site accurate and available, but we do not guarantee that it will be uninterrupted,
+          error-free, or that published rates will always reflect the latest market movement. The site is provided on an
+          "as is" basis, and DPPL is not liable for loss arising from reliance on information published here.
+        </p>
+      </Section>
+
+      <Section heading="Intellectual property">
+        <p>
+          The DPPL name, seal, site text, images, and design are the property of DPPL and may not be copied or reproduced
+          without permission. Map data is © OpenStreetMap contributors and CARTO.
+        </p>
+      </Section>
+
+      <Section heading="External links and advertising">
+        <p>
+          This site links to third-party services such as WhatsApp and Google Maps, and displays third-party advertising.
+          DPPL does not control and is not responsible for the content, products, or practices of those third parties.
+        </p>
+      </Section>
+
+      <Section heading="Governing law">
+        <p>
+          These terms are governed by the laws of Nepal, and any dispute arising from use of this site is subject to the
+          jurisdiction of the courts of Kathmandu.
+        </p>
+      </Section>
+
+      <Section heading="Contact">
+        <p>
+          DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
+          Counter: 01-5915052 · Mobile: +977 980-561-7932 · Email: dppl2080@gmail.com
+        </p>
+      </Section>
+    </Shell>
+  );
+}
