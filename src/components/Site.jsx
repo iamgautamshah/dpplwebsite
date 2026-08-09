@@ -36,6 +36,15 @@ const ARTICLES = [
     more: 'Silver is consumed as well as saved: solar panels, electronics, and medical uses take a growing share of world supply each year, which gives the metal an industrial floor that pure store-of-value assets lack. For a household in Kathmandu, that means a 100 g bar bought today is both a hedge against rupee inflation and a claim on real industrial demand. The sensible pattern we see from experienced customers is steady accumulation — a fixed budget each month or each Dashain bonus, converted at the day\u2019s rate regardless of headlines — rather than trying to time the market. Silver rewards patience and punishes panic; buy documented metal, store it safely, and let the decades do the work.' },
 ];
 
+const scrollToSection = (e, href) => {
+  const id = href.replace('#', '');
+  const el = document.getElementById(id);
+  if (!el) return;
+  e.preventDefault();
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  history.replaceState(null, '', location.pathname);
+};
+
 const Ledger = ({ children, light = false }) => (
   <p className={`flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase ${light ? 'text-[#8A8271]' : 'text-steel'}`}>
     <span className="hallmark" aria-hidden="true" />
@@ -75,7 +84,7 @@ function Nav() {
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-gold" aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
-        <a href="#home" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+        <a href="#home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
           <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
           <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
             DP<span className="text-gold">PL</span>
@@ -85,7 +94,7 @@ function Nav() {
         <ul className="hidden md:flex gap-8">
           {links.map(([href, label]) => (
             <li key={href}>
-              <a href={href} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
+              <a href={href} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
             </li>
           ))}
         </ul>
@@ -109,7 +118,7 @@ function Nav() {
             <li key={href}>
               <a
                 href={href}
-                onClick={() => setOpen(false)}
+                onClick={(e) => { setOpen(false); scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
                 {label}
@@ -137,7 +146,7 @@ export default function Site() {
   useReveal();
   return (
     <main className="relative z-10 bg-graphite">
-      <a href="#home" className="skip-link">Skip to content</a>
+      <a href="#home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
       <Nav />
       <Ticker />
 
@@ -153,7 +162,7 @@ export default function Site() {
               DPPL publishes the daily sale and purchase rate for fine silver and supplies 999 bars and grains from the heart of Kathmandu's original street of commerce. Every piece is weighed on calibrated scales, sealed at the counter, and invoiced to the gram.
             </p>
             <div className="mt-8 flex flex-wrap gap-3.5">
-              <a href="#products" className="btn-gold">BROWSE SILVER</a>
+              <a href="#products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
               <a href={WA('Hello DPPL, I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
             </div>
           </div>

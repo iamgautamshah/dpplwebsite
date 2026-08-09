@@ -23,9 +23,9 @@ export default function App() {
     setFlash(true);
     setTimeout(() => {
       setEntered(true);
-      // land on /#home without pushing a history entry, so Back leaves the site
-      // rather than replaying the intro
-      history.replaceState(null, '', '/#home');
+      // clean address bar — no hash — and no history entry, so Back leaves the
+      // site rather than replaying the intro
+      history.replaceState(null, '', '/');
       scrollTo(0, 0);
       setTimeout(() => setFlash(false), 80);
     }, 650);

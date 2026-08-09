@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
-
 // the first caption follows the clock in Kathmandu, not the visitor's timezone
 function openingLine() {
   let hour = new Date().getHours();
@@ -42,7 +40,7 @@ function Stars() {
 }
 
 export default function Intro({ onEnter }) {
-  const [phase, setPhase] = useState('hero'); // hero → cap1 → cap2 → arrive
+  const [phase, setPhase] = useState('hero'); // hero → cap1 → cap2, then the site
   const line = useRef(openingLine());
 
   useEffect(() => {
@@ -50,13 +48,11 @@ export default function Intro({ onEnter }) {
     const run = (fn, ms) => timers.push(setTimeout(fn, ms));
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPhase('arrive');
-      run(onEnter, 1600);
+      run(onEnter, 600);
     } else {
       run(() => setPhase('cap1'), 3400);
-      run(() => setPhase('cap2'), 6000);
-      run(() => setPhase('arrive'), 8600);
-      run(onEnter, 12600);
+      run(() => setPhase('cap2'), 6400);
+      run(onEnter, 9400);
     }
     return () => timers.forEach(clearTimeout);
   }, [onEnter]);
@@ -66,11 +62,10 @@ export default function Intro({ onEnter }) {
   return (
     <div className="fixed inset-0 z-[1] overflow-hidden bg-void">
       <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
-      <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'arrive' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
+      <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'cap2' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
       <Stars />
 
-
-            <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
+      <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
         <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
         <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
           Hello, <span className="text-gold">Investors.</span>
@@ -93,25 +88,6 @@ export default function Intro({ onEnter }) {
         </div>
       </section>
 
-            <aside className={`ov ${on('arrive')} absolute left-1/2 -translate-x-1/2 bottom-[max(4.5vh,2rem)] z-[5] w-[min(92vw,460px)] glass p-6 text-left pointer-events-none [&.is-on]:pointer-events-auto`}>
-        <div className="flex items-center gap-4">
-          <img src="/images/logo.webp" alt="DPPL seal" className="w-14 h-14 rounded-full" />
-          <div>
-            <p className="text-[0.6rem] tracking-[0.4em] uppercase text-gold mb-1">You have arrived</p>
-            <h3 className="font-display text-silverhi text-xl">DPPL</h3>
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-silver/80 tracking-wide">5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button onClick={onEnter} className="flex-1 bg-gold text-[#141005] font-medium text-xs tracking-[0.14em] uppercase py-3.5 px-5 rounded-full transition-all hover:bg-gold-light hover:-translate-y-px">
-            Enter DPPL →
-          </button>
-          <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border border-silver/30 text-silver text-xs tracking-wider py-3.5 px-4 rounded-full transition-colors hover:border-gold hover:text-gold">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-            Google Maps
-          </a>
-        </div>
-      </aside>
     </div>
   );
 }
