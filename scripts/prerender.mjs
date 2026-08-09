@@ -56,4 +56,26 @@ legal(
   'https://dppl.com.np/terms/'
 );
 
+
+// Each menu item is a real URL (/home, /products, ...). They serve the same
+// single-page content, so every one canonicalises back to the root to keep
+// Google from treating them as duplicate pages.
+const SECTIONS = [
+  ['home', "DPPL — Today's Silver Price in Nepal | Silver Bars & Grains, New Road, Kathmandu"],
+  ['products', 'Silver Bars & Grains — 999 Fine | DPPL, New Road, Kathmandu'],
+  ['articles', 'Silver Journal — History, Buying & Investing | DPPL Kathmandu'],
+  ['about', 'About DPPL — Silver Bullion Dealer, New Road, Kathmandu'],
+  ['contact', 'Contact DPPL — Sasa Complex, New Road, Kathmandu'],
+];
+
+const home = render();
+for (const [slug, title] of SECTIONS) {
+  mkdirSync(`dist/${slug}`, { recursive: true });
+  const out = shell
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+    .replace('<div id="root"></div>', `<div id="root"><div data-prerender>${home}</div></div>`);
+  writeFileSync(`dist/${slug}/index.html`, out);
+  console.log(`  dist/${slug}/index.html — section page`);
+}
+
 rmSync('scripts/.prerender.cjs');

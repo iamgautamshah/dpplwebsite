@@ -36,13 +36,15 @@ const ARTICLES = [
     more: 'Silver is consumed as well as saved: solar panels, electronics, and medical uses take a growing share of world supply each year, which gives the metal an industrial floor that pure store-of-value assets lack. For a household in Kathmandu, that means a 100 g bar bought today is both a hedge against rupee inflation and a claim on real industrial demand. The sensible pattern we see from experienced customers is steady accumulation — a fixed budget each month or each Dashain bonus, converted at the day\u2019s rate regardless of headlines — rather than trying to time the market. Silver rewards patience and punishes panic; buy documented metal, store it safely, and let the decades do the work.' },
 ];
 
+// scroll to the section and put its own path in the address bar — /contact,
+// /products and so on, each of which is also a real page if reloaded
 const scrollToSection = (e, href) => {
   const id = href.replace('#', '');
   const el = document.getElementById(id);
   if (!el) return;
   e.preventDefault();
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  history.replaceState(null, '', location.pathname);
+  history.replaceState(null, '', '/' + id);
 };
 
 const Ledger = ({ children, light = false }) => (

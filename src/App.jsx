@@ -1,39 +1,55 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { lazy, Suspense } from 'react';
-const Intro = lazy(() => import('./components/Intro.jsx'));
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Site from './components/Site.jsx';
 import { Privacy, Terms } from './components/Legal.jsx';
 
+const Intro = lazy(() => import('./components/Intro.jsx'));
+
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
+const SECTIONS = ['home', 'products', 'articles', 'about', 'contact'];
+
+// /contact, /contact/ and /Contact all resolve to the contact section
+function sectionFromPath(path) {
+  const seg = path.replace(/^\/+|\/+$/g, '').toLowerCase();
+  return SECTIONS.includes(seg) ? seg : null;
+}
 
 export default function App() {
   const path = typeof location !== 'undefined' ? location.pathname : '/';
-  if (path.startsWith('/privacy')) return <Privacy />;
-  if (path.startsWith('/terms')) return <Terms />;
+  const legal = path.startsWith('/privacy') ? 'privacy' : path.startsWith('/terms') ? 'terms' : null;
+  const section = sectionFromPath(path);
 
+  // arriving on a section URL means the visitor already knows where they are
+  // going, so the intro is skipped
   const [entered, setEntered] = useState(
-    () => isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
+    () => Boolean(legal) || Boolean(section) || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
   );
   const [flash, setFlash] = useState(false);
-
   const entering = useRef(false);
+
   const enter = useCallback(() => {
-    if (entering.current) return;          // the auto timer and the card button share this
+    if (entering.current) return;
     entering.current = true;
     setFlash(true);
     setTimeout(() => {
       setEntered(true);
-      // clean address bar — no hash — and no history entry, so Back leaves the
-      // site rather than replaying the intro
-      history.replaceState(null, '', '/');
+      // no history entry, so Back leaves the site instead of replaying the intro
+      history.replaceState(null, '', '/home');
       scrollTo(0, 0);
       setTimeout(() => setFlash(false), 80);
     }, 650);
   }, []);
 
   useEffect(() => {
-    if (entered) scrollTo(0, 0);
-  }, [entered]);
+    if (!entered || legal) return;
+    if (section && section !== 'home') {
+      const el = document.getElementById(section);
+      if (el) { el.scrollIntoView({ block: 'start' }); return; }
+    }
+    scrollTo(0, 0);
+  }, [entered, legal, section]);
+
+  if (legal === 'privacy') return <Privacy />;
+  if (legal === 'terms') return <Terms />;
 
   return (
     <>
