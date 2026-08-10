@@ -70,15 +70,6 @@ function ArrivalSky({ scene }) {
       </svg>
       <div className="absolute inset-x-0 bottom-0 h-[22%]" style={{ background: `radial-gradient(70% 100% at 50% 100%, ${scene.city}, transparent 72%)` }} />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,6,13,0.55)_0%,rgba(4,6,13,0.12)_45%,rgba(4,6,13,0.62)_100%)]" />
-      <section className={`ov ${on('arrive')} absolute inset-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`}>
-        <img src="/images/logo.webp" alt="" className="w-16 h-16 rounded-full mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
-        <p className="text-[0.62rem] tracking-[0.44em] uppercase text-gold mb-3">You have arrived</p>
-        <h2 className="font-display text-silverhi leading-tight text-[clamp(2.2rem,7vw,4.2rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">DPPL</h2>
-        <p className="mt-4 max-w-md text-silverhi/90 tracking-wide text-[clamp(0.9rem,2vw,1.05rem)] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
-          5th Floor, Sasa Complex, New Road,<br />Kathmandu 44600, Nepal
-        </p>
-        <p className="mt-5 font-mono text-[0.6rem] tracking-[0.3em] uppercase text-gold/90">{scene.label}</p>
-      </section>
     </div>
   );
 }
