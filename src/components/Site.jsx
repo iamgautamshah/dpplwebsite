@@ -15,10 +15,10 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: '100 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 100 gram fine silver bar 999', label: 'BUY · 100 G', msg: 'Hello DPPL, I want to buy a 100g Fine Silver Bar (999). Please share today\u2019s price.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
-  { name: '500 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 500 gram fine silver bar 999', label: 'BUY · 500 G', msg: 'Hello DPPL, I want to buy a 500g Fine Silver Bar (999). Please share today\u2019s price.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
-  { name: '1 kg Silver Bar', img: '/images/bar.webp', alt: 'DPPL 1 kilogram fine silver bar 999', label: 'BUY · 1 KG', msg: 'Hello DPPL, I want to buy a 1kg Fine Silver Bar (999). Please share today\u2019s price.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
-  { name: 'Silver Grains', img: '/images/grains.webp', alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'BUY · GRAINS', msg: 'Hello DPPL, I want to buy Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
+  { name: '100 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
+  { name: '500 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
+  { name: '1 kg Silver Bar', img: '/images/bar.webp', alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
+  { name: 'Silver Grains', img: '/images/grains.webp', alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
 ];
 
 const ARTICLES = [
@@ -39,7 +39,7 @@ const ARTICLES = [
 // scroll to the section and put its own path in the address bar — /contact,
 // /products and so on, each of which is also a real page if reloaded
 const scrollToSection = (e, href) => {
-  const id = href.replace('#', '');
+  const id = href.replace('#', '').replace('/', '');
   const el = document.getElementById(id);
   if (!el) return;
   e.preventDefault();
@@ -80,13 +80,13 @@ function Nav() {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  const links = [['#home', 'HOME'], ['#products', 'PRODUCTS'], ['#articles', 'ARTICLES'], ['#about', 'ABOUT US'], ['#contact', 'CONTACT']];
+  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['articles', 'ARTICLES'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
 
   return (
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-gold" aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
-        <a href="#home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
+        <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
           <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
           <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
             DP<span className="text-gold">PL</span>
@@ -96,7 +96,7 @@ function Nav() {
         <ul className="hidden md:flex gap-8">
           {links.map(([href, label]) => (
             <li key={href}>
-              <a href={href} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
+              <a href={`/${href}`} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
             </li>
           ))}
         </ul>
@@ -119,7 +119,7 @@ function Nav() {
           {links.map(([href, label]) => (
             <li key={href}>
               <a
-                href={href}
+                href={`/${href}`}
                 onClick={(e) => { setOpen(false); scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
@@ -148,7 +148,7 @@ export default function Site() {
   useReveal();
   return (
     <main className="relative z-10 bg-graphite">
-      <a href="#home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
+      <a href="/home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
       <Nav />
       <Ticker />
 
@@ -164,7 +164,7 @@ export default function Site() {
               DPPL publishes the daily sale and purchase rate for fine silver and supplies 999 bars and grains from the heart of Kathmandu's original street of commerce. Every piece is weighed on calibrated scales, sealed at the counter, and invoiced to the gram.
             </p>
             <div className="mt-8 flex flex-wrap gap-3.5">
-              <a href="#products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
+              <a href="/products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
               <a href={WA('Hello DPPL, I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function Site() {
             <Ledger light>The collection</Ledger>
             <h2 className="font-display text-[#141821] text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
           </div>
-          <p className="mt-3 max-w-xl text-[#4A4F5C] leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap BUY to order directly on WhatsApp.</p>
+          <p className="mt-3 max-w-xl text-[#4A4F5C] leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap ENQUIRE to reach us directly on WhatsApp.</p>
           <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold-deep/35 bg-[#FBF7EA] px-4 py-3.5 text-sm leading-relaxed text-[#4A4F5C]">
             <span className="hallmark mt-1" aria-hidden="true" />
             <span><b className="text-[#141821] font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>

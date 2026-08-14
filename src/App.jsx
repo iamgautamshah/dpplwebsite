@@ -23,20 +23,15 @@ export default function App() {
   const [entered, setEntered] = useState(
     () => Boolean(legal) || Boolean(section) || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
   );
-  const [flash, setFlash] = useState(false);
   const entering = useRef(false);
 
   const enter = useCallback(() => {
     if (entering.current) return;
     entering.current = true;
-    setFlash(true);
-    setTimeout(() => {
-      setEntered(true);
-      // no history entry, so Back leaves the site instead of replaying the intro
-      history.replaceState(null, '', '/home');
-      scrollTo(0, 0);
-      setTimeout(() => setFlash(false), 80);
-    }, 650);
+    // straight in — no fade-through-white, no waiting. the address stays at the
+    // root; /home only appears if the visitor clicks the logo or HOME
+    setEntered(true);
+    scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -55,11 +50,6 @@ export default function App() {
     <>
       {!entered && <Suspense fallback={<div className="fixed inset-0 bg-void" />}><Intro onEnter={enter} /></Suspense>}
       {entered && <Site />}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 z-[50] bg-silverhi pointer-events-none transition-opacity duration-700"
-        style={{ opacity: flash ? 1 : 0 }}
-      />
     </>
   );
 }
