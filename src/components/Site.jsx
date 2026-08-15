@@ -43,7 +43,8 @@ const scrollToSection = (e, href) => {
   const el = document.getElementById(id);
   if (!el) return;
   e.preventDefault();
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  catch { scrollTo(0, el.offsetTop || 0); }
   history.replaceState(null, '', '/' + id);
 };
 
@@ -147,12 +148,12 @@ function AdSlot() {
 export default function Site() {
   useReveal();
   return (
-    <main className="relative z-10 bg-graphite">
+    <main className="relative z-10 bg-[#0B0F16]">
       <a href="/home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
       <Nav />
       <Ticker />
 
-            <section id="home" className="px-3 sm:px-6 md:px-12 pt-5 sm:pt-10 pb-8 sm:pb-12 bg-[radial-gradient(1100px_560px_at_82%_-12%,rgba(216,179,106,0.13),transparent_60%),linear-gradient(180deg,#0A0F1A_0%,#111624_60%,#101520_100%)]">
+            <section id="home" className="px-3 sm:px-6 md:px-12 pt-5 sm:pt-10 pb-8 sm:pb-12">
         <div className="frame grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv className="order-2 lg:order-1">
             <Ledger>Rates · New Road ledger</Ledger>
@@ -169,36 +170,33 @@ export default function Site() {
             </div>
           </div>
           <div className="relative order-1 lg:order-2" data-rv data-rv-d="1">
-            <span className="wm hidden sm:block text-silver/[0.05] text-[clamp(6rem,14vw,11rem)] top-1 right-2" aria-hidden="true">999</span>
             <PriceCard />
           </div>
         </div>
       </section>
 
-            <section id="products" className="bg-ivory text-[#1C222E] px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <div className="frame-light max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
-          <span className="wm hidden sm:block text-[#1C222E]/[0.06] text-[clamp(5rem,13vw,11rem)] top-1 right-3" lang="ne" aria-hidden="true">चाँदी</span>
+            <section id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
-            <Ledger light>The collection</Ledger>
-            <h2 className="font-display text-[#141821] text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
+            <Ledger>The collection</Ledger>
+            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
           </div>
-          <p className="mt-3 max-w-xl text-[#4A4F5C] leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap ENQUIRE to reach us directly on WhatsApp.</p>
-          <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold-deep/35 bg-[#FBF7EA] px-4 py-3.5 text-sm leading-relaxed text-[#4A4F5C]">
+          <p className="mt-3 max-w-xl text-silver/75 leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap ENQUIRE to reach us directly on WhatsApp.</p>
+          <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
             <span className="hallmark mt-1" aria-hidden="true" />
-            <span><b className="text-[#141821] font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
+            <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
           </p>
           <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
             {PRODUCTS.map((p, i) => (
-              <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-[#FDFBF5] border border-[#E4DECC] rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-gold-deep/50 hover:shadow-[0_22px_44px_-18px_rgba(28,34,46,0.25)]">
-                <span className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full border border-gold-deep/40 flex items-center justify-center font-mono text-[0.6rem] tracking-widest text-gold-deep rotate-12" aria-hidden="true">999</span>
-                <div className="bg-gradient-to-b from-[#EFEBDD] to-[#FDFBF5] px-6 pt-6 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" className="h-52 w-auto object-contain drop-shadow-[0_14px_20px_rgba(28,34,46,0.22)] transition-transform duration-500 group-hover:scale-105" />
+              <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
+                <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
+                  <img src={p.img} alt={p.alt} loading="lazy" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <h3 className="font-display text-xl text-[#141821]">{p.name}</h3>
-                  <p className="text-[0.64rem] tracking-[0.3em] uppercase text-gold-deep my-2">999 fine · sealed &amp; stamped</p>
-                  <p className="text-sm text-[#5A5F6C] leading-relaxed flex-1">{p.desc}</p>
-                  {p.name.includes('Bar') && <p className="mt-4 text-[0.7rem] tracking-wide text-[#8A8271]">Rate by weight · making charges extra</p>}
+                  <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
+                  <p className="text-[0.62rem] tracking-[0.3em] uppercase text-gold/80 my-2">999 fine · sealed &amp; stamped</p>
+                  <p className="text-sm text-silver/70 leading-relaxed flex-1">{p.desc}</p>
+                  {p.name.includes('Bar') && <p className="mt-4 text-[0.7rem] tracking-wide text-steel">Rate by weight · making charges extra</p>}
                   <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-4">{p.label}</a>
                 </div>
               </article>
@@ -207,7 +205,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="articles" className="bg-panel px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
@@ -230,7 +228,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="about" className="bg-graphite px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
           <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
@@ -254,7 +252,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="contact" className="bg-gradient-to-b from-graphite to-[#0A0F1A] px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
@@ -292,9 +290,8 @@ export default function Site() {
         </div>
       </section>
 
-      <footer className="bg-[#080C14] border-t border-silver/[0.07] px-5 md:px-16 pt-14 pb-10">
-        <p className="wm relative !static block text-center text-silver/[0.07] text-[clamp(4.5rem,16vw,12rem)] tracking-[0.08em] mb-8" aria-hidden="true">DPPL</p>
-        <div className="flex flex-wrap items-center justify-between gap-5">
+      <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="flex items-center gap-3.5">
           <img src="/images/logo.webp" alt="DPPL seal" className="w-10 h-10 rounded-full" />
           <p className="text-xs text-steel leading-relaxed tracking-wide">

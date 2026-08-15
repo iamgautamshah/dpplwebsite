@@ -92,7 +92,7 @@ export default function PriceCard() {
 
   return (
     <div className="relative">
-            <div className="absolute -inset-5 rounded-[2rem] bg-gold/20 blur-3xl opacity-30 animate-[pulse_5s_ease-in-out_infinite] pointer-events-none" aria-hidden="true" />
+            <div className="absolute -inset-4 rounded-[2rem] bg-gold/10 blur-3xl pointer-events-none" aria-hidden="true" />
 
       <div className="plate relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
         <div className="plate-in relative p-4 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>

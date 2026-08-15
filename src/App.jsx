@@ -38,7 +38,11 @@ export default function App() {
     if (!entered || legal) return;
     if (section && section !== 'home') {
       const el = document.getElementById(section);
-      if (el) { el.scrollIntoView({ block: 'start' }); return; }
+      // never let a scroll failure take the whole page down with it
+      if (el) {
+        try { el.scrollIntoView({ block: 'start' }); return; }
+        catch { scrollTo(0, el.offsetTop || 0); return; }
+      }
     }
     scrollTo(0, 0);
   }, [entered, legal, section]);
