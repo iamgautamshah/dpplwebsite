@@ -11,6 +11,30 @@ const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 );
 
+const SOCIALS = [
+  {
+    name: 'Facebook',
+    url: 'https://www.facebook.com/dppl2080',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z" /></svg>
+    ),
+  },
+  {
+    name: 'Instagram',
+    url: 'https://www.instagram.com/dppl2080',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none" /></svg>
+    ),
+  },
+  {
+    name: 'TikTok',
+    url: 'https://www.tiktok.com/@dppl2080',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 2h-3v13.2a2.7 2.7 0 1 1-2.2-2.7v-3a5.7 5.7 0 1 0 5.2 5.7V9.3a7 7 0 0 0 4 1.3V7.5a4 4 0 0 1-4-4z" /></svg>
+    ),
+  },
+];
+
 const WaIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.4-.7-3.9-3.4-4-3.6-.9-1.2-.9-2.3.6-1.6.8-1.8.4-.3.6-.3h.4c.2 0 .4-.1.6.4l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.4-.1.7s.8 1.3 1.7 2.1c1.2 1 2.1 1.3 2.4 1.5s.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.2.5.2.6.4s0 .9-.4 1.5z" /></svg>
 );
@@ -150,9 +174,6 @@ export default function Site() {
             <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(2.1rem,5.4vw,3.8rem)]">
               Today's silver price, <em className="not-italic text-gold">straight from New Road.</em>
             </h1>
-            <p className="mt-5 max-w-xl text-silver/75 leading-relaxed">
-              DPPL publishes the daily sale and purchase rate for fine silver and supplies 999 bars and grains from the heart of Kathmandu's original street of commerce. Every piece is weighed on calibrated scales, sealed at the counter, and invoiced to the gram.
-            </p>
             <div className="mt-8 flex flex-wrap gap-3.5">
               <a href="/products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
               <a href={WA('Hello DPPL, I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
@@ -170,7 +191,6 @@ export default function Site() {
             <Ledger>The collection</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
           </div>
-          <p className="mt-3 max-w-xl text-silver/75 leading-relaxed">Every DPPL piece is 999 fine, stamped with the diamond mark, and sealed at Sasa Complex. Tap ENQUIRE to reach us directly on WhatsApp.</p>
           <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
             <span className="hallmark mt-1" aria-hidden="true" />
             <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
@@ -290,10 +310,19 @@ export default function Site() {
         </div>
           <div className="text-xs text-steel leading-relaxed tracking-wide sm:text-right">
             <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 DPPL. All rights reserved.</p>
-            <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
+              <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
+              <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
               <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
               <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
               <a href="mailto:dppl2080@gmail.com" className="transition-colors hover:text-gold">dppl2080@gmail.com</a>
+            </p>
+            <p className="mt-4 flex gap-3 sm:justify-end">
+              {SOCIALS.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name}
+                   className="w-9 h-9 rounded-full border border-silver/20 flex items-center justify-center text-silver/70 transition-all hover:border-gold hover:text-gold hover:-translate-y-0.5">
+                  {s.icon}
+                </a>
+              ))}
             </p>
           </div>
         </div>

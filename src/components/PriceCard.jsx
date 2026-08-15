@@ -9,19 +9,15 @@ const fmtNum = (n) =>
 const I18N = {
   en: {
     head: "Today's Silver Price",
-    sub: 'Kathmandu · New Road',
     thSale: 'SALE', thBuy: 'PURCHASE',
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
-    note: 'Rates are set each morning from the official Kathmandu bullion market reference and confirmed at the counter. Sale = you buy from us · Purchase = we buy from you. Bar and grain prices follow these rates by weight; making charges are additional.',
     updated: 'Updated', live: 'LIVE',
     cur: (n) => 'Rs ' + fmtNum(n),
   },
   np: {
     head: 'आजको चाँदीको मूल्य',
-    sub: 'काठमाडौँ · न्यू रोड',
     thSale: 'बिक्री', thBuy: 'खरिद',
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
-    note: 'दरहरू हरेक बिहान काठमाडौँ बुलियन बजारको आधिकारिक सन्दर्भ मूल्य अनुसार तय हुन्छन् र काउन्टरमा पुष्टि गरिन्छ। बिक्री = तपाईंले हामीबाट किन्ने मूल्य · खरिद = हामीले तपाईंबाट किन्ने मूल्य। बार तथा ग्रेनको मूल्य यिनै दरमा तौल अनुसार हुन्छ; बनाउने ज्याला अतिरिक्त लाग्छ।',
     updated: 'अद्यावधिक', live: 'लाइभ',
     cur: (n) => 'रु ' + toNepaliDigits(fmtNum(n)),
   },
@@ -101,7 +97,6 @@ export default function PriceCard() {
                     <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <h2 className={`font-display text-silverhi tracking-wide text-[clamp(1.25rem,3vw,1.6rem)] ${np ? 'font-np' : ''}`}>{t.head}</h2>
-              <p className={`mt-1 text-[0.68rem] tracking-[0.3em] uppercase text-steel ${np ? 'font-np tracking-[0.18em]' : ''}`}>{t.sub}</p>
             </div>
             <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[0.6rem] tracking-[0.24em] font-mono
               ${live ? 'border-[#3DDC84]/50 text-[#3DDC84]' : 'border-steel/40 text-steel'}`}>
@@ -117,7 +112,7 @@ export default function PriceCard() {
 
                     <div className={np ? 'font-np' : ''}>
             <div className={`${COLS} mb-2`}>
-              <span className="text-[0.68rem] tracking-[0.24em] uppercase text-steel">{t.fine}</span>
+              <span aria-hidden="true" />
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-[#9FD8B4] font-medium">{t.thBuy}</span>
             </div>
@@ -132,11 +127,11 @@ export default function PriceCard() {
               <Pill v={prices.g10Purchase} buy />
             </div>
           </div>
-
-          <p className={`mt-4 text-[0.78rem] leading-relaxed text-steel ${np ? 'font-np' : ''}`}>
-            {t.note}
-            {updated && <> · {t.updated}: {np ? toNepaliDigits(updated) : updated} NPT{prices.source ? ` (${prices.source})` : ''}</>}
-          </p>
+          {updated && (
+            <p className={`mt-4 font-mono text-[0.66rem] tracking-[0.18em] uppercase text-steel ${np ? 'font-np tracking-normal' : ''}`}>
+              {t.updated}: {np ? toNepaliDigits(updated) : updated} NPT{prices.source ? ` · ${prices.source}` : ''}
+            </p>
+          )}
         </div>
       </div>
     </div>
