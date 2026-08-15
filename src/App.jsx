@@ -1,11 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Site from './components/Site.jsx';
 import { Privacy, Terms } from './components/Legal.jsx';
+import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
 
 const Intro = lazy(() => import('./components/Intro.jsx'));
 
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
-const SECTIONS = ['home', 'products', 'articles', 'about', 'contact'];
+const SECTIONS = ['home', 'products', 'about', 'contact'];
 
 // /contact, /contact/ and /Contact all resolve to the contact section
 function sectionFromPath(path) {
@@ -16,12 +17,14 @@ function sectionFromPath(path) {
 export default function App() {
   const path = typeof location !== 'undefined' ? location.pathname : '/';
   const legal = path.startsWith('/privacy') ? 'privacy' : path.startsWith('/terms') ? 'terms' : null;
+  const journal = path.replace(/^\/+|\/+$/g, '').toLowerCase().split('/');
+  const isJournal = journal[0] === 'articles';
   const section = sectionFromPath(path);
 
   // arriving on a section URL means the visitor already knows where they are
   // going, so the intro is skipped
   const [entered, setEntered] = useState(
-    () => Boolean(legal) || Boolean(section) || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
+    () => Boolean(legal) || isJournal || Boolean(section) || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
   );
   const entering = useRef(false);
 
@@ -35,7 +38,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!entered || legal) return;
+    if (!entered || legal || isJournal) return;
     if (section && section !== 'home') {
       const el = document.getElementById(section);
       // never let a scroll failure take the whole page down with it
@@ -45,10 +48,11 @@ export default function App() {
       }
     }
     scrollTo(0, 0);
-  }, [entered, legal, section]);
+  }, [entered, legal, isJournal, section]);
 
   if (legal === 'privacy') return <Privacy />;
   if (legal === 'terms') return <Terms />;
+  if (isJournal) return journal[1] ? <ArticlePage slug={journal[1]} /> : <ArticlesIndex />;
 
   return (
     <>

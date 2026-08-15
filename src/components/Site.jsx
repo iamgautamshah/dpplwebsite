@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Ticker, useReveal } from '../lib/ui.jsx';
+import { ARTICLES } from '../content/articles.js';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
 
@@ -21,20 +22,6 @@ const PRODUCTS = [
   { name: 'Silver Grains', img: '/images/grains.webp', alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
 ];
 
-const ARTICLES = [
-  { cat: 'History', title: 'Silver in the world: five thousand years of money',
-    teaser: 'Silver was money before coins existed. Mesopotamian merchants weighed out silver shekels four thousand years before Christ, and when the Lydians struck the world\u2019s first coins around 600 BCE, silver was in them. Athens built its navy on the silver mines of Laurion; Rome paid its legions in silver denarii.',
-    more: 'The metal shaped whole eras. Spanish galleons carried Bolivian and Mexican silver across two oceans, and the eight-real coin — the "piece of eight" — became the first truly global currency, accepted from Manila to Boston. China ran its entire economy on silver for centuries. The word for money is still "argent" in French and "plata" in Spanish: literally, silver. In the modern age silver picked up a second life as an industrial metal — it is the best electrical conductor of any element, which puts it inside every solar panel, smartphone, and electric vehicle made today. That double identity, ancient money and modern technology, is what makes silver unlike any other asset: it has never in recorded history been worthless, and the industries of the future keep consuming it.' },
-  { cat: 'History', title: 'Silver in Nepal: from Lichhavi coins to today\u2019s counter',
-    teaser: 'Silver has circulated in the Kathmandu Valley for well over a millennium. Lichhavi and Malla kings struck silver coinage, and Malla-era Nepal even minted the silver mohar coins used across the Himalaya in Tibet — a trade so valuable that disputes over coin purity helped spark war between Kathmandu and Lhasa.',
-    more: 'Beyond coinage, silver wove itself into daily Nepali life. Newar silversmiths of the Valley became famous across Asia for repouss\u00e9 work on temple doors, ritual vessels, and statue ornaments. A Nepali child still receives silver anklets and bangles; offerings to deities are made on silver plates; a daughter\u2019s dowry traditionally carries silver alongside gold. New Road itself — rebuilt after the great earthquake of 1990 B.S. — grew into the country\u2019s centre for precious-metal trade, where daily gold and silver prices have been set and shouted between shops for generations. When you buy a stamped bar at a New Road counter today, weighed in tolas as it was under the Mallas, you are participating in one of the oldest continuous markets in Nepal.' },
-  { cat: 'Buying well', title: 'How to verify a silver bar before you pay for it',
-    teaser: 'A genuine fine-silver bar tells you what it is. Look first for three stampings: the fineness (999), the weight, and the maker\u2019s mark — on DPPL bars, the diamond seal. If any of the three is missing or looks re-struck, walk away.',
-    more: 'Second, insist on seeing the bar weighed in front of you on a calibrated scale — a 100 g bar should read 100.0, not "about a hundred." Third, ask for a full VAT invoice recording the weight, fineness, rate, and date; this is what makes the bar liquid, because any honest dealer in Nepal will buy back a documented bar at the day\u2019s purchase rate. Finally, be careful with deals that are far below the published rate. Silver is a commodity: nobody sells it meaningfully under the market unless something is wrong with the metal, the weight, or the paperwork. Paying the fair, published price with full documentation is the cheapest way to own silver in the long run.' },
-  { cat: 'Investing', title: 'Why Kathmandu households are turning to silver',
-    teaser: 'Gold gets the headlines, but silver has quietly become the practical metal for Nepali savers. The entry price is a fraction of gold\u2019s, the cultural uses — from ritual to jewellery — are just as deep, and the industrial demand behind it keeps growing.',
-    more: 'Silver is consumed as well as saved: solar panels, electronics, and medical uses take a growing share of world supply each year, which gives the metal an industrial floor that pure store-of-value assets lack. For a household in Kathmandu, that means a 100 g bar bought today is both a hedge against rupee inflation and a claim on real industrial demand. The sensible pattern we see from experienced customers is steady accumulation — a fixed budget each month or each Dashain bonus, converted at the day\u2019s rate regardless of headlines — rather than trying to time the market. Silver rewards patience and punishes panic; buy documented metal, store it safely, and let the decades do the work.' },
-];
 
 // scroll to the section and put its own path in the address bar — /contact,
 // /products and so on, each of which is also a real page if reloaded
@@ -81,7 +68,7 @@ function Nav() {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['articles', 'ARTICLES'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
+  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
 
   return (
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
@@ -94,12 +81,13 @@ function Nav() {
             <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
           </span>
         </a>
-        <ul className="hidden md:flex gap-8">
+        <ul className="hidden md:flex gap-8 items-center">
           {links.map(([href, label]) => (
             <li key={href}>
               <a href={`/${href}`} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
             </li>
           ))}
+          <li><a href="/articles" className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">JOURNAL</a></li>
         </ul>
         <button
           className="md:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
@@ -128,6 +116,7 @@ function Nav() {
               </a>
             </li>
           ))}
+          <li><a href="/articles" onClick={() => setOpen(false)} className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]">JOURNAL</a></li>
         </ul>
       </div>
     </nav>
@@ -212,18 +201,19 @@ export default function Site() {
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Understand silver before you buy it.</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mt-10">
-            {ARTICLES.map((a, i) => (
-              <article key={a.title} data-rv data-rv-d={String(i % 2)} className="bg-silver/[0.04] border border-silver/10 rounded-2xl p-7 transition-all duration-300 hover:border-gold/30 hover:bg-silver/[0.06]">
-                <p className="text-[0.6rem] tracking-[0.34em] uppercase text-gold mb-3">{a.cat}</p>
-                <h3 className="font-display text-xl text-silverhi leading-snug">{a.title}</h3>
-                <p className="mt-3 text-sm text-silver/75 leading-relaxed">{a.teaser}</p>
-                <details className="mt-3 group">
-                  <summary className="cursor-pointer list-none text-[0.72rem] tracking-[0.22em] uppercase text-gold after:content-['_+'] group-open:after:content-['_−']">Read more</summary>
-                  <p className="mt-3 text-sm text-silver/60 leading-relaxed">{a.more}</p>
-                </details>
+            {ARTICLES.slice(0, 4).map((a, i) => (
+              <article key={a.slug} data-rv data-rv-d={String(i % 2)} className="flex flex-col rounded-2xl border border-silver/10 bg-white/[0.02] p-6 transition-all duration-300 hover:border-gold/35 hover:bg-white/[0.04]">
+                <p className="text-[0.6rem] tracking-[0.34em] uppercase text-gold mb-3">{a.category}</p>
+                <h3 className="font-display text-silverhi text-xl leading-snug">
+                  <a href={`/articles/${a.slug}`} className="transition-colors hover:text-gold">{a.title}</a>
+                </h3>
+                <p className="mt-3 text-sm text-silver/70 leading-relaxed flex-1">{a.teaser}</p>
+                <a href={`/articles/${a.slug}`} className="mt-4 self-start text-[0.72rem] tracking-[0.22em] uppercase text-gold border-b border-gold/40 pb-1">Read the article →</a>
               </article>
             ))}
           </div>
+          <a href="/articles" className="btn-line inline-block mt-8">READ ALL {ARTICLES.length} ARTICLES →</a>
+
           <AdSlot />
         </div>
       </section>
