@@ -92,7 +92,14 @@ function Nav() {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
+  // 'page' items navigate; 'scroll' items jump to a section of the home page
+  const links = [
+    ['home', 'HOME', 'scroll'],
+    ['products', 'PRODUCTS', 'scroll'],
+    ['articles', 'JOURNAL', 'page'],
+    ['about', 'ABOUT US', 'scroll'],
+    ['contact', 'CONTACT', 'scroll'],
+  ];
 
   return (
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
@@ -106,12 +113,17 @@ function Nav() {
           </span>
         </a>
         <ul className="hidden md:flex gap-8 items-center">
-          {links.map(([href, label]) => (
+          {links.map(([href, label, kind]) => (
             <li key={href}>
-              <a href={`/${href}`} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
+              <a
+                href={`/${href}`}
+                onClick={kind === 'page' ? undefined : (e) => scrollToSection(e, href)}
+                className="block py-1 font-mono text-[0.68rem] tracking-[0.2em] text-steel transition-colors hover:text-gold"
+              >
+                {label}
+              </a>
             </li>
           ))}
-          <li><a href="/articles" className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">JOURNAL</a></li>
         </ul>
         <button
           className="md:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
@@ -129,18 +141,17 @@ function Nav() {
 
             <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
-          {links.map(([href, label]) => (
+          {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
                 href={`/${href}`}
-                onClick={(e) => { setOpen(false); scrollToSection(e, href); }}
-                className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
+                onClick={kind === 'page' ? () => setOpen(false) : (e) => { setOpen(false); scrollToSection(e, href); }}
+                className="block px-6 py-4 text-center font-mono text-[0.76rem] tracking-[0.22em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
                 {label}
               </a>
             </li>
           ))}
-          <li><a href="/articles" onClick={() => setOpen(false)} className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]">JOURNAL</a></li>
         </ul>
       </div>
     </nav>

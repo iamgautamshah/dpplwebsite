@@ -7,12 +7,19 @@ body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
 ::selection { @apply bg-gold text-void; }
 
 @layer components {
-  .eyebrow { @apply text-[0.68rem] tracking-[0.4em] uppercase text-steel; }
-  .btn-gold { @apply inline-block bg-gold text-[#141005] border border-gold font-medium text-xs tracking-[0.16em] uppercase px-7 py-4 rounded-full transition-all duration-300 hover:bg-gold-light hover:-translate-y-0.5 text-center; }
-  .btn-line { @apply inline-block border border-silver/30 text-silver text-xs tracking-[0.16em] uppercase px-7 py-4 rounded-full transition-colors duration-300 hover:border-gold hover:text-gold text-center; }
-  .btn-wa { @apply inline-flex items-center justify-center gap-2 bg-[#1FA855] text-white font-medium text-xs tracking-[0.12em] uppercase px-6 py-3.5 rounded-full transition-all duration-300 hover:bg-[#25C263] hover:-translate-y-0.5; }
-  .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-3xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
+  .eyebrow { @apply font-mono text-[0.66rem] tracking-[0.28em] uppercase text-steel; }
+  .btn-gold { @apply inline-block bg-gold text-[#141005] border border-gold font-semibold text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-all duration-300 hover:bg-gold-light hover:-translate-y-0.5 text-center; }
+  .btn-line { @apply inline-block border border-silver/25 text-silver font-medium text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-colors duration-300 hover:border-gold hover:text-gold text-center; }
+  .btn-wa { @apply inline-flex items-center justify-center gap-2 bg-[#1FA855] text-white font-semibold text-[0.7rem] tracking-[0.12em] uppercase px-6 py-3.5 rounded-lg transition-all duration-300 hover:bg-[#25C263] hover:-translate-y-0.5; }
+  .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-2xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
 }
+
+/* Bodoni is a high-contrast face: it wants tight tracking at display sizes and
+   a touch more weight on dark backgrounds so the hairlines hold up */
+.font-display { letter-spacing: -0.015em; font-weight: 500; }
+h1.font-display, h2.font-display { font-weight: 500; }
+body { letter-spacing: 0.002em; -webkit-font-smoothing: antialiased; }
+.tnum, .font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 
 .ov { opacity: 0; transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
 .ov.is-on { opacity: 1; }
@@ -43,7 +50,7 @@ body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
 }
 
 /* engraved display headings — struck from above */
-.engraved { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 -1px 0 rgba(0, 0, 0, 0.45); }
+.engraved { text-shadow: 0 1px 24px rgba(0, 0, 0, 0.45); }
 
 /* rate-board ticker */
 .ticker { overflow: hidden; opacity: 0.85; }
@@ -112,9 +119,9 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
   border-radius: 14px; color: #c9d1de; box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
 }
 .dppl-map .leaflet-popup-tip { background: rgba(8, 13, 24, 0.94); }
-.dppl-pop { font-family: Jost, sans-serif; font-weight: 300; padding: 2px 4px; }
-.dppl-pop-tag { font-family: 'Spline Sans Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
-.dppl-pop h3 { font-family: Marcellus, serif; font-weight: 400; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
+.dppl-pop { font-family: Manrope, sans-serif; font-weight: 300; padding: 2px 4px; }
+.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
 .dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d8b36a; text-decoration: none; border-bottom: 1px solid rgba(216, 179, 106, 0.5); padding-bottom: 2px; }
 
@@ -125,7 +132,7 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 .frame-light {
   position: relative;
   overflow: hidden;
-  border-radius: 1.5rem;
+  border-radius: 1.25rem;
   border: 1px solid rgba(201, 209, 222, 0.1);
   background: rgba(255, 255, 255, 0.02);
 }
