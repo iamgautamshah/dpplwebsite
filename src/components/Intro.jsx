@@ -121,7 +121,7 @@ export default function Intro({ onEnter }) {
   const on = (p) => (phase === p ? 'is-on' : '');
 
   return (
-    <div className="fixed inset-0 z-[1] overflow-hidden bg-void">
+    <div className="fixed inset-0 z-[45] overflow-hidden bg-void">
       <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
       <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'cap2' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
 

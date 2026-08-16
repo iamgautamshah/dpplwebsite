@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import 'leaflet/dist/leaflet.css';
 
 export const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
 const DPPL = [27.7032447, 85.3111961];
@@ -10,7 +9,11 @@ export default function KathmanduMap({ className = '' }) {
   useEffect(() => {
     let map;
     let cancelled = false;
-    (async () => {
+
+    // Leaflet is ~150 KB and the map sits below the fold, so it is only
+    // fetched once the container is close to the viewport
+    const start = async () => {
+      await import('leaflet/dist/leaflet.css');
       const L = (await import('leaflet')).default;
       if (cancelled || !ref.current || ref.current.dataset.init) return;
       ref.current.dataset.init = '1';
@@ -52,9 +55,20 @@ export default function KathmanduMap({ className = '' }) {
         { closeButton: false, offset: [0, -14] }
       );
       marker.openPopup();
-    })();
+    };
 
-    return () => { cancelled = true; if (map) map.remove(); };
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          io.disconnect();
+          start();
+        }
+      },
+      { rootMargin: '400px' }
+    );
+    if (ref.current) io.observe(ref.current);
+
+    return () => { cancelled = true; io.disconnect(); if (map) map.remove(); };
   }, []);
 
   return (

@@ -8,6 +8,10 @@ const Intro = lazy(() => import('./components/Intro.jsx'));
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
 const SECTIONS = ['home', 'products', 'about', 'contact'];
 
+const seenIntro = () => {
+  try { return Boolean(sessionStorage.getItem('dppl-intro')); } catch { return false; }
+};
+
 // /contact, /contact/ and /Contact all resolve to the contact section
 function sectionFromPath(path) {
   const seg = path.replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -24,7 +28,7 @@ export default function App() {
   // arriving on a section URL means the visitor already knows where they are
   // going, so the intro is skipped
   const [entered, setEntered] = useState(
-    () => Boolean(legal) || isJournal || Boolean(section) || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
+    () => Boolean(legal) || isJournal || Boolean(section) || seenIntro() || isBot.test(navigator.userAgent) || (location.hash && location.hash !== '#top')
   );
   const entering = useRef(false);
 
@@ -34,8 +38,17 @@ export default function App() {
     // straight in — no fade-through-white, no waiting. the address stays at the
     // root; /home only appears if the visitor clicks the logo or HOME
     setEntered(true);
+    document.documentElement.classList.remove('intro-pending');
+    document.body.style.overflow = '';
+    try { sessionStorage.setItem('dppl-intro', '1'); } catch { /* private mode */ }
     scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (entered) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [entered]);
 
   useEffect(() => {
     if (!entered || legal || isJournal) return;
@@ -54,10 +67,16 @@ export default function App() {
   if (legal === 'terms') return <Terms />;
   if (isJournal) return journal[1] ? <ArticlePage slug={journal[1]} /> : <ArticlesIndex />;
 
+  const page = <Site />;
+
   return (
     <>
-      {!entered && <Suspense fallback={<div className="fixed inset-0 bg-void" />}><Intro onEnter={enter} /></Suspense>}
-      {entered && <Site />}
+      {page}
+      {!entered && (
+        <Suspense fallback={null}>
+          <Intro onEnter={enter} />
+        </Suspense>
+      )}
     </>
   );
 }
