@@ -44,7 +44,14 @@
       try {
         if (location.pathname === '/' && !sessionStorage.getItem('dppl-intro') &&
             !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          document.documentElement.classList.add('intro-pending');
+          var root = document.documentElement;
+          root.classList.add('intro-pending');
+          // failsafe: never let the cover strand a visitor on a blank screen if
+          // the app is slow to start or fails to load at all
+          var clear = function () { root.classList.remove('intro-pending'); };
+          setTimeout(clear, 4000);
+          addEventListener('error', clear);
+          addEventListener('unhandledrejection', clear);
         }
       } catch (e) {}
     </script>

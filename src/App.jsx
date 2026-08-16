@@ -1,9 +1,9 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Component, useCallback, useEffect, useRef, useState } from 'react';
 import Site from './components/Site.jsx';
 import { Privacy, Terms } from './components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
 
-const Intro = lazy(() => import('./components/Intro.jsx'));
+import Intro from './components/Intro.jsx';
 
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
 const SECTIONS = ['home', 'products', 'about', 'contact'];
@@ -16,6 +16,25 @@ const seenIntro = () => {
 function sectionFromPath(path) {
   const seg = path.replace(/^\/+|\/+$/g, '').toLowerCase();
   return SECTIONS.includes(seg) ? seg : null;
+}
+
+
+// The intro is decorative. If it fails for any reason the site must still be
+// usable, so this boundary swallows the error and enters immediately.
+class IntroBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onFail();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }
 
 export default function App() {
@@ -45,7 +64,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (entered) return;
+    if (entered) {
+      // the intro is not going to run (deep link, repeat visit, crawler), so the
+      // pre-paint cover must come off or the visitor is left staring at it
+      document.documentElement.classList.remove('intro-pending');
+      document.body.style.overflow = '';
+      return;
+    }
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, [entered]);
@@ -73,9 +98,9 @@ export default function App() {
     <>
       {page}
       {!entered && (
-        <Suspense fallback={null}>
+        <IntroBoundary onFail={enter}>
           <Intro onEnter={enter} />
-        </Suspense>
+        </IntroBoundary>
       )}
     </>
   );

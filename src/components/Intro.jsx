@@ -103,6 +103,8 @@ export default function Intro({ onEnter }) {
   const scene = useRef(SCENE[timeOfDay()]).current;
 
   useEffect(() => {
+    // the intro is opaque, so the pre-paint cover has done its job
+    document.documentElement.classList.remove('intro-pending');
     const timers = [];
     const run = (fn, ms) => timers.push(setTimeout(fn, ms));
 
