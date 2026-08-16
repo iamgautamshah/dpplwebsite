@@ -14,7 +14,7 @@ export default {
         ivory: '#F4F0E6',
       },
       fontFamily: {
-        display: ['Bodoni Moda', 'Georgia', 'serif'],
+        display: ['Cinzel', 'Georgia', 'serif'],
         body: ['Manrope', 'Mukta', 'system-ui', 'sans-serif'],
         np: ['Mukta', 'Manrope', 'sans-serif'],
         mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],

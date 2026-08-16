@@ -14,10 +14,17 @@ body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
   .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-2xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
 }
 
-/* Bodoni is a high-contrast face: it wants tight tracking at display sizes and
-   a touch more weight on dark backgrounds so the hairlines hold up */
-.font-display { letter-spacing: -0.015em; font-weight: 500; }
-h1.font-display, h2.font-display { font-weight: 500; }
+/* Cinzel is an inscriptional face — set in caps, with the open tracking that
+   carved Roman lettering needs, and a slightly tighter line for stacked lines */
+.font-display {
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  font-weight: 500;
+  line-height: 1.18;
+}
+h1.font-display, h2.font-display { font-weight: 600; }
+/* caps have no descenders, so headings can sit tighter to what follows */
+.font-display + p { margin-top: 0.85rem; }
 body { letter-spacing: 0.002em; -webkit-font-smoothing: antialiased; }
 .tnum, .font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 
@@ -121,7 +128,7 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 .dppl-map .leaflet-popup-tip { background: rgba(8, 13, 24, 0.94); }
 .dppl-pop { font-family: Manrope, sans-serif; font-weight: 300; padding: 2px 4px; }
 .dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
-.dppl-pop h3 { font-family: 'Bodoni Moda', serif; font-weight: 500; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: Cinzel, serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
 .dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d8b36a; text-decoration: none; border-bottom: 1px solid rgba(216, 179, 106, 0.5); padding-bottom: 2px; }
 
