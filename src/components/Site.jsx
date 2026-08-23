@@ -323,8 +323,8 @@ export default function Site() {
             <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 DPPL. All rights reserved.</p>
               <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
               <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
-              <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
-              <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
+              <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
+              <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
               <a href="mailto:dppl2080@gmail.com" className="transition-colors hover:text-gold">dppl2080@gmail.com</a>
             </p>
             <p className="mt-4 flex gap-3 sm:justify-end">

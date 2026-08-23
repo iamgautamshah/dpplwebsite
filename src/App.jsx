@@ -1,6 +1,6 @@
 import { Component, useCallback, useEffect, useRef, useState } from 'react';
 import Site from './components/Site.jsx';
-import { Privacy, Terms } from './components/Legal.jsx';
+import { NotFound, Privacy, Terms } from './components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
 
 import Intro from './components/Intro.jsx';
@@ -90,6 +90,10 @@ export default function App() {
 
   if (legal === 'privacy') return <Privacy />;
   if (legal === 'terms') return <Terms />;
+  // anything that is not a known route renders the 404 page rather than a
+  // half-loaded home page
+  const known = path === '/' || section || isJournal || legal;
+  if (!known) return <NotFound />;
   if (isJournal) return journal[1] ? <ArticlePage slug={journal[1]} /> : <ArticlesIndex />;
 
   const page = <Site />;

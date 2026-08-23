@@ -1,0 +1,10 @@
+# Old and mistyped paths resolve instead of 404ing.
+/journal            /articles           301
+/journal/*          /articles/:splat    301
+/blog               /articles           301
+/blog/*             /articles/:splat    301
+/article/*          /articles/:splat    301
+/articles/index.html /articles          301
+/index.html         /                   301
+/privacy.html       /privacy            301
+/terms.html         /terms              301

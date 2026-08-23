@@ -27,8 +27,8 @@ function Chrome({ children }) {
           <p>DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu · © 2026</p>
           <p className="flex flex-wrap gap-x-5 gap-y-2">
             <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
-            <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
-            <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
+            <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
+            <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
           </p>
         </div>
       </footer>

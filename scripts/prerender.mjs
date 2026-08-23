@@ -15,7 +15,7 @@ buildSync({
 });
 
 const require = createRequire(import.meta.url);
-const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, articles } = require('./.prerender.cjs');
+const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, articles } = require('./.prerender.cjs');
 
 const shell = readFileSync('dist/index.html', 'utf8');
 
@@ -44,7 +44,7 @@ legal(
   renderPrivacy(),
   'Privacy Policy — DPPL, New Road, Kathmandu',
   'How DPPL handles cookies, Google advertising, analytics and enquiry information on dppl.com.np.',
-  'https://dppl.com.np/privacy/'
+  'https://dppl.com.np/privacy'
 );
 
 mkdirSync('dist/terms', { recursive: true });
@@ -53,7 +53,7 @@ legal(
   renderTerms(),
   'Terms of Use — DPPL, New Road, Kathmandu',
   'Terms governing use of dppl.com.np, including how published silver rates and making charges apply.',
-  'https://dppl.com.np/terms/'
+  'https://dppl.com.np/terms'
 );
 
 
@@ -140,5 +140,13 @@ for (const a of articles) {
     }
   );
 }
+
+page(
+  'dist/404.html',
+  renderNotFound(),
+  'Page not found | DPPL, New Road, Kathmandu',
+  'That page could not be found. Browse the daily silver price, our bars and grains, or the DPPL Journal.',
+  'https://dppl.com.np/'
+);
 
 rmSync('scripts/.prerender.cjs');

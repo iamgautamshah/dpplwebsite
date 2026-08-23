@@ -38,8 +38,8 @@ function Shell({ title, updated, children }) {
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <p className="text-xs text-steel tracking-wide">© 2026 DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
           <p className="flex gap-5 text-xs text-steel tracking-wide">
-            <a href="/privacy/" className="transition-colors hover:text-gold">Privacy Policy</a>
-            <a href="/terms/" className="transition-colors hover:text-gold">Terms of Use</a>
+            <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
+            <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
           </p>
         </div>
       </footer>
@@ -254,6 +254,34 @@ export function Terms() {
         <p>
           DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
           Counter: 01-5915052 · Mobile: +977 980-561-7932 · Email: dppl2080@gmail.com
+        </p>
+      </Section>
+    </Shell>
+  );
+}
+
+export function NotFound() {
+  return (
+    <Shell title="Page not found" updated={UPDATED}>
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
+        The page you were looking for is not here — it may have been moved, or the address may be slightly off.
+        Everything on this site is reachable from the links below.
+      </p>
+
+      <Section heading="Where to go next">
+        <ul className="space-y-3">
+          <li><a href="/home" className="text-gold border-b border-gold/40 hover:border-gold">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
+          <li><a href="/products" className="text-gold border-b border-gold/40 hover:border-gold">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
+          <li><a href="/articles" className="text-gold border-b border-gold/40 hover:border-gold">The DPPL Journal</a> — how silver is priced, verified and stored</li>
+          <li><a href="/contact" className="text-gold border-b border-gold/40 hover:border-gold">Contact and directions</a> — Sasa Complex, New Road</li>
+        </ul>
+      </Section>
+
+      <Section heading="Still stuck?">
+        <p>
+          Call the counter on <a href="tel:+97715915052" className="text-gold">01-5915052</a>, message us on
+          WhatsApp at <a href="tel:+9779805617932" className="text-gold">+977 980-561-7932</a>, or email
+          <a href="mailto:dppl2080@gmail.com" className="text-gold"> dppl2080@gmail.com</a>.
         </p>
       </Section>
     </Shell>
