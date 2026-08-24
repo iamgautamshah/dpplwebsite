@@ -73,7 +73,7 @@ export default function KathmanduMap({ className = '' }) {
 
   return (
     <div className={`relative ${className}`}>
-      <div ref={ref} className="absolute inset-0 dppl-map" aria-label="Map — DPPL at Sasa Complex, New Road, Kathmandu" />
+      <div ref={ref} role="img" aria-label="Map — DPPL at Sasa Complex, New Road, Kathmandu" className="absolute inset-0 dppl-map" />
       <a
         href={MAPS_URL}
         target="_blank"

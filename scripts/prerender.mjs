@@ -17,7 +17,15 @@ buildSync({
 const require = createRequire(import.meta.url);
 const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, articles } = require('./.prerender.cjs');
 
-const shell = readFileSync('dist/index.html', 'utf8');
+let shell = readFileSync('dist/index.html', 'utf8');
+
+// inline the site stylesheet so first paint needs no extra round trip
+const cssLink = shell.match(/<link rel="stylesheet"[^>]*href="(\/assets\/index-[^"]+\.css)"[^>]*>/);
+if (cssLink) {
+  const css = readFileSync(`dist${cssLink[1]}`, 'utf8');
+  shell = shell.replace(cssLink[0], `<style>${css}</style>`);
+  console.log(`inlined ${(css.length / 1024).toFixed(1)} KB of CSS into the shell`);
+}
 
 const write = (file, html) => {
   writeFileSync(file, shell.replace('<div id="root"></div>', `<div id="root"><div data-prerender>${html}</div></div>`));

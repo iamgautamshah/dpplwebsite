@@ -11,6 +11,37 @@ const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 );
 
+const FAQS = [
+  {
+    q: 'Where can I buy the best silver in Kathmandu?',
+    a: 'DPPL trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.',
+  },
+  {
+    q: 'What is today\u2019s silver price in Nepal?',
+    a: 'The current silver rate for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.',
+  },
+  {
+    q: 'Is DPPL a silver importer or a retail dealer?',
+    a: 'Both sides of the trade run through the counter. DPPL supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.',
+  },
+  {
+    q: 'What does 999 fine silver mean?',
+    a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every DPPL bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.',
+  },
+  {
+    q: 'How much do making charges add to a silver bar?',
+    a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.',
+  },
+  {
+    q: 'Does DPPL buy silver back?',
+    a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.',
+  },
+  {
+    q: 'What are your opening hours and where exactly are you?',
+    a: 'DPPL is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 980-561-7932 on WhatsApp before visiting for large orders.',
+  },
+];
+
 const SOCIALS = [
   {
     name: 'Facebook',
@@ -158,13 +189,19 @@ function Nav() {
   );
 }
 
+// Ad units go in once AdSense approves the site and issues a slot ID. Rendering
+// a placeholder slot only produces failed ad requests in the console.
+const AD_SLOT = '';
+
 function AdSlot() {
   useEffect(() => {
+    if (!AD_SLOT) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
   }, []);
+  if (!AD_SLOT) return null;
   return (
-    <div className="mt-10 min-h-[90px] flex items-center justify-center border border-dashed border-silver/15 rounded-xl">
-            <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot="0000000000" data-ad-format="auto" data-full-width-responsive="true" />
+    <div className="mt-10 min-h-[90px] flex items-center justify-center">
+      <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot={AD_SLOT} data-ad-format="auto" data-full-width-responsive="true" />
     </div>
   );
 }
@@ -210,7 +247,7 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <img src={p.img} alt={p.alt} loading="lazy" width="700" height="933" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
@@ -251,7 +288,7 @@ export default function Site() {
 
             <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" width="512" height="512" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
@@ -273,7 +310,28 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+        <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
+          <div data-rv>
+            <Ledger>Common questions</Ledger>
+            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Buying silver in Kathmandu</h2>
+          </div>
+          <div className="mt-8 divide-y divide-silver/10">
+            {FAQS.map((f, i) => (
+              <details key={f.q} data-rv data-rv-d={String(i % 3)} className="group py-5">
+                <summary className="flex items-start gap-4 cursor-pointer list-none">
+                  <span className="hallmark mt-2 shrink-0" aria-hidden="true" />
+                  <h3 className="flex-1 font-body font-medium text-silverhi text-[1.02rem] leading-snug transition-colors group-hover:text-gold">{f.q}</h3>
+                  <span className="mt-1 text-gold text-lg leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                </summary>
+                <p className="mt-3 pl-7 text-[0.95rem] leading-relaxed text-silver/75">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
@@ -314,7 +372,7 @@ export default function Site() {
       <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="flex items-center gap-3.5">
-          <img src="/images/logo.webp" alt="DPPL seal" className="w-10 h-10 rounded-full" />
+          <img src="/images/logo.webp" alt="DPPL seal" width="40" height="40" className="w-10 h-10 rounded-full" />
           <p className="text-xs text-steel leading-relaxed tracking-wide">
             <span className="font-display text-silver tracking-[0.14em] text-sm">DPPL</span><br />Est. 2080 B.S.
           </p>
