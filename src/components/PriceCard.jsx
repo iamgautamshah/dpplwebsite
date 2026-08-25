@@ -1,25 +1,21 @@
 import { useEffect, useState } from 'react';
 import { formatAD, formatBS, toNepaliDigits } from '../lib/nepaliDate.js';
 
-const fmtNum = (n) =>
+const fmt = (n) =>
   Number.isInteger(n)
     ? n.toLocaleString('en-IN')
     : n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const I18N = {
   en: {
-    head: "Today's Silver Price",
-    thSale: 'SALE', thBuy: 'PURCHASE',
-    rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
-    updated: 'Updated', live: 'LIVE',
-    cur: (n) => 'Rs ' + fmtNum(n),
+    sale: 'Sale', buy: 'Purchase', tola: '1 Tola', g10: '10 Gram',
+    spread: 'Spread', live: 'Live', updated: 'Updated', unit: 'per tola',
+    rs: (n) => 'Rs ' + fmt(n),
   },
   np: {
-    head: 'आजको चाँदीको मूल्य',
-    thSale: 'बिक्री', thBuy: 'खरिद',
-    rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
-    updated: 'अद्यावधिक', live: 'लाइभ',
-    cur: (n) => 'रु ' + toNepaliDigits(fmtNum(n)),
+    sale: 'बिक्री', buy: 'खरिद', tola: '१ तोला', g10: '१० ग्राम',
+    spread: 'अन्तर', live: 'लाइभ', updated: 'अद्यावधिक', unit: 'प्रति तोला',
+    rs: (n) => 'रु ' + toNepaliDigits(fmt(n)),
   },
 };
 
@@ -28,7 +24,7 @@ const FALLBACK = { tolaSale: 4360, tolaPurchase: 4300, g10Sale: 3738, g10Purchas
 
 export default function PriceCard() {
   const [lang, setLang] = useState('en');
-  const [prices, setPrices] = useState(FALLBACK);
+  const [p, setP] = useState(FALLBACK);
   const [live, setLive] = useState(false);
   const [now, setNow] = useState(new Date());
   const t = I18N[lang];
@@ -36,14 +32,14 @@ export default function PriceCard() {
 
   useEffect(() => {
     let alive = true;
-    async function load() {
+    const load = async () => {
       try {
-        const res = await fetch('/api/silver', { cache: 'no-store' });
-        if (!res.ok) throw 0;
-        const d = await res.json();
-        if (alive) { setPrices(d); setLive(true); setNow(new Date()); }
-      } catch {}
-    }
+        const r = await fetch('/api/silver', { cache: 'no-store' });
+        if (!r.ok) throw 0;
+        const d = await r.json();
+        if (alive) { setP(d); setLive(true); setNow(new Date()); }
+      } catch { /* fallback stands */ }
+    };
     load();
     const id = setInterval(load, 30 * 60 * 1000);
     const vis = () => document.visibilityState === 'visible' && load();
@@ -51,89 +47,80 @@ export default function PriceCard() {
     return () => { alive = false; clearInterval(id); document.removeEventListener('visibilitychange', vis); };
   }, []);
 
-  const updated = prices?.fetchedAt
-    ? new Date(prices.fetchedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kathmandu' })
+  const updated = p?.fetchedAt
+    ? new Date(p.fetchedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kathmandu' })
     : null;
+  const spread = Math.round((p.tolaSale - p.tolaPurchase) * 100) / 100;
 
-  const Tab = ({ id, label, ne }) => (
-    <button
-      role="tab"
-      aria-selected={lang === id}
-      onClick={() => setLang(id)}
-      lang={ne ? 'ne' : undefined}
-      className={`rounded-2xl px-2.5 py-3.5 text-center transition-all duration-300 border ${
-        lang === id
-          ? 'bg-gold/15 border-gold shadow-[0_0_20px_rgba(216,179,106,0.12)]'
-          : 'bg-silver/5 border-silver/20 hover:border-silver/40'
-      }`}
-    >
-      <span className={`block font-medium text-silverhi leading-snug text-[clamp(0.88rem,2vw,1.02rem)] ${ne ? 'font-np' : ''}`}>{label}</span>
-    </button>
-  );
-
-  const COLS = 'grid grid-cols-[1fr_1.15fr_1.15fr] items-center gap-2 sm:gap-3';
-
-  const Pill = ({ v, buy }) => (
-    <span
-      className={`block w-full text-center rounded-xl border px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
-        text-[clamp(1.1rem,3.4vw,1.5rem)] transition-colors duration-500
-        ${buy
-          ? 'bg-[#9FD8B4]/[0.08] border-[#9FD8B4]/40 text-[#9FD8B4]'
-          : 'bg-gold/[0.12] border-gold/50 text-gold shadow-[inset_0_0_18px_rgba(216,179,106,0.08)]'}
-        ${np ? 'font-np' : ''}`}
-    >
-      {t.cur(v)}
-    </span>
+  const Pan = ({ label, value, accent }) => (
+    <div className="hanger flex-1 pt-6 text-center">
+      <p className={`stamp mb-3 ${accent ? 'text-vermilion' : ''} ${np ? 'font-np tracking-[0.14em]' : ''}`}>{label}</p>
+      <p className={`font-mono tnum font-medium text-ink leading-none text-[clamp(1.9rem,7vw,3.1rem)] ${np ? 'font-np' : ''}`}>
+        {t.rs(value)}
+      </p>
+      <p className={`stamp mt-3 ${np ? 'font-np tracking-[0.14em]' : ''}`}>{t.unit}</p>
+    </div>
   );
 
   return (
-    <div className="relative">
-            <div className="absolute -inset-4 rounded-[2rem] bg-gold/10 blur-3xl pointer-events-none" aria-hidden="true" />
+    <section className="panel p-5 sm:p-8" lang={np ? 'ne' : 'en'} aria-label="Today's silver rate">
+      {/* the day, in both calendars */}
+      <header className="flex items-start justify-between gap-4 border-b border-line pb-4">
+        <div className="flex gap-1.5">
+          {[['en', formatAD(now), false], ['np', formatBS(now), true]].map(([id, label, ne]) => (
+            <button
+              key={id}
+              onClick={() => setLang(id)}
+              aria-pressed={lang === id}
+              lang={ne ? 'ne' : undefined}
+              className={`font-mono text-[0.68rem] tracking-[0.1em] px-3 py-2 rounded-sm border transition-colors ${
+                lang === id ? 'border-ink bg-ink text-sheet' : 'border-line text-mute hover:border-ink hover:text-ink'
+              } ${ne ? 'font-np' : ''}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <span className={`flex items-center gap-2 stamp ${live ? 'text-vermilion' : ''} ${np ? 'font-np' : ''}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-vermilion animate-pulse' : 'bg-mute'}`} />
+          {t.live}
+        </span>
+      </header>
 
-      <div className="plate relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
-        <div className="plate-in relative p-4 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
-          <span className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.62rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
-
-                    <div className="flex items-start justify-between gap-3 mb-4">
-            <div>
-              <h2 className={`font-display text-silverhi tracking-wide text-[clamp(1.25rem,3vw,1.6rem)] ${np ? 'font-np' : ''}`}>{t.head}</h2>
-            </div>
-            <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[0.6rem] tracking-[0.24em] font-mono
-              ${live ? 'border-[#3DDC84]/50 text-[#3DDC84]' : 'border-steel/40 text-steel'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-[#3DDC84] shadow-[0_0_8px_#3DDC84] animate-pulse' : 'bg-steel'}`} />
-              {t.live}
-            </span>
+      {/* the balance — the instrument this whole trade runs on */}
+      <div className="mt-8">
+        <div className="beam" />
+        <div className="relative flex items-start">
+          <Pan label={t.sale} value={p.tolaSale} accent />
+          {/* fulcrum */}
+          <div className="relative w-px bg-line self-stretch mx-2">
+            <span className="hallmark absolute -top-[5px] left-1/2 -translate-x-1/2 bg-card" />
           </div>
-
-                    <div className="grid grid-cols-2 gap-2.5 mb-5" role="tablist" aria-label="Choose date and language">
-            <Tab id="en" label={formatAD(now)} />
-            <Tab id="np" label={formatBS(now)} ne />
-          </div>
-
-                    <div className={np ? 'font-np' : ''}>
-            <div className={`${COLS} mb-2`}>
-              <span aria-hidden="true" />
-              <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>
-              <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-[#9FD8B4] font-medium">{t.thBuy}</span>
-            </div>
-            <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(1rem,2.6vw,1.15rem)] tracking-wide">{t.rowTola}</span>
-              <Pill v={prices.tolaSale} />
-              <Pill v={prices.tolaPurchase} buy />
-            </div>
-            <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(1rem,2.6vw,1.15rem)] tracking-wide">{t.rowG10}</span>
-              <Pill v={prices.g10Sale} />
-              <Pill v={prices.g10Purchase} buy />
-            </div>
-          </div>
-          {updated && (
-            <p className={`mt-4 font-mono text-[0.66rem] tracking-[0.18em] uppercase text-steel ${np ? 'font-np tracking-normal' : ''}`}>
-              {t.updated}: {np ? toNepaliDigits(updated) : updated} NPT{prices.source ? ` · ${prices.source}` : ''}
-            </p>
-          )}
+          <Pan label={t.buy} value={p.tolaPurchase} />
         </div>
       </div>
-    </div>
+
+      {/* ten gram, and the spread between the pans */}
+      <dl className="mt-8 pt-4 border-t border-line grid grid-cols-3 gap-3 text-center">
+        <div>
+          <dt className={`stamp ${np ? 'font-np' : ''}`}>{t.g10} · {t.sale}</dt>
+          <dd className={`mt-1.5 font-mono tnum text-ink text-[clamp(0.95rem,2.6vw,1.15rem)] ${np ? 'font-np' : ''}`}>{t.rs(p.g10Sale)}</dd>
+        </div>
+        <div className="border-x border-line">
+          <dt className={`stamp ${np ? 'font-np' : ''}`}>{t.spread}</dt>
+          <dd className={`mt-1.5 font-mono tnum text-vermilion text-[clamp(0.95rem,2.6vw,1.15rem)] ${np ? 'font-np' : ''}`}>{t.rs(spread)}</dd>
+        </div>
+        <div>
+          <dt className={`stamp ${np ? 'font-np' : ''}`}>{t.g10} · {t.buy}</dt>
+          <dd className={`mt-1.5 font-mono tnum text-ink text-[clamp(0.95rem,2.6vw,1.15rem)] ${np ? 'font-np' : ''}`}>{t.rs(p.g10Purchase)}</dd>
+        </div>
+      </dl>
+
+      {updated && (
+        <p className={`mt-5 stamp ${np ? 'font-np tracking-[0.12em]' : ''}`}>
+          {t.updated} {np ? toNepaliDigits(updated) : updated} NPT{p.source ? ` · ${p.source}` : ''}
+        </p>
+      )}
+    </section>
   );
 }

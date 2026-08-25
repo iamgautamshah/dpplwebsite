@@ -123,9 +123,9 @@ export default function Intro({ onEnter }) {
   const on = (p) => (phase === p ? 'is-on' : '');
 
   return (
-    <div className="fixed inset-0 z-[45] overflow-hidden bg-void">
-      <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
-      <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'cap2' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
+    <div className="fixed inset-0 z-[45] overflow-hidden bg-[#0B0D11]">
+      <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(181,18,46,0.14),transparent_60%),linear-gradient(180deg,#0B0D11_0%,#14171C_70%,#191D24_100%)]" />
+      <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(181,18,46,0.24),transparent_62%)] ${phase === 'cap2' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
 
       <div className={`absolute inset-0 transition-opacity duration-[1600ms] ease-out ${phase === 'arrive' ? 'opacity-100' : 'opacity-0'}`}>
         <ArrivalSky scene={scene} />
@@ -134,36 +134,36 @@ export default function Intro({ onEnter }) {
       <Stars count={phase === "arrive" ? 0 : 220} />
 
       <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
-        <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
-        <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
-          Hello, <span className="text-gold">Investors.</span>
+        <p className="eyebrow mb-6">DPPL · <b className="text-[#D0233C] font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
+        <h1 className="title text-[#EDEFF2] leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
+          Hello, <span className="text-[#D0233C]">Investors.</span>
         </h1>
-        <p className="mt-5 max-w-xl px-6 text-silver/75 tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
+        <p className="mt-5 max-w-xl px-6 text-[#AEB4BD] tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
           Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine silver is being weighed, sealed, and priced for today. Let us take you there.
         </p>
       </section>
 
             <section className={`ov ${on('cap1')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
-        <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
+        <div className="title text-[#EDEFF2] max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
           Four hundred kilometres above the Himalaya, {scene.line}
-          <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">27.7041° N · 85.3125° E</small>
+          <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-[#D0233C]">27.7041° N · 85.3125° E</small>
         </div>
       </section>
       <section className={`ov ${on('cap2')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
-        <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
+        <div className="title text-[#EDEFF2] max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
           Down through the clouds — past Tundikhel, along Kantipath — to a street traders have trusted for a century.
-          <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">New Road · Kathmandu</small>
+          <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-[#D0233C]">New Road · Kathmandu</small>
         </div>
       </section>
 
       <section className={`ov ${on('arrive')} absolute inset-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`}>
         <img src="/images/logo.webp" alt="" width="64" height="64" className="w-16 h-16 rounded-full mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
-        <p className="text-[0.62rem] tracking-[0.44em] uppercase text-gold mb-3">You have arrived</p>
-        <h2 className="font-display text-silverhi leading-tight text-[clamp(2.2rem,7vw,4.2rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">DPPL</h2>
-        <p className="mt-4 max-w-md text-silverhi/90 tracking-wide text-[clamp(0.9rem,2vw,1.05rem)] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+        <p className="text-[0.62rem] tracking-[0.44em] uppercase text-[#D0233C] mb-3">You have arrived</p>
+        <h2 className="title text-[#EDEFF2] leading-tight text-[clamp(2.2rem,7vw,4.2rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">DPPL</h2>
+        <p className="mt-4 max-w-md text-[#EDEFF2]/90 tracking-wide text-[clamp(0.9rem,2vw,1.05rem)] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
           5th Floor, Sasa Complex, New Road,<br />Kathmandu 44600, Nepal
         </p>
-        <p className="mt-5 font-mono text-[0.6rem] tracking-[0.3em] uppercase text-gold/90">{scene.label}</p>
+        <p className="mt-5 font-mono text-[0.6rem] tracking-[0.3em] uppercase text-[#D0233C]/90">{scene.label}</p>
       </section>
     </div>
   );

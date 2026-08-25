@@ -46,15 +46,15 @@ export function Ticker() {
     <span className="flex items-center shrink-0">
       {items.map((it, i) => (
         <span key={i} className="flex items-center">
-          <span className="px-6 py-2.5 font-mono text-[0.66rem] tracking-[0.3em] text-silver/80 whitespace-nowrap tnum">{it}</span>
-          <span className="hallmark scale-[0.65] opacity-70" aria-hidden="true" />
+          <span className="px-6 py-2.5 font-mono text-[0.64rem] tracking-[0.26em] whitespace-nowrap tnum">{it}</span>
+          <span className="w-1 h-1 rotate-45 bg-vermilion" aria-hidden="true" />
         </span>
       ))}
     </span>
   );
 
   return (
-    <div className="ticker border-b border-silver/10 bg-gradient-to-b from-[#141A28] to-[#0C111C]" aria-label="Today's silver rate board">
+    <div className="ticker bg-ink text-sheet" aria-label="Today's silver rate board">
       <div className="ticker-run">
         <Run /><Run /><Run /><Run />
       </div>

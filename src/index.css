@@ -2,110 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   THE DAY SHEET — DPPL, New Road, Kathmandu
+   Cool polished-sheet greys with one accent: sindoor vermilion.
+   Display: Space Grotesk, set as stamped caps.
+   Reading: Source Serif 4. Figures: IBM Plex Mono, tabular.
+   ============================================================ */
+
 html { scroll-behavior: smooth; }
-body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
-::selection { @apply bg-gold text-void; }
+body {
+  @apply bg-sheet text-body font-body;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: #B5122E; color: #EDEFF2; }
 
 @layer components {
-  .eyebrow { @apply font-mono text-[0.66rem] tracking-[0.28em] uppercase text-steel; }
-  .btn-gold { @apply inline-block bg-gold text-[#141005] border border-gold font-semibold text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-all duration-300 hover:bg-gold-light hover:-translate-y-0.5 text-center; }
-  .btn-line { @apply inline-block border border-silver/25 text-silver font-medium text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-colors duration-300 hover:border-gold hover:text-gold text-center; }
-  .btn-wa { @apply inline-flex items-center justify-center gap-2 bg-[#1FA855] text-white font-semibold text-[0.7rem] tracking-[0.12em] uppercase px-6 py-3.5 rounded-lg transition-all duration-300 hover:bg-[#25C263] hover:-translate-y-0.5; }
-  .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-2xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
+  .stamp { @apply font-mono text-[0.66rem] tracking-[0.24em] uppercase text-mute; }
+  .title { @apply font-display uppercase text-ink font-semibold leading-[1.05] tracking-[0.02em]; }
+  .btn { @apply inline-flex items-center justify-center gap-2 font-mono text-[0.7rem] tracking-[0.16em] uppercase px-6 py-3.5 rounded-sm transition-colors duration-200; }
+  .btn-solid { @apply btn bg-ink text-sheet hover:bg-vermilion; }
+  .btn-out { @apply btn border border-line text-ink hover:border-ink; }
+  .btn-wa { @apply btn bg-[#1FA855] text-white hover:bg-[#178A45]; }
+  .panel { @apply bg-card border border-line rounded-sm; }
 }
 
-/* Cinzel is an inscriptional face — set in caps, with the open tracking that
-   carved Roman lettering needs, and a slightly tighter line for stacked lines */
-.font-display {
-  text-transform: uppercase;
-  letter-spacing: 0.055em;
-  font-weight: 500;
-  line-height: 1.18;
+/* text links draw their own underline */
+.ln {
+  color: #14161A; text-decoration: none;
+  background-image: linear-gradient(#B5122E, #B5122E);
+  background-size: 0 1px; background-position: 0 100%; background-repeat: no-repeat;
+  transition: background-size 0.3s ease, color 0.2s ease;
 }
-h1.font-display, h2.font-display { font-weight: 600; }
-/* caps have no descenders, so headings can sit tighter to what follows */
-.font-display + p { margin-top: 0.85rem; }
-body { letter-spacing: 0.002em; -webkit-font-smoothing: antialiased; }
+.ln:hover { color: #B5122E; background-size: 100% 1px; }
+
+/* the hallmark: DPPL's diamond stamp — marker, bullet, and fulcrum */
+.hallmark { width: 9px; height: 9px; flex: none; transform: rotate(45deg); border: 1px solid #B5122E; position: relative; }
+.hallmark::after { content: ''; position: absolute; inset: 2px; background: #B5122E; }
+
 .tnum, .font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 
-.ov { opacity: 0; transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
-.ov.is-on { opacity: 1; }
-.ov:not(.is-on) * { pointer-events: none !important; }
-
-
-
-/* hallmark glyph — the assay stamp, used as section mark */
-.hallmark {
-  width: 11px; height: 11px; flex: none;
-  transform: rotate(45deg);
-  border: 1px solid rgba(216, 179, 106, 0.85);
-  position: relative;
-}
-.hallmark::after {
-  content: ''; position: absolute; inset: 3px;
-  background: rgba(216, 179, 106, 0.85);
+/* the balance: beam, hangers, pans */
+.beam { position: relative; height: 1px; background: #CDD2D8; }
+.hanger { position: relative; }
+.hanger::before {
+  content: ''; position: absolute; left: 50%; top: -22px; width: 1px; height: 22px;
+  background: #CDD2D8;
 }
 
-/* metallic assay plate — gradient hairline frame */
-.plate {
-  padding: 1px; border-radius: 1.5rem;
-  background: linear-gradient(140deg, #8f97a8, #e8ecf2 25%, #6b7890 50%, #dfe4ec 75%, #8f97a8);
-}
-.plate-in {
-  border-radius: calc(1.5rem - 1px);
-  background: rgba(7, 12, 22, 0.94);
-}
-
-/* engraved display headings — struck from above */
-.engraved { text-shadow: 0 1px 24px rgba(0, 0, 0, 0.45); }
-
-/* rate-board ticker */
-.ticker { overflow: hidden; opacity: 0.85; }
-/* ticker scroll */
+/* rate strip */
+.ticker { overflow: hidden; }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .ticker-run { display: flex; width: max-content; animation: marquee 36s linear infinite; will-change: transform; }
 .ticker:hover .ticker-run { animation-play-state: paused; }
 
-/* scroll reveals — only when JS runs, so crawlers always see content */
-html[data-js] [data-rv] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+/* one orchestrated reveal, nothing scattered */
+html[data-js] [data-rv] { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 html[data-js] [data-rv].in { opacity: 1; transform: none; }
-html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.08s; }
-html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.16s; }
-html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.24s; }
+html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.07s; }
+html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.14s; }
+html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.21s; }
 
-/* intro entrance — one orchestrated moment */
-html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-html[data-js] .stag > *:nth-child(2) { animation-delay: 0.12s; }
-html[data-js] .stag > *:nth-child(3) { animation-delay: 0.24s; }
-html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
+html[data-js] .stag > * { opacity: 0; transform: translateY(12px); animation: stag-rise 0.85s cubic-bezier(0.22,1,0.36,1) forwards; }
+html[data-js] .stag > *:nth-child(2) { animation-delay: 0.1s; }
+html[data-js] .stag > *:nth-child(3) { animation-delay: 0.2s; }
+html[data-js] .stag > *:nth-child(4) { animation-delay: 0.34s; }
 @keyframes stag-rise { to { opacity: 1; transform: none; } }
 
 /* quality floor */
-:focus-visible { outline: 2px solid #d8b36a; outline-offset: 3px; border-radius: 4px; }
-.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #d8b36a; color: #141005; padding: 0.7rem 1.2rem; border-radius: 999px; font-size: 0.75rem; letter-spacing: 0.1em; transition: top 0.2s; }
+:focus-visible { outline: 2px solid #B5122E; outline-offset: 3px; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #14161A; color: #EDEFF2; padding: 0.7rem 1.2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; transition: top 0.2s; }
 .skip-link:focus { top: 1rem; }
-.tnum { font-variant-numeric: tabular-nums; }
+section[id] { scroll-margin-top: 5rem; }
 ::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #0a0e16; }
-::-webkit-scrollbar-thumb { background: #2a3346; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #d8b36a; }
+::-webkit-scrollbar-track { background: #E3E6EA; }
+::-webkit-scrollbar-thumb { background: #C3C7CD; }
+::-webkit-scrollbar-thumb:hover { background: #B5122E; }
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-run { animation: none; }
   html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
 }
 
-.dppl-map { background: #0d1a29; z-index: 0; }
-.dppl-map .leaflet-tile { filter: saturate(0.85) brightness(0.96); }
-.dppl-map .leaflet-control-zoom a { background: #0a1322; color: #c9d1de; border-color: rgba(201, 209, 222, 0.2); }
-.dppl-map .leaflet-control-zoom a:hover { background: #141a28; color: #d8b36a; }
-.dppl-map .leaflet-control-attribution { background: rgba(10, 14, 22, 0.7); color: #6b7890; font-size: 9px; }
-.dppl-map .leaflet-control-attribution a { color: #8a96ac; }
+.dppl-map { background: #DFE3E8; z-index: 0; }
+.dppl-map .leaflet-tile { filter: grayscale(0.55) contrast(1.02) brightness(1.02); }
+.dppl-map .leaflet-control-zoom a { background: #F8F9FB; color: #14161A; border-color: #CDD2D8; }
+.dppl-map .leaflet-control-zoom a:hover { background: #fff; color: #B5122E; }
+.dppl-map .leaflet-control-attribution { background: rgba(248,249,251,0.85); color: #6C737C; font-size: 9px; }
+.dppl-map .leaflet-control-attribution a { color: #3A4048; }
 
 .dppl-marker { position: relative; width: 0; height: 0; }
 .dppl-pulse {
   position: absolute; left: -26px; top: -26px; width: 52px; height: 52px;
-  border: 2px solid rgba(216, 179, 106, 0.65); border-radius: 50%;
+  border: 2px solid rgba(181, 18, 46, 0.6); border-radius: 50%;
   animation: dppl-pulse 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 .dppl-pulse-2 { animation-delay: 1.2s; }
@@ -115,22 +105,22 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 }
 .dppl-core {
   position: absolute; left: -13px; top: -13px; width: 26px; height: 26px;
-  background: #0a1322; border: 1.5px solid #d8b36a; border-radius: 50%;
+  background: #14161A; border: 1.5px solid #B5122E; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 18px rgba(216, 179, 106, 0.55);
+  box-shadow: 0 6px 18px rgba(20,22,26,0.35);
 }
-.dppl-diamond { width: 8px; height: 8px; background: #e8c47a; transform: rotate(45deg); }
+.dppl-diamond { width: 8px; height: 8px; background: #EDEFF2; transform: rotate(45deg); }
 
 .dppl-map .leaflet-popup-content-wrapper {
-  background: rgba(8, 13, 24, 0.94); border: 1px solid rgba(216, 179, 106, 0.45);
-  border-radius: 14px; color: #c9d1de; box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  background: #F8F9FB; border: 1px solid #CDD2D8;
+  border-radius: 2px; color: #3A4048; box-shadow: 0 18px 40px -22px rgba(20,22,26,0.45);
 }
-.dppl-map .leaflet-popup-tip { background: rgba(8, 13, 24, 0.94); }
-.dppl-pop { font-family: Manrope, sans-serif; font-weight: 300; padding: 2px 4px; }
-.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
-.dppl-pop h3 { font-family: Cinzel, serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
+.dppl-map .leaflet-popup-tip { background: #F8F9FB; }
+.dppl-pop { font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; padding: 2px 4px; }
+.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #B5122E; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.95rem; color: #14161A; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
-.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d8b36a; text-decoration: none; border-bottom: 1px solid rgba(216, 179, 106, 0.5); padding-bottom: 2px; }
+.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #B5122E; text-decoration: none; border-bottom: 1px solid #B5122E; padding-bottom: 2px; }
 
 @media (prefers-reduced-motion: reduce) { .dppl-pulse { animation: none; opacity: 0; } }
 
