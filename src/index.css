@@ -2,124 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================================
-   THE DESK — DPPL, New Road, Kathmandu
-   A silver price is live market data, so the site is an
-   instrument panel: dot-grid substrate, machined panels,
-   monospaced figures, and light used only where it means
-   something. Chrome = the metal itself. Blue = interaction.
-   Amber = what you pay. Mint = what we pay you.
-   ============================================================ */
-
 html { scroll-behavior: smooth; }
-/* nothing may push the page sideways on a phone */
-html, body { max-width: 100%; overflow-x: hidden; }
-img, svg, canvas { max-width: 100%; }
-body {
-  @apply bg-base text-body font-body;
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-::selection { background: rgba(77, 163, 255, 0.28); color: #E8EEF6; }
-
-/* the substrate: an engineering grid, barely there */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: radial-gradient(circle at 1px 1px, rgba(138, 151, 168, 0.13) 1px, transparent 0);
-  background-size: 34px 34px;
-  mask-image: radial-gradient(ellipse 110% 70% at 50% 0%, #000 35%, transparent 78%);
-}
+body { @apply bg-void text-silver font-body font-light overflow-x-hidden; }
+::selection { @apply bg-gold text-void; }
 
 @layer components {
-  .mono-label { @apply font-mono text-[0.64rem] tracking-[0.22em] uppercase text-mute; }
-  .panel-surface { @apply bg-panel border border-line rounded-lg; }
-  .btn { @apply inline-flex items-center justify-center gap-2 font-mono text-[0.72rem] tracking-[0.1em] uppercase px-5 py-3 rounded-md transition-all duration-200; }
-  .btn-primary { @apply btn bg-signal text-base font-medium hover:bg-signal-light hover:-translate-y-px; }
-  .btn-ghost { @apply btn border border-line text-text hover:border-signal hover:text-signal; }
-  .btn-wa { @apply btn bg-[#1FA855] text-white hover:bg-[#25C263] hover:-translate-y-px; }
-  .kbd { @apply font-mono text-[0.62rem] px-1.5 py-0.5 rounded border border-line bg-raised text-mute; }
+  .eyebrow { @apply font-mono text-[0.66rem] tracking-[0.28em] uppercase text-steel; }
+  .btn-gold { @apply inline-block bg-gold text-[#141005] border border-gold font-semibold text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-all duration-300 hover:bg-gold-light hover:-translate-y-0.5 text-center; }
+  .btn-line { @apply inline-block border border-silver/25 text-silver font-medium text-[0.7rem] tracking-[0.14em] uppercase px-7 py-3.5 rounded-lg transition-colors duration-300 hover:border-gold hover:text-gold text-center; }
+  .btn-wa { @apply inline-flex items-center justify-center gap-2 bg-[#1FA855] text-white font-semibold text-[0.7rem] tracking-[0.12em] uppercase px-6 py-3.5 rounded-lg transition-all duration-300 hover:bg-[#25C263] hover:-translate-y-0.5; }
+  .glass { @apply bg-[#080D18]/80 border border-gold/40 rounded-2xl backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]; }
 }
 
-/* machined panel: hairline top highlight, like a bevelled faceplate */
-.faceplate { position: relative; }
-.faceplate::before {
-  content: ''; position: absolute; inset-inline: 0; top: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(232, 238, 246, 0.22), transparent);
+/* Cinzel is an inscriptional face — set in caps, with the open tracking that
+   carved Roman lettering needs, and a slightly tighter line for stacked lines */
+.font-display {
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  font-weight: 500;
+  line-height: 1.18;
 }
-
-/* the metal itself, rendered as light */
-.chrome {
-  background: linear-gradient(178deg, #FFFFFF 0%, #DCE7F2 38%, #A9BACD 62%, #E9F1F8 100%);
-  -webkit-background-clip: text; background-clip: text;
-  color: transparent;
-}
-
-.hallmark { width: 9px; height: 9px; flex: none; transform: rotate(45deg); border: 1px solid #4DA3FF; position: relative; }
-.hallmark::after { content: ''; position: absolute; inset: 2px; background: #4DA3FF; }
-
+h1.font-display, h2.font-display { font-weight: 600; }
+/* caps have no descenders, so headings can sit tighter to what follows */
+.font-display + p { margin-top: 0.85rem; }
+body { letter-spacing: 0.002em; -webkit-font-smoothing: antialiased; }
 .tnum, .font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 
-/* live pulse for anything genuinely live */
-.pip { position: relative; }
-.pip::after {
-  content: ''; position: absolute; inset: -4px; border-radius: 999px;
-  border: 1px solid currentColor; opacity: 0; animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-@keyframes ping { 0% { transform: scale(0.7); opacity: 0.8; } 100% { transform: scale(1.9); opacity: 0; } }
+.ov { opacity: 0; transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
+.ov.is-on { opacity: 1; }
+.ov:not(.is-on) * { pointer-events: none !important; }
 
-/* rate strip */
-.ticker { overflow: hidden; }
+
+
+/* hallmark glyph — the assay stamp, used as section mark */
+.hallmark {
+  width: 11px; height: 11px; flex: none;
+  transform: rotate(45deg);
+  border: 1px solid rgba(216, 179, 106, 0.85);
+  position: relative;
+}
+.hallmark::after {
+  content: ''; position: absolute; inset: 3px;
+  background: rgba(216, 179, 106, 0.85);
+}
+
+/* metallic assay plate — gradient hairline frame */
+.plate {
+  padding: 1px; border-radius: 1.5rem;
+  background: linear-gradient(140deg, #8f97a8, #e8ecf2 25%, #6b7890 50%, #dfe4ec 75%, #8f97a8);
+}
+.plate-in {
+  border-radius: calc(1.5rem - 1px);
+  background: rgba(7, 12, 22, 0.94);
+}
+
+/* engraved display headings — struck from above */
+.engraved { text-shadow: 0 1px 24px rgba(0, 0, 0, 0.45); }
+
+/* rate-board ticker */
+.ticker { overflow: hidden; opacity: 0.85; }
+/* ticker scroll */
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.ticker-run { display: flex; width: max-content; animation: marquee 40s linear infinite; will-change: transform; }
+.ticker-run { display: flex; width: max-content; animation: marquee 36s linear infinite; will-change: transform; }
 .ticker:hover .ticker-run { animation-play-state: paused; }
 
-/* reveals */
-html[data-js] [data-rv] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+/* scroll reveals — only when JS runs, so crawlers always see content */
+html[data-js] [data-rv] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
 html[data-js] [data-rv].in { opacity: 1; transform: none; }
-html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.07s; }
-html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.14s; }
-html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.21s; }
+html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.08s; }
+html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.16s; }
+html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.24s; }
 
-html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
-html[data-js] .stag > *:nth-child(2) { animation-delay: 0.09s; }
-html[data-js] .stag > *:nth-child(3) { animation-delay: 0.18s; }
-html[data-js] .stag > *:nth-child(4) { animation-delay: 0.3s; }
+/* intro entrance — one orchestrated moment */
+html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+html[data-js] .stag > *:nth-child(2) { animation-delay: 0.12s; }
+html[data-js] .stag > *:nth-child(3) { animation-delay: 0.24s; }
+html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 @keyframes stag-rise { to { opacity: 1; transform: none; } }
 
 /* quality floor */
-:focus-visible { outline: 2px solid #4DA3FF; outline-offset: 3px; border-radius: 2px; }
-.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #4DA3FF; color: #070A0F; padding: 0.7rem 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; transition: top 0.2s; border-radius: 6px; }
+:focus-visible { outline: 2px solid #d8b36a; outline-offset: 3px; border-radius: 4px; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #d8b36a; color: #141005; padding: 0.7rem 1.2rem; border-radius: 999px; font-size: 0.75rem; letter-spacing: 0.1em; transition: top 0.2s; }
 .skip-link:focus { top: 1rem; }
-section[id] { scroll-margin-top: 5.5rem; }
+.tnum { font-variant-numeric: tabular-nums; }
 ::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #0B0F16; }
-::-webkit-scrollbar-thumb { background: #1F2A38; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #4DA3FF; }
-
-/* labels are set wide; on small screens that costs more than it gives */
-@media (max-width: 640px) {
-  .mono-label { letter-spacing: 0.14em; }
-  body { font-size: 15px; }
-}
+::-webkit-scrollbar-track { background: #0a0e16; }
+::-webkit-scrollbar-thumb { background: #2a3346; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #d8b36a; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ticker-run, .pip::after { animation: none; }
+  .ticker-run { animation: none; }
   html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
 }
 
-.dppl-map { background: #0B0F16; z-index: 0; }
-.dppl-map .leaflet-tile { filter: invert(0.92) hue-rotate(185deg) saturate(0.55) brightness(0.95); }
-.dppl-map .leaflet-control-zoom a { background: #0D121A; color: #E8EEF6; border-color: #1F2A38; }
-.dppl-map .leaflet-control-zoom a:hover { background: #131A24; color: #4DA3FF; }
-.dppl-map .leaflet-control-attribution { background: rgba(7,10,15,0.8); color: #8A97A8; font-size: 9px; }
-.dppl-map .leaflet-control-attribution a { color: #B7C2D0; }
+.dppl-map { background: #0d1a29; z-index: 0; }
+.dppl-map .leaflet-tile { filter: saturate(0.85) brightness(0.96); }
+.dppl-map .leaflet-control-zoom a { background: #0a1322; color: #c9d1de; border-color: rgba(201, 209, 222, 0.2); }
+.dppl-map .leaflet-control-zoom a:hover { background: #141a28; color: #d8b36a; }
+.dppl-map .leaflet-control-attribution { background: rgba(10, 14, 22, 0.7); color: #6b7890; font-size: 9px; }
+.dppl-map .leaflet-control-attribution a { color: #8a96ac; }
 
 .dppl-marker { position: relative; width: 0; height: 0; }
 .dppl-pulse {
   position: absolute; left: -26px; top: -26px; width: 52px; height: 52px;
-  border: 2px solid rgba(77, 163, 255, 0.6); border-radius: 50%;
+  border: 2px solid rgba(216, 179, 106, 0.65); border-radius: 50%;
   animation: dppl-pulse 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 .dppl-pulse-2 { animation-delay: 1.2s; }
@@ -129,28 +115,22 @@ section[id] { scroll-margin-top: 5.5rem; }
 }
 .dppl-core {
   position: absolute; left: -13px; top: -13px; width: 26px; height: 26px;
-  background: #070A0F; border: 1.5px solid #4DA3FF; border-radius: 50%;
+  background: #0a1322; border: 1.5px solid #d8b36a; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 6px 18px rgba(20,22,26,0.35);
+  box-shadow: 0 0 18px rgba(216, 179, 106, 0.55);
 }
-.dppl-diamond { width: 8px; height: 8px; background: #4DA3FF; transform: rotate(45deg); }
+.dppl-diamond { width: 8px; height: 8px; background: #e8c47a; transform: rotate(45deg); }
 
 .dppl-map .leaflet-popup-content-wrapper {
-  background: #0D121A; border: 1px solid #1F2A38;
-  border-radius: 2px; color: #B7C2D0; box-shadow: 0 18px 40px -22px rgba(20,22,26,0.45);
+  background: rgba(8, 13, 24, 0.94); border: 1px solid rgba(216, 179, 106, 0.45);
+  border-radius: 14px; color: #c9d1de; box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
 }
-.dppl-map .leaflet-popup-tip { background: #0D121A; }
-.dppl-pop { font-family: Sora, sans-serif; font-weight: 400; padding: 2px 4px; }
-.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #4DA3FF; margin: 0 0 4px; }
-.dppl-pop h3 { font-family: Sora, sans-serif; font-weight: 600; font-size: 0.98rem; color: #E8EEF6; margin: 0 0 4px; }
+.dppl-map .leaflet-popup-tip { background: rgba(8, 13, 24, 0.94); }
+.dppl-pop { font-family: Manrope, sans-serif; font-weight: 300; padding: 2px 4px; }
+.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #d8b36a; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: Cinzel, serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 1.05rem; color: #eef1f6; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
-.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #4DA3FF; text-decoration: none; border-bottom: 1px solid #4DA3FF; padding-bottom: 2px; }
-
-/* labels are set wide; on small screens that costs more than it gives */
-@media (max-width: 640px) {
-  .mono-label { letter-spacing: 0.14em; }
-  body { font-size: 15px; }
-}
+.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d8b36a; text-decoration: none; border-bottom: 1px solid rgba(216, 179, 106, 0.5); padding-bottom: 2px; }
 
 @media (prefers-reduced-motion: reduce) { .dppl-pulse { animation: none; opacity: 0; } }
 
@@ -171,3 +151,18 @@ section[id] { scroll-margin-top: 4.75rem; }
   .frame, .frame-light { border-radius: 1.15rem; }
   body::after { opacity: 0.02; }
 }
+
+
+/* aliases so the journal, legal and 404 views render on the gold system */
+@layer components {
+  .panel-surface { @apply bg-panel border border-silver/10 rounded-2xl; }
+  .mono-label { @apply font-mono text-[0.64rem] tracking-[0.24em] uppercase text-steel; }
+  .btn-primary { @apply btn-gold; }
+  .btn-ghost { @apply btn-line; }
+  .btn-out { @apply btn-line; }
+  .btn-solid { @apply btn-gold; }
+  .stamp { @apply mono-label; }
+  .kbd { @apply font-mono text-[0.62rem] px-1.5 py-0.5 rounded border border-silver/20 bg-silver/5 text-steel; }
+}
+.faceplate { position: relative; }
+.title { @apply font-display uppercase text-silverhi; }

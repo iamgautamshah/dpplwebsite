@@ -89,16 +89,16 @@ export function Ticker() {
     <span className="flex items-center shrink-0" aria-hidden="true">
       {items.map(([k, v], i) => (
         <span key={i} className="flex items-center gap-2.5 px-5 py-2 font-mono text-[0.66rem] tracking-[0.14em] whitespace-nowrap">
-          <span className="text-mute">{k}</span>
-          {v && <span className="text-text tnum">{v}</span>}
-          <span className="w-1 h-1 rotate-45 bg-signal/60 ml-2.5" />
+          <span className="text-steel">{k}</span>
+          {v && <span className="text-silver tnum">{v}</span>}
+          <span className="hallmark scale-[0.6] opacity-70 ml-2.5" aria-hidden="true" />
         </span>
       ))}
     </span>
   );
 
   return (
-    <div className="ticker border-y border-line bg-panel/80" aria-label="Today's silver rate strip">
+    <div className="ticker border-b border-silver/10 bg-gradient-to-b from-[#141A28] to-[#0C111C]" aria-label="Today's silver rate board">
       <div className="ticker-run"><Run /><Run /></div>
     </div>
   );
