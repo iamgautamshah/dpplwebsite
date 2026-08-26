@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatAD, formatBS, toNepaliDigits } from '../lib/nepaliDate.js';
+import { getSilver } from '../lib/ui.jsx';
 
 const fmtNum = (n) =>
   Number.isInteger(n)
@@ -36,17 +37,13 @@ export default function PriceCard() {
 
   useEffect(() => {
     let alive = true;
-    async function load() {
-      try {
-        const res = await fetch('/api/silver', { cache: 'no-store' });
-        if (!res.ok) throw 0;
-        const d = await res.json();
-        if (alive) { setPrices(d); setLive(true); setNow(new Date()); }
-      } catch {}
-    }
-    load();
-    const id = setInterval(load, 30 * 60 * 1000);
-    const vis = () => document.visibilityState === 'visible' && load();
+    // shared with the ticker, so the page makes one request, not two
+    const load = (refresh) => getSilver(refresh).then((d) => {
+      if (alive && d) { setPrices(d); setLive(true); setNow(new Date()); }
+    });
+    load(false);
+    const id = setInterval(() => load(true), 30 * 60 * 1000);
+    const vis = () => document.visibilityState === 'visible' && load(true);
     document.addEventListener('visibilitychange', vis);
     return () => { alive = false; clearInterval(id); document.removeEventListener('visibilitychange', vis); };
   }, []);

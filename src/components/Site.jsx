@@ -50,10 +50,10 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: '100 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
-  { name: '500 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
-  { name: '1 kg Silver Bar', img: '/images/bar.webp', alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
-  { name: 'Silver Grains', img: '/images/grains.webp', alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
+  { name: '100 g Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
+  { name: '500 g Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
+  { name: '1 kg Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
+  { name: 'Silver Grains', img: '/images/grains.webp', w: 430, h: 573, alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
 ];
 
 
@@ -220,7 +220,7 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width="700" height="933" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
@@ -261,7 +261,7 @@ export default function Site() {
 
             <section style={{ contentVisibility: 'auto', containIntrinsicSize: '800px' }} id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="512" height="512" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
