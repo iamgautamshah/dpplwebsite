@@ -86,16 +86,24 @@ function Nav() {
   openRef.current = open;
 
   useEffect(() => {
-    const onScroll = () => {
+    // batched into one frame, and driven by transform so no layout is forced
+    let ticking = false;
+    const frame = () => {
+      ticking = false;
       const y = scrollY;
       const max = document.documentElement.scrollHeight - innerHeight;
-      if (bar.current) bar.current.style.width = `${max > 0 ? (y / max) * 100 : 0}%`;
+      if (bar.current) bar.current.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
       if (openRef.current) setOpen(false);                    // scrolling dismisses the menu
       if (y > lastY.current + 6 && y > 90) setHidden(true);   // scrolling down → tuck away
       else if (y < lastY.current - 4 || y < 90) setHidden(false); // scrolling up → return
       lastY.current = y;
     };
-    onScroll();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(frame);
+    };
+    frame();
     addEventListener('scroll', onScroll, { passive: true });
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
     addEventListener('keydown', onKey);
@@ -105,8 +113,8 @@ function Nav() {
   const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
 
   return (
-    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
-      <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-gold" aria-hidden="true" />
+    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
+      <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
         <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
           <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
@@ -198,7 +206,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1400px' }} id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The collection</Ledger>
@@ -212,7 +220,7 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" width="700" height="933" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width="700" height="933" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
@@ -227,7 +235,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }} id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
@@ -251,9 +259,9 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '800px' }} id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" width="512" height="512" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="512" height="512" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
@@ -275,7 +283,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>Common questions</Ledger>
@@ -296,7 +304,7 @@ export default function Site() {
         </div>
       </section>
 
-      <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+      <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
