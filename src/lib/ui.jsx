@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 
-// one shared request for the day's rates; refresh() bypasses the cache
+// One shared request for the day's rates. A failure is never cached — caching
+// it once meant a single network hiccup left the page stuck forever.
 let cached = null;
+const usable = (d) => d && Number.isFinite(d.tolaSale) && Number.isFinite(d.tolaPurchase);
+
 export function getSilver(refresh = false) {
   if (refresh || !cached) {
     cached = fetch('/api/silver', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
-      .catch(() => null);
+      .then((d) => {
+        if (!usable(d)) throw new Error('no rate');
+        return d;
+      })
+      .catch((err) => {
+        cached = null;          // let the next attempt try again
+        throw err;
+      });
   }
   return cached;
 }
@@ -77,7 +87,11 @@ export function useCountUp(value, ms = 1100) {
 /** The rate strip that runs under the desk header. */
 export function Ticker() {
   const [p, setP] = useState(null);
-  useEffect(() => { let a = true; getSilver().then((d) => a && d && setP(d)); return () => { a = false; }; }, []);
+  useEffect(() => {
+    let a = true;
+    getSilver().then((d) => { if (a) setP(d); }).catch(() => {});
+    return () => { a = false; };
+  }, []);
 
   const rs = (n) => 'Rs ' + (Number.isInteger(n) ? n.toLocaleString('en-IN') : n.toLocaleString('en-IN', { minimumFractionDigits: 2 }));
   const items = p
