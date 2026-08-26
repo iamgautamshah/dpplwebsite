@@ -124,7 +124,7 @@ function Palette({ open, setOpen }) {
 
   useEffect(() => {
     const key = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setOpen((v) => !v); }
+      if ((e.metaKey || e.ctrlKey) && (e.key || '').toLowerCase() === 'k') { e.preventDefault(); setOpen((v) => !v); }
       if (e.key === 'Escape') setOpen(false);
     };
     addEventListener('keydown', key);
@@ -271,13 +271,13 @@ function StatusBar() {
 function Head({ id, label, title, lede }) {
   return (
     <div data-rv>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <span className="hallmark" aria-hidden="true" />
         <span className="mono-label text-signal">{id}</span>
         <span className="mono-label">{label}</span>
         <span className="flex-1 h-px bg-line" aria-hidden="true" />
       </div>
-      <h2 className="mt-7 font-display font-semibold text-text leading-[1.08] text-[clamp(1.8rem,4.6vw,3rem)] max-w-3xl">{title}</h2>
+      <h2 className="mt-7 font-display font-semibold text-text leading-[1.08] text-[clamp(1.5rem,5.4vw,3rem)] max-w-3xl">{title}</h2>
       {lede && <p className="mt-4 max-w-xl text-body/85">{lede}</p>}
     </div>
   );
@@ -296,7 +296,7 @@ export default function Site() {
   useReveal();
   const [pal, setPal] = useState(false);
   const openPal = useCallback(() => setPal(true), []);
-  const wrap = 'mx-auto max-w-[1360px] px-4 sm:px-7';
+  const wrap = 'mx-auto w-full max-w-[1360px] px-4 sm:px-7';
 
   return (
     <main className="relative z-10">
@@ -307,11 +307,11 @@ export default function Site() {
       <StatusBar />
 
       {/* ── RATES ───────────────────────────────────────────── */}
-      <section id="home" className={`${wrap} pt-12 sm:pt-16 pb-16 relative`}>
+      <section id="home" className={`${wrap} pt-8 sm:pt-16 pb-12 sm:pb-16 relative`}>
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           <div className="lg:col-span-6 order-2 lg:order-1 stag">
             <p className="mono-label">Kathmandu · New Road · Est. 2080 B.S.</p>
-            <h1 className="mt-6 font-display font-bold leading-[1.04] text-[clamp(2.3rem,6.5vw,4.2rem)] text-text">
+            <h1 className="mt-6 font-display font-bold leading-[1.04] text-[clamp(1.9rem,7.4vw,4.2rem)] text-text">
               The silver rate,<br /><span className="chrome">live from the counter.</span>
             </h1>
             <p className="mt-6 max-w-lg text-body/85">
@@ -319,10 +319,10 @@ export default function Site() {
               grain, weighed on calibrated scales in front of you, invoiced to the gram, and bought
               back at the rate on this page.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="/products" onClick={(e) => scrollToSection(e, 'products')} className="btn-primary">Browse silver</a>
-              <a href={WA('Hello DPPL, I would like to enquire about today\u2019s rate.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WhatsApp</a>
-              <button onClick={openPal} className="btn-ghost">Search <kbd className="kbd ml-1">⌘K</kbd></button>
+            <div className="mt-8 flex flex-wrap gap-2.5">
+              <a href="/products" onClick={(e) => scrollToSection(e, 'products')} className="btn-primary flex-1 sm:flex-none">Browse silver</a>
+              <a href={WA('Hello DPPL, I would like to enquire about today\u2019s rate.')} target="_blank" rel="noopener noreferrer" className="btn-wa flex-1 sm:flex-none"><WaIcon /> WhatsApp</a>
+              <button onClick={openPal} className="btn-ghost hidden sm:inline-flex">Search <kbd className="kbd ml-1">⌘K</kbd></button>
             </div>
           </div>
           <div className="lg:col-span-6 order-1 lg:order-2" data-rv>
@@ -335,7 +335,7 @@ export default function Site() {
       </section>
 
       {/* ── SILVER ──────────────────────────────────────────── */}
-      <section id="products" className={`${wrap} py-16 sm:py-20`}>
+      <section id="products" className={`${wrap} py-12 sm:py-20`}>
         <Head id="01" label="Inventory" title={<>Four formats, one purity.</>}
               lede="Every piece is 999 fine and stamped with the DPPL diamond. Prices follow the day's rate by weight; making charges are added on top and itemised on your invoice." />
         <div className="mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -355,7 +355,7 @@ export default function Site() {
                 <div className="p-5 flex flex-col flex-1">
                   <h3 className="font-display font-semibold text-text text-[1.05rem]">{p.name}</h3>
                   <p className="mt-2.5 text-[0.9rem] text-body/80 leading-relaxed flex-1">{p.desc}</p>
-                  <dl className="mt-4 pt-4 border-t border-line grid grid-cols-2 gap-y-2 font-mono text-[0.66rem]">
+                  <dl className="mt-4 pt-4 border-t border-line grid grid-cols-2 gap-y-2 font-mono text-[0.64rem] min-w-0">
                     <dt className="text-mute">Weight</dt><dd className="text-text text-right tnum">{s.w}</dd>
                     <dt className="text-mute">Tolas</dt><dd className="text-text text-right tnum">{s.t}</dd>
                     <dt className="text-mute">Suits</dt><dd className="text-text text-right">{s.use}</dd>
@@ -369,7 +369,7 @@ export default function Site() {
       </section>
 
       {/* ── JOURNAL ─────────────────────────────────────────── */}
-      <section id="articles" className={`${wrap} py-16 sm:py-20`}>
+      <section id="articles" className={`${wrap} py-12 sm:py-20`}>
         <Head id="02" label="Journal" title={<>Know the metal before you buy it.</>} />
         <ul className="mt-10 border-t border-line">
           {ARTICLES.slice(0, 4).map((a, i) => (
@@ -388,7 +388,7 @@ export default function Site() {
       </section>
 
       {/* ── DESK ────────────────────────────────────────────── */}
-      <section id="about" className={`${wrap} py-16 sm:py-20`}>
+      <section id="about" className={`${wrap} py-12 sm:py-20`}>
         <Head id="03" label="The desk" title={<>A counter, not a storefront.</>} />
         <div className="mt-10 grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-5 text-body/85" data-rv>
@@ -416,7 +416,7 @@ export default function Site() {
       </section>
 
       {/* ── QUESTIONS ───────────────────────────────────────── */}
-      <section id="faq" className={`${wrap} py-16 sm:py-20`}>
+      <section id="faq" className={`${wrap} py-12 sm:py-20`}>
         <Head id="04" label="Questions" title={<>Buying silver in Kathmandu.</>} />
         <div className="mt-10 border-t border-line">
           {FAQS.map((f, i) => (
@@ -433,11 +433,11 @@ export default function Site() {
       </section>
 
       {/* ── VISIT ───────────────────────────────────────────── */}
-      <section id="contact" className={`${wrap} py-16 sm:py-20`}>
+      <section id="contact" className={`${wrap} py-12 sm:py-20`}>
         <Head id="05" label="Visit" title={<>Fifth floor, Sasa Complex.</>} />
         <div className="mt-10 grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-5" data-rv>
-            <div className="panel-surface faceplate p-6">
+            <div className="panel-surface faceplate p-4 sm:p-6">
               <address className="not-italic text-[1.02rem] leading-relaxed text-text">
                 DPPL<br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600<br />Nepal
               </address>
@@ -448,7 +448,7 @@ export default function Site() {
                   ['Mobile', <a href="tel:+9779805617932" className="tnum hover:text-signal transition-colors">+977 980-561-7932</a>],
                   ['Email', <a href="mailto:dppl2080@gmail.com" className="break-all hover:text-signal transition-colors">dppl2080@gmail.com</a>],
                 ].map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[5rem_1fr] gap-3 border-b border-line py-3">
+                  <div key={k} className="grid grid-cols-[4.2rem_1fr] sm:grid-cols-[5rem_1fr] gap-3 border-b border-line py-3 min-w-0">
                     <dt className="mono-label pt-1">{k}</dt>
                     <dd className="text-[0.95rem] text-text">{v}</dd>
                   </div>

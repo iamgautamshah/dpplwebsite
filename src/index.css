@@ -12,6 +12,9 @@
    ============================================================ */
 
 html { scroll-behavior: smooth; }
+/* nothing may push the page sideways on a phone */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, svg, canvas { max-width: 100%; }
 body {
   @apply bg-base text-body font-body;
   font-size: 16px;
@@ -95,6 +98,12 @@ section[id] { scroll-margin-top: 5.5rem; }
 ::-webkit-scrollbar-thumb { background: #1F2A38; border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: #4DA3FF; }
 
+/* labels are set wide; on small screens that costs more than it gives */
+@media (max-width: 640px) {
+  .mono-label { letter-spacing: 0.14em; }
+  body { font-size: 15px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticker-run, .pip::after { animation: none; }
   html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
@@ -136,6 +145,12 @@ section[id] { scroll-margin-top: 5.5rem; }
 .dppl-pop h3 { font-family: Sora, sans-serif; font-weight: 600; font-size: 0.98rem; color: #E8EEF6; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
 .dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #4DA3FF; text-decoration: none; border-bottom: 1px solid #4DA3FF; padding-bottom: 2px; }
+
+/* labels are set wide; on small screens that costs more than it gives */
+@media (max-width: 640px) {
+  .mono-label { letter-spacing: 0.14em; }
+  body { font-size: 15px; }
+}
 
 @media (prefers-reduced-motion: reduce) { .dppl-pulse { animation: none; opacity: 0; } }
 

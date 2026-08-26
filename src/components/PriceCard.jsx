@@ -22,12 +22,12 @@ const FALLBACK = { tolaSale: 4360, tolaPurchase: 4300, g10Sale: 3738, g10Purchas
 function Readout({ label, value, tone, np, rs }) {
   const shown = useCountUp(value);
   return (
-    <div className="flex-1 p-5 sm:p-6">
+    <div className="flex-1 min-w-0 p-3.5 sm:p-6">
       <div className="flex items-center gap-2">
         <span className={`w-1.5 h-1.5 rounded-sm rotate-45 ${tone === 'sale' ? 'bg-sale' : 'bg-buy'}`} />
         <span className={`mono-label ${np ? 'font-np tracking-[0.12em]' : ''}`}>{label}</span>
       </div>
-      <p className={`mt-3 font-mono tnum font-medium leading-none text-[clamp(1.75rem,6.5vw,2.9rem)] ${tone === 'sale' ? 'text-sale' : 'text-buy'} ${np ? 'font-np' : ''}`}>
+      <p className={`mt-2.5 sm:mt-3 font-mono tnum font-medium leading-none whitespace-nowrap text-[clamp(1.15rem,5.4vw,2.9rem)] ${tone === 'sale' ? 'text-sale' : 'text-buy'} ${np ? 'font-np' : ''}`}>
         {rs(Math.round(shown * 100) / 100)}
       </p>
     </div>
@@ -76,10 +76,10 @@ export default function PriceCard() {
   return (
     <section className="panel-surface faceplate overflow-hidden" lang={np ? 'ne' : 'en'} aria-label="Today's silver rate">
       {/* instrument header: what this is, where it came from, is it live */}
-      <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-line bg-raised/60">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 border-b border-line bg-raised/60">
         <div className="flex items-center gap-2.5">
           <span className={`pip w-2 h-2 rounded-full ${live ? 'bg-buy text-buy' : 'bg-mute text-mute'}`} />
-          <span className="font-mono text-[0.68rem] tracking-[0.14em] text-text">SILVER · 999</span>
+          <span className="font-mono text-[0.64rem] sm:text-[0.68rem] tracking-[0.1em] sm:tracking-[0.14em] text-text">SILVER · 999</span>
           <span className="mono-label hidden sm:inline">{t.unit}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -101,7 +101,7 @@ export default function PriceCard() {
       </div>
 
       {/* the spread, drawn to scale between them */}
-      <div className="px-5 pb-5">
+      <div className="px-3.5 sm:px-5 pb-4 sm:pb-5">
         <div className="flex items-center justify-between mono-label mb-2">
           <span className={np ? 'font-np' : ''}>{t.spread}</span>
           <span className="text-text tnum">{rs(spread)} · {spreadPct}%</span>
@@ -114,17 +114,17 @@ export default function PriceCard() {
 
       {/* ten gram, and the desk's own status line */}
       <dl className="grid grid-cols-2 border-t border-line divide-x divide-line">
-        <div className="px-5 py-4">
+        <div className="px-3.5 sm:px-5 py-3.5 sm:py-4 min-w-0">
           <dt className={`mono-label ${np ? 'font-np' : ''}`}>{t.g10} · {t.sale}</dt>
-          <dd className={`mt-1.5 font-mono tnum text-text text-[1.05rem] ${np ? 'font-np' : ''}`}>{rs(p.g10Sale)}</dd>
+          <dd className={`mt-1.5 font-mono tnum text-text text-[0.95rem] sm:text-[1.05rem] whitespace-nowrap ${np ? 'font-np' : ''}`}>{rs(p.g10Sale)}</dd>
         </div>
-        <div className="px-5 py-4">
+        <div className="px-3.5 sm:px-5 py-3.5 sm:py-4 min-w-0">
           <dt className={`mono-label ${np ? 'font-np' : ''}`}>{t.g10} · {t.buy}</dt>
-          <dd className={`mt-1.5 font-mono tnum text-text text-[1.05rem] ${np ? 'font-np' : ''}`}>{rs(p.g10Purchase)}</dd>
+          <dd className={`mt-1.5 font-mono tnum text-text text-[0.95rem] sm:text-[1.05rem] whitespace-nowrap ${np ? 'font-np' : ''}`}>{rs(p.g10Purchase)}</dd>
         </div>
       </dl>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-line bg-raised/40 font-mono text-[0.62rem] tracking-[0.1em] text-mute">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-3.5 sm:px-5 py-2.5 sm:py-3 border-t border-line bg-raised/40 font-mono text-[0.58rem] sm:text-[0.62rem] tracking-[0.06em] sm:tracking-[0.1em] text-mute">
         <span className="flex items-center gap-2">
           <span className={`w-1.5 h-1.5 rounded-full ${desk.open ? 'bg-buy' : 'bg-mute'}`} />
           <span className={np ? 'font-np' : ''}>{desk.open ? t.open : t.shut}</span>
