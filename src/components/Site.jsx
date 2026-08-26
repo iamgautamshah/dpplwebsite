@@ -1,25 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
-import { Ticker, useReveal } from '../lib/ui.jsx';
+import { Ticker, useDesk, useReveal } from '../lib/ui.jsx';
 import { ARTICLES } from '../content/articles.js';
 
 const WA = (msg) => `https://wa.me/9779805617932?text=${encodeURIComponent(msg)}`;
 const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
 
-// specimen data for the catalogue: what a buyer actually needs to compare
+// what a buyer actually compares when choosing a format
 const SPECS = {
-  '100 g Silver Bar': { weight: '100 g', tolas: '8.57 tola', best: 'First holding' },
-  '500 g Silver Bar': { weight: '500 g', tolas: '42.87 tola', best: 'Steady accumulation' },
-  '1 kg Silver Bar': { weight: '1,000 g', tolas: '85.74 tola', best: 'Lowest premium per gram' },
-  'Silver Grains': { weight: 'By weight', tolas: 'To the gram', best: 'Jewellers & industry' },
+  '100 g Silver Bar': { w: '100 g', t: '8.57', use: 'First holding' },
+  '500 g Silver Bar': { w: '500 g', t: '42.87', use: 'Steady accumulation' },
+  '1 kg Silver Bar': { w: '1,000 g', t: '85.74', use: 'Lowest premium / g' },
+  'Silver Grains': { w: 'By weight', t: '—', use: 'Jewellers & industry' },
 };
 
 const scrollToSection = (e, href) => {
   const id = href.replace('#', '').replace('/', '');
   const el = document.getElementById(id);
   if (!el) return;
-  e.preventDefault();
+  if (e) e.preventDefault();
   try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   catch { scrollTo(0, el.offsetTop || 0); }
   history.replaceState(null, '', '/' + id);
@@ -95,27 +95,83 @@ const NAV = [
   ['home', 'Rates', 'scroll'],
   ['products', 'Silver', 'scroll'],
   ['articles', 'Journal', 'page'],
-  ['about', 'House', 'scroll'],
+  ['about', 'Desk', 'scroll'],
   ['contact', 'Visit', 'scroll'],
 ];
 
-/* A section opens with its label sitting on a full-width rule, the way a
-   drawing sheet is annotated. */
-function Head({ label, title, lede, children }) {
+/* ── Command palette ──────────────────────────────────────────
+   Everything on the site reachable from the keyboard. ⌘K / Ctrl-K. */
+function Palette({ open, setOpen }) {
+  const [q, setQ] = useState('');
+  const [i, setI] = useState(0);
+  const inputRef = useRef(null);
+
+  const items = useMemo(() => [
+    ...NAV.map(([id, label, kind]) => ({
+      label, hint: kind === 'page' ? '/articles' : `/${id}`, group: 'Go to',
+      run: () => (kind === 'page' ? (location.href = '/articles') : scrollToSection(null, id)),
+    })),
+    ...ARTICLES.map((a) => ({ label: a.title, hint: a.category, group: 'Journal', run: () => (location.href = `/articles/${a.slug}`) })),
+    { label: 'Call the counter', hint: '01-5915052', group: 'Contact', run: () => (location.href = 'tel:+97715915052') },
+    { label: 'WhatsApp us', hint: '+977 980-561-7932', group: 'Contact', run: () => window.open(WA('Hello DPPL, I would like to enquire about silver.'), '_blank') },
+    { label: 'Open in Google Maps', hint: 'Sasa Complex, New Road', group: 'Contact', run: () => window.open(MAPS_URL, '_blank') },
+  ], []);
+
+  const hits = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    return (s ? items.filter((it) => (it.label + it.hint).toLowerCase().includes(s)) : items).slice(0, 8);
+  }, [q, items]);
+
+  useEffect(() => {
+    const key = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setOpen((v) => !v); }
+      if (e.key === 'Escape') setOpen(false);
+    };
+    addEventListener('keydown', key);
+    return () => removeEventListener('keydown', key);
+  }, [setOpen]);
+
+  useEffect(() => { if (open) { setQ(''); setI(0); setTimeout(() => inputRef.current?.focus(), 30); } }, [open]);
+  if (!open) return null;
+
+  const onKey = (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setI((n) => (n + 1) % hits.length); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); setI((n) => (n - 1 + hits.length) % hits.length); }
+    if (e.key === 'Enter' && hits[i]) { e.preventDefault(); setOpen(false); hits[i].run(); }
+  };
+
   return (
-    <div data-rv>
-      <div className="flex items-center gap-4 border-t border-ink pt-3">
-        <span className="hallmark" aria-hidden="true" />
-        <span className="stamp text-ink">{label}</span>
+    <div className="fixed inset-0 z-[70] flex items-start justify-center pt-[12vh] px-4 bg-base/80 backdrop-blur-sm" onClick={() => setOpen(false)}>
+      <div className="panel-surface faceplate w-full max-w-lg overflow-hidden shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9)]" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
+          <span className="font-mono text-signal text-sm">›</span>
+          <input ref={inputRef} value={q} onChange={(e) => { setQ(e.target.value); setI(0); }} onKeyDown={onKey}
+            placeholder="Search rates, silver, journal…" aria-label="Search the site"
+            className="flex-1 bg-transparent outline-none text-text placeholder:text-mute text-sm font-mono" />
+          <kbd className="kbd">esc</kbd>
+        </div>
+        <ul className="max-h-[52vh] overflow-y-auto py-1.5">
+          {hits.length === 0 && <li className="px-4 py-6 text-center mono-label">No matches</li>}
+          {hits.map((it, n) => (
+            <li key={it.label}>
+              <button onMouseEnter={() => setI(n)} onClick={() => { setOpen(false); it.run(); }}
+                className={`w-full text-left px-4 py-2.5 flex items-center gap-3 transition-colors ${n === i ? 'bg-signal/10' : ''}`}>
+                <span className={`w-1 h-1 rotate-45 ${n === i ? 'bg-signal' : 'bg-line'}`} />
+                <span className="flex-1 text-sm text-text truncate">{it.label}</span>
+                <span className="mono-label truncate max-w-[42%]">{it.hint}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="flex items-center gap-3 px-4 py-2 border-t border-line mono-label">
+          <span><kbd className="kbd">↑↓</kbd> move</span><span><kbd className="kbd">⏎</kbd> open</span>
+        </div>
       </div>
-      <h2 className="title mt-8 text-[clamp(1.9rem,5vw,3.4rem)] max-w-3xl">{title}</h2>
-      {lede && <p className="mt-5 max-w-xl text-body/90">{lede}</p>}
-      {children}
     </div>
   );
 }
 
-function Nav() {
+function Nav({ onPalette }) {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const bar = useRef(null);
@@ -135,38 +191,41 @@ function Nav() {
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-    const onKey = (e) => e.key === 'Escape' && setOpen(false);
-    addEventListener('keydown', onKey);
-    return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
+    const esc = (e) => e.key === 'Escape' && setOpen(false);
+    addEventListener('keydown', esc);
+    return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', esc); };
   }, []);
 
   return (
-    <nav className={`sticky top-0 z-40 bg-sheet/95 backdrop-blur border-b border-line transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
-      <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-vermilion" aria-hidden="true" />
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 flex items-center justify-between gap-6 py-3.5">
-        <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, 'home'); }} className="flex items-center gap-3 group">
-          <img src="/images/logo.webp" alt="" width="40" height="40" className="w-10 h-10" />
+    <nav className={`sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
+      <div ref={bar} className="absolute top-0 left-0 h-px bg-signal shadow-[0_0_8px_#4DA3FF]" aria-hidden="true" />
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-7 flex items-center justify-between gap-6 py-3">
+        <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, 'home'); }} className="flex items-center gap-3">
+          <img src="/images/logo.webp" alt="" width="36" height="36" className="w-9 h-9 rounded-md" />
           <span className="leading-none">
-            <span className="block font-display font-bold text-ink text-lg tracking-[0.08em]">DPPL</span>
-            <span className="block stamp mt-1 text-[0.58rem]">Bullion · New Road</span>
+            <span className="block font-display font-bold text-text text-[1.05rem] tracking-[0.04em]">DPPL</span>
+            <span className="block mono-label mt-1 text-[0.56rem]">Bullion desk · New Road</span>
           </span>
         </a>
 
-        <ul className="hidden md:flex items-center gap-9">
+        <ul className="hidden md:flex items-center gap-7">
           {NAV.map(([href, label, kind]) => (
             <li key={href}>
               <a href={`/${href}`} onClick={kind === 'page' ? undefined : (e) => scrollToSection(e, href)}
-                 className="font-mono text-[0.7rem] tracking-[0.18em] uppercase text-mute hover:text-ink transition-colors">
+                 className="font-mono text-[0.72rem] tracking-[0.1em] text-mute hover:text-text transition-colors">
                 {label}
               </a>
             </li>
           ))}
           <li>
-            <a href={WA('Hello DPPL, I would like to enquire about silver.')} target="_blank" rel="noopener noreferrer" className="btn-solid !px-5 !py-2.5">Enquire</a>
+            <button onClick={onPalette} className="flex items-center gap-2 border border-line rounded-md px-2.5 py-1.5 text-mute hover:border-signal hover:text-signal transition-colors" aria-label="Open command palette">
+              <span className="font-mono text-[0.68rem]">Search</span><kbd className="kbd">⌘K</kbd>
+            </button>
           </li>
+          <li><a href={WA('Hello DPPL, I would like to enquire about silver.')} target="_blank" rel="noopener noreferrer" className="btn-primary !px-4 !py-2">Enquire</a></li>
         </ul>
 
-        <button className="md:hidden border border-line p-2.5 text-ink rounded-sm" onClick={() => setOpen(!open)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>
+        <button className="md:hidden border border-line rounded-md p-2.5 text-text" onClick={() => setOpen(!open)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>
           {open
             ? <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
             : <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>}
@@ -174,12 +233,12 @@ function Nav() {
       </div>
 
       <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
-        <ul className="bg-card border-b border-line shadow-[0_20px_40px_-24px_rgba(20,22,26,0.4)]">
+        <ul className="bg-panel border-b border-line shadow-[0_24px_48px_-16px_rgba(0,0,0,0.85)]">
           {NAV.map(([href, label, kind]) => (
             <li key={href} className="border-t border-line first:border-0">
               <a href={`/${href}`} onClick={kind === 'page' ? () => setOpen(false) : (e) => { setOpen(false); scrollToSection(e, href); }}
-                 className="flex items-center justify-between px-6 py-4 font-mono text-[0.78rem] tracking-[0.18em] uppercase text-ink">
-                {label}<span className="text-vermilion" aria-hidden="true">→</span>
+                 className="flex items-center justify-between px-6 py-4 font-mono text-[0.8rem] tracking-[0.08em] text-text">
+                {label}<span className="text-signal" aria-hidden="true">→</span>
               </a>
             </li>
           ))}
@@ -189,93 +248,119 @@ function Nav() {
   );
 }
 
-// Ad units go in once AdSense approves the site and issues a slot ID.
-const AD_SLOT = '';
-function AdSlot() {
-  useEffect(() => {
-    if (!AD_SLOT) return;
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
-  }, []);
-  if (!AD_SLOT) return null;
+/* the desk status bar — always-on, like the bottom of an editor */
+function StatusBar() {
+  const desk = useDesk();
   return (
-    <div className="mt-12 min-h-[90px] flex items-center justify-center">
-      <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot={AD_SLOT} data-ad-format="auto" data-full-width-responsive="true" />
+    <div className="hidden lg:flex fixed bottom-0 inset-x-0 z-30 items-center justify-between gap-6 px-5 py-1.5 bg-panel/95 backdrop-blur border-t border-line font-mono text-[0.62rem] tracking-[0.08em] text-mute">
+      <span className="flex items-center gap-2">
+        <span className={`w-1.5 h-1.5 rounded-full ${desk.open ? 'bg-buy' : 'bg-mute'}`} />
+        {desk.open ? 'Counter open' : 'Counter closed'} · Sun–Fri 10:30–18:00
+      </span>
+      <span className="flex items-center gap-5">
+        <span>Kathmandu <span className="text-text tnum">{desk.time}</span></span>
+        <span className="text-line">|</span>
+        <span>999 fine silver · weighed at the counter</span>
+        <span className="text-line">|</span>
+        <span>Press <kbd className="kbd">⌘K</kbd></span>
+      </span>
     </div>
   );
 }
 
+function Head({ id, label, title, lede }) {
+  return (
+    <div data-rv>
+      <div className="flex items-center gap-3">
+        <span className="hallmark" aria-hidden="true" />
+        <span className="mono-label text-signal">{id}</span>
+        <span className="mono-label">{label}</span>
+        <span className="flex-1 h-px bg-line" aria-hidden="true" />
+      </div>
+      <h2 className="mt-7 font-display font-semibold text-text leading-[1.08] text-[clamp(1.8rem,4.6vw,3rem)] max-w-3xl">{title}</h2>
+      {lede && <p className="mt-4 max-w-xl text-body/85">{lede}</p>}
+    </div>
+  );
+}
+
+const AD_SLOT = '';
+function AdSlot() {
+  useEffect(() => { if (AD_SLOT) { try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch {} } }, []);
+  if (!AD_SLOT) return null;
+  return <div className="mt-12 min-h-[90px] flex items-center justify-center">
+    <ins className="adsbygoogle block w-full" data-ad-client="ca-pub-6267575917692101" data-ad-slot={AD_SLOT} data-ad-format="auto" data-full-width-responsive="true" />
+  </div>;
+}
+
 export default function Site() {
   useReveal();
-  const wrap = 'mx-auto max-w-[1400px] px-4 sm:px-8';
+  const [pal, setPal] = useState(false);
+  const openPal = useCallback(() => setPal(true), []);
+  const wrap = 'mx-auto max-w-[1360px] px-4 sm:px-7';
 
   return (
-    <main className="relative z-10 bg-sheet">
+    <main className="relative z-10">
       <a href="/home" onClick={(e) => scrollToSection(e, 'home')} className="skip-link">Skip to content</a>
-      <Nav />
+      <Nav onPalette={openPal} />
       <Ticker />
+      <Palette open={pal} setOpen={setPal} />
+      <StatusBar />
 
-      {/* ── RATES ─────────────────────────────────────────────── */}
-      <section id="home" className={`${wrap} pt-10 sm:pt-16 pb-14`}>
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+      {/* ── RATES ───────────────────────────────────────────── */}
+      <section id="home" className={`${wrap} pt-12 sm:pt-16 pb-16 relative`}>
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           <div className="lg:col-span-6 order-2 lg:order-1 stag">
-            <p className="stamp">New Road · Kathmandu · Est. 2080 B.S.</p>
-            <h1 className="title mt-6 text-[clamp(2.4rem,7vw,4.6rem)]">
-              Today's silver,<br />weighed and<br /><span className="text-vermilion">priced in the open.</span>
+            <p className="mono-label">Kathmandu · New Road · Est. 2080 B.S.</p>
+            <h1 className="mt-6 font-display font-bold leading-[1.04] text-[clamp(2.3rem,6.5vw,4.2rem)] text-text">
+              The silver rate,<br /><span className="chrome">live from the counter.</span>
             </h1>
-            <p className="mt-7 max-w-lg text-body/90">
-              We publish the day's sale and purchase rate before you walk in, so you know what
-              the metal costs and what we will pay for it back. Bars of 999 fine silver and loose
-              grain, weighed on calibrated scales in front of you, invoiced to the gram.
+            <p className="mt-6 max-w-lg text-body/85">
+              Today's sale and purchase price, published before you walk in. 999 fine bars and loose
+              grain, weighed on calibrated scales in front of you, invoiced to the gram, and bought
+              back at the rate on this page.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <a href="/products" onClick={(e) => scrollToSection(e, 'products')} className="btn-solid">See the silver</a>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="/products" onClick={(e) => scrollToSection(e, 'products')} className="btn-primary">Browse silver</a>
               <a href={WA('Hello DPPL, I would like to enquire about today\u2019s rate.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WhatsApp</a>
+              <button onClick={openPal} className="btn-ghost">Search <kbd className="kbd ml-1">⌘K</kbd></button>
             </div>
           </div>
-
           <div className="lg:col-span-6 order-1 lg:order-2" data-rv>
             <PriceCard />
-            <p className="mt-4 stamp leading-relaxed">
-              Rate confirmed at the counter · Bars carry making charges on top of metal weight
+            <p className="mt-3 mono-label leading-relaxed">
+              Rate confirmed at the counter · Bars carry making charges above metal weight
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── SILVER ────────────────────────────────────────────── */}
-      <section id="products" className={`${wrap} py-14 sm:py-20`}>
-        <Head
-          label="The silver"
-          title={<>Four ways to hold it.</>}
-          lede="Every piece is 999 fine, stamped with the DPPL diamond, and sealed at the counter. Prices follow the day's rate by weight; making charges are added on top and itemised on your invoice."
-        />
-
-        <div className="mt-12 border-t border-line">
+      {/* ── SILVER ──────────────────────────────────────────── */}
+      <section id="products" className={`${wrap} py-16 sm:py-20`}>
+        <Head id="01" label="Inventory" title={<>Four formats, one purity.</>}
+              lede="Every piece is 999 fine and stamped with the DPPL diamond. Prices follow the day's rate by weight; making charges are added on top and itemised on your invoice." />
+        <div className="mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           {PRODUCTS.map((p, i) => {
-            const spec = SPECS[p.name];
+            const s = SPECS[p.name];
             return (
-              <article key={p.label} data-rv data-rv-d={String(i % 3)} className="group grid md:grid-cols-12 gap-6 md:gap-8 items-center border-b border-line py-8">
-                <div className="md:col-span-1 stamp">{String(i + 1).padStart(2, '0')}</div>
-                <div className="md:col-span-3">
-                  <div className="bg-card border border-line rounded-sm p-5 flex justify-center">
-                    <img src={p.img} alt={p.alt} loading="lazy" width="700" height="933"
-                         className="h-36 w-auto object-contain transition-transform duration-500 group-hover:scale-[1.04]" />
-                  </div>
+              <article key={p.label} data-rv data-rv-d={String(i % 4)}
+                       className="panel-surface faceplate group flex flex-col overflow-hidden transition-all duration-300 hover:border-signal/50 hover:-translate-y-1">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-line bg-raised/50">
+                  <span className="mono-label">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="mono-label text-signal">999</span>
                 </div>
-                <div className="md:col-span-5">
-                  <h3 className="title text-[clamp(1.2rem,2.6vw,1.6rem)]">{p.name}</h3>
-                  <p className="mt-3 text-[0.98rem] text-body/85 leading-relaxed">{p.desc}</p>
+                <div className="px-5 pt-6 flex justify-center">
+                  <img src={p.img} alt={p.alt} loading="lazy" width="700" height="933"
+                       className="h-40 w-auto object-contain transition-transform duration-500 group-hover:scale-[1.06]" />
                 </div>
-                <div className="md:col-span-3 md:text-right">
-                  <dl className="font-mono text-[0.7rem] tracking-[0.06em] text-mute space-y-1.5">
-                    <div><dt className="inline">Weight </dt><dd className="inline text-ink">{spec.weight}</dd></div>
-                    <div><dt className="inline">Tolas </dt><dd className="inline text-ink">{spec.tolas}</dd></div>
-                    <div><dt className="inline">Fineness </dt><dd className="inline text-ink">999</dd></div>
-                    <div><dt className="inline">Suits </dt><dd className="inline text-ink">{spec.best}</dd></div>
+                <div className="p-5 flex flex-col flex-1">
+                  <h3 className="font-display font-semibold text-text text-[1.05rem]">{p.name}</h3>
+                  <p className="mt-2.5 text-[0.9rem] text-body/80 leading-relaxed flex-1">{p.desc}</p>
+                  <dl className="mt-4 pt-4 border-t border-line grid grid-cols-2 gap-y-2 font-mono text-[0.66rem]">
+                    <dt className="text-mute">Weight</dt><dd className="text-text text-right tnum">{s.w}</dd>
+                    <dt className="text-mute">Tolas</dt><dd className="text-text text-right tnum">{s.t}</dd>
+                    <dt className="text-mute">Suits</dt><dd className="text-text text-right">{s.use}</dd>
                   </dl>
-                  <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-out mt-5 w-full md:w-auto">
-                    Enquire →
-                  </a>
+                  <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-4 w-full group-hover:border-signal group-hover:text-signal">Enquire →</a>
                 </div>
               </article>
             );
@@ -283,30 +368,30 @@ export default function Site() {
         </div>
       </section>
 
-      {/* ── JOURNAL ───────────────────────────────────────────── */}
-      <section id="articles" className={`${wrap} py-14 sm:py-20`}>
-        <Head label="The journal" title={<>Know the metal<br />before you buy it.</>} />
-        <ul className="mt-12 border-t border-line">
+      {/* ── JOURNAL ─────────────────────────────────────────── */}
+      <section id="articles" className={`${wrap} py-16 sm:py-20`}>
+        <Head id="02" label="Journal" title={<>Know the metal before you buy it.</>} />
+        <ul className="mt-10 border-t border-line">
           {ARTICLES.slice(0, 4).map((a, i) => (
             <li key={a.slug} data-rv data-rv-d={String(i % 3)} className="border-b border-line">
-              <a href={`/articles/${a.slug}`} className="group grid md:grid-cols-12 gap-4 md:gap-8 py-7 items-baseline">
-                <span className="md:col-span-2 stamp">{a.category}</span>
-                <h3 className="md:col-span-7 title text-[clamp(1.1rem,2.4vw,1.45rem)] group-hover:text-vermilion transition-colors">{a.title}</h3>
-                <span className="md:col-span-2 stamp">{a.minutes} min read</span>
-                <span className="md:col-span-1 md:text-right text-vermilion" aria-hidden="true">→</span>
+              <a href={`/articles/${a.slug}`} className="group grid md:grid-cols-12 gap-3 md:gap-6 py-6 items-baseline">
+                <span className="md:col-span-2 mono-label text-signal">{a.category}</span>
+                <h3 className="md:col-span-7 font-display font-medium text-text text-[1.05rem] group-hover:text-signal transition-colors">{a.title}</h3>
+                <span className="md:col-span-2 mono-label">{a.minutes} min</span>
+                <span className="md:col-span-1 md:text-right text-signal opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">→</span>
               </a>
             </li>
           ))}
         </ul>
-        <a href="/articles" className="btn-out mt-8">All {ARTICLES.length} articles</a>
+        <a href="/articles" className="btn-ghost mt-8">All {ARTICLES.length} articles</a>
         <AdSlot />
       </section>
 
-      {/* ── HOUSE ─────────────────────────────────────────────── */}
-      <section id="about" className={`${wrap} py-14 sm:py-20`}>
-        <Head label="The house" title={<>A counter, not a<br />storefront.</>} />
-        <div className="mt-12 grid lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-7 space-y-5 text-body/90" data-rv>
+      {/* ── DESK ────────────────────────────────────────────── */}
+      <section id="about" className={`${wrap} py-16 sm:py-20`}>
+        <Head id="03" label="The desk" title={<>A counter, not a storefront.</>} />
+        <div className="mt-10 grid lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-7 space-y-5 text-body/85" data-rv>
             <p>
               DPPL was established in 2080 B.S. on the conviction that buying silver in Nepal should be
               as transparent as buying rice. We deal in one thing: fine silver, 999 purity — bars of
@@ -319,129 +404,122 @@ export default function Site() {
               metal, honest weight, honest paper.
             </p>
           </div>
-          <dl className="lg:col-span-5 grid grid-cols-2 gap-px bg-line border border-line" data-rv data-rv-d="1">
-            {[['999', 'Fineness'], ['2080', 'Established B.S.'], ['11.6638 g', 'One tola'], ['100%', 'Invoiced sales']].map(([v, l]) => (
-              <div key={l} className="bg-sheet p-6">
-                <dt className="font-mono tnum text-ink text-[clamp(1.2rem,3vw,1.7rem)]">{v}</dt>
-                <dd className="stamp mt-2">{l}</dd>
+          <dl className="lg:col-span-5 grid grid-cols-2 gap-3" data-rv data-rv-d="1">
+            {[['999', 'Fineness'], ['2080', 'Established B.S.'], ['11.6638', 'Grams per tola'], ['100%', 'Invoiced sales']].map(([v, l]) => (
+              <div key={l} className="panel-surface faceplate p-5">
+                <dt className="font-mono tnum text-text text-[clamp(1.15rem,3vw,1.6rem)]">{v}</dt>
+                <dd className="mono-label mt-2">{l}</dd>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      {/* ── QUESTIONS ─────────────────────────────────────────── */}
-      <section id="faq" className={`${wrap} py-14 sm:py-20`}>
-        <Head label="Questions" title={<>Buying silver<br />in Kathmandu.</>} />
-        <div className="mt-12 border-t border-line">
+      {/* ── QUESTIONS ───────────────────────────────────────── */}
+      <section id="faq" className={`${wrap} py-16 sm:py-20`}>
+        <Head id="04" label="Questions" title={<>Buying silver in Kathmandu.</>} />
+        <div className="mt-10 border-t border-line">
           {FAQS.map((f, i) => (
             <details key={f.q} data-rv data-rv-d={String(i % 3)} className="group border-b border-line py-5">
               <summary className="flex items-start gap-4 cursor-pointer list-none">
-                <span className="stamp mt-1.5 w-8 shrink-0">{String(i + 1).padStart(2, '0')}</span>
-                <h3 className="flex-1 font-display uppercase text-ink text-[0.98rem] tracking-[0.02em] leading-snug group-hover:text-vermilion transition-colors">{f.q}</h3>
-                <span className="text-vermilion text-lg leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                <span className="mono-label mt-1 w-7 shrink-0 text-signal">{String(i + 1).padStart(2, '0')}</span>
+                <h3 className="flex-1 font-display font-medium text-text text-[1rem] leading-snug group-hover:text-signal transition-colors">{f.q}</h3>
+                <span className="text-signal text-lg leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
               </summary>
-              <p className="mt-4 pl-12 pr-8 text-[0.98rem] text-body/85 leading-relaxed max-w-3xl">{f.a}</p>
+              <p className="mt-3.5 pl-11 pr-6 text-[0.95rem] text-body/80 leading-relaxed max-w-3xl">{f.a}</p>
             </details>
           ))}
         </div>
       </section>
 
-      {/* ── VISIT ─────────────────────────────────────────────── */}
-      <section id="contact" className={`${wrap} py-14 sm:py-20`}>
-        <Head label="Visit" title={<>The counter is on<br />the fifth floor.</>} />
-        <div className="mt-12 grid lg:grid-cols-12 gap-10">
+      {/* ── VISIT ───────────────────────────────────────────── */}
+      <section id="contact" className={`${wrap} py-16 sm:py-20`}>
+        <Head id="05" label="Visit" title={<>Fifth floor, Sasa Complex.</>} />
+        <div className="mt-10 grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-5" data-rv>
-            <address className="not-italic text-[1.05rem] leading-relaxed text-ink">
-              DPPL<br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600<br />Nepal
-            </address>
-
-            <dl className="mt-8 border-t border-line">
-              {[
-                ['Hours', <>Sun – Fri · 10:30–18:00 NPT<br /><span className="text-mute">Closed Saturdays &amp; public holidays</span></>],
-                ['Counter', <a href="tel:+97715915052" className="ln tnum">01-5915052</a>],
-                ['Mobile', <a href="tel:+9779805617932" className="ln tnum">+977 980-561-7932</a>],
-                ['Email', <a href="mailto:dppl2080@gmail.com" className="ln break-all">dppl2080@gmail.com</a>],
-              ].map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[5.5rem_1fr] gap-4 border-b border-line py-3.5">
-                  <dt className="stamp pt-1">{k}</dt>
-                  <dd className="text-[0.98rem]">{v}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="tel:+97715915052" className="btn-solid"><PhoneIcon /> Call the counter</a>
-              <a href={WA('Hello DPPL, I have an enquiry.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WhatsApp</a>
-              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-out">Google Maps ↗</a>
+            <div className="panel-surface faceplate p-6">
+              <address className="not-italic text-[1.02rem] leading-relaxed text-text">
+                DPPL<br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600<br />Nepal
+              </address>
+              <dl className="mt-6 border-t border-line">
+                {[
+                  ['Hours', <>Sun – Fri · 10:30–18:00 NPT<br /><span className="text-mute">Closed Saturdays &amp; public holidays</span></>],
+                  ['Counter', <a href="tel:+97715915052" className="tnum hover:text-signal transition-colors">01-5915052</a>],
+                  ['Mobile', <a href="tel:+9779805617932" className="tnum hover:text-signal transition-colors">+977 980-561-7932</a>],
+                  ['Email', <a href="mailto:dppl2080@gmail.com" className="break-all hover:text-signal transition-colors">dppl2080@gmail.com</a>],
+                ].map(([k, v]) => (
+                  <div key={k} className="grid grid-cols-[5rem_1fr] gap-3 border-b border-line py-3">
+                    <dt className="mono-label pt-1">{k}</dt>
+                    <dd className="text-[0.95rem] text-text">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                <a href="tel:+97715915052" className="btn-primary"><PhoneIcon /> Call</a>
+                <a href={WA('Hello DPPL, I have an enquiry.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WhatsApp</a>
+                <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-ghost">Maps ↗</a>
+              </div>
             </div>
           </div>
-
-          <div className="lg:col-span-7 border border-line rounded-sm overflow-hidden min-h-[380px] relative bg-card" data-rv data-rv-d="1">
+          <div className="lg:col-span-7 panel-surface overflow-hidden min-h-[380px] relative" data-rv data-rv-d="1">
             <KathmanduMap className="absolute inset-0 w-full h-full" />
           </div>
         </div>
       </section>
 
-      {/* ── COLOPHON ──────────────────────────────────────────── */}
-      <footer className="border-t border-ink mt-6">
+      {/* ── FOOTER ──────────────────────────────────────────── */}
+      <footer className="border-t border-line mt-8 lg:mb-8">
         <div className={`${wrap} py-12 grid md:grid-cols-12 gap-8`}>
           <div className="md:col-span-4">
             <div className="flex items-center gap-3">
-              <img src="/images/logo.webp" alt="" width="40" height="40" className="w-10 h-10" />
-              <span className="font-display font-bold text-ink text-lg tracking-[0.08em]">DPPL</span>
+              <img src="/images/logo.webp" alt="" width="36" height="36" className="w-9 h-9 rounded-md" />
+              <span className="font-display font-bold text-text text-[1.05rem] tracking-[0.04em]">DPPL</span>
             </div>
-            <p className="mt-4 text-[0.92rem] text-mute leading-relaxed">
+            <p className="mt-4 text-[0.9rem] text-mute leading-relaxed">
               Silver bullion, weighed and invoiced at the counter.<br />New Road, Kathmandu · Est. 2080 B.S.
             </p>
             <div className="mt-5 flex gap-2.5">
               {SOCIALS.map((s) => (
                 <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name}
-                   className="w-9 h-9 border border-line rounded-sm flex items-center justify-center text-mute hover:text-vermilion hover:border-vermilion transition-colors">
+                   className="w-9 h-9 border border-line rounded-md flex items-center justify-center text-mute hover:text-signal hover:border-signal transition-colors">
                   {s.icon}
                 </a>
               ))}
             </div>
           </div>
-
           <nav className="md:col-span-2">
-            <p className="stamp">Sections</p>
-            <ul className="mt-4 space-y-2.5 text-[0.92rem]">
+            <p className="mono-label">Sections</p>
+            <ul className="mt-4 space-y-2.5 text-[0.9rem]">
               {NAV.map(([href, label, kind]) => (
-                <li key={href}>
-                  <a href={`/${href}`} onClick={kind === 'page' ? undefined : (e) => scrollToSection(e, href)} className="ln">{label}</a>
-                </li>
+                <li key={href}><a href={`/${href}`} onClick={kind === 'page' ? undefined : (e) => scrollToSection(e, href)} className="text-body/85 hover:text-signal transition-colors">{label}</a></li>
               ))}
             </ul>
           </nav>
-
           <nav className="md:col-span-3">
-            <p className="stamp">Journal</p>
-            <ul className="mt-4 space-y-2.5 text-[0.92rem]">
+            <p className="mono-label">Journal</p>
+            <ul className="mt-4 space-y-2.5 text-[0.9rem]">
               {ARTICLES.slice(0, 4).map((a) => (
-                <li key={a.slug}><a href={`/articles/${a.slug}`} className="ln">{a.title}</a></li>
+                <li key={a.slug}><a href={`/articles/${a.slug}`} className="text-body/85 hover:text-signal transition-colors">{a.title}</a></li>
               ))}
             </ul>
           </nav>
-
           <div className="md:col-span-3">
-            <p className="stamp">Counter</p>
-            <ul className="mt-4 space-y-2.5 text-[0.92rem]">
-              <li><a href="tel:+97715915052" className="ln tnum">01-5915052</a></li>
-              <li><a href="tel:+9779805617932" className="ln tnum">+977 980-561-7932</a></li>
-              <li><a href="mailto:dppl2080@gmail.com" className="ln">dppl2080@gmail.com</a></li>
-              <li><a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="ln">Sasa Complex, New Road ↗</a></li>
+            <p className="mono-label">Counter</p>
+            <ul className="mt-4 space-y-2.5 text-[0.9rem]">
+              <li><a href="tel:+97715915052" className="text-body/85 hover:text-signal transition-colors tnum">01-5915052</a></li>
+              <li><a href="tel:+9779805617932" className="text-body/85 hover:text-signal transition-colors tnum">+977 980-561-7932</a></li>
+              <li><a href="mailto:dppl2080@gmail.com" className="text-body/85 hover:text-signal transition-colors">dppl2080@gmail.com</a></li>
+              <li><a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="text-body/85 hover:text-signal transition-colors">Sasa Complex, New Road ↗</a></li>
             </ul>
           </div>
         </div>
-
         <div className="border-t border-line">
-          <div className={`${wrap} py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 stamp`}>
+          <div className={`${wrap} py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mono-label`}>
             <p>© 2026 DPPL · All rights reserved</p>
             <p className="flex gap-5">
-              <a href="/privacy" className="hover:text-ink transition-colors">Privacy</a>
-              <a href="/terms" className="hover:text-ink transition-colors">Terms</a>
-              <a href="/articles" className="hover:text-ink transition-colors">Journal</a>
+              <a href="/privacy" className="hover:text-text transition-colors">Privacy</a>
+              <a href="/terms" className="hover:text-text transition-colors">Terms</a>
+              <a href="/articles" className="hover:text-text transition-colors">Journal</a>
             </p>
           </div>
         </div>

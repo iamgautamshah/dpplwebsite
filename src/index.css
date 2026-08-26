@@ -3,99 +3,114 @@
 @tailwind utilities;
 
 /* ============================================================
-   THE DAY SHEET — DPPL, New Road, Kathmandu
-   Cool polished-sheet greys with one accent: sindoor vermilion.
-   Display: Space Grotesk, set as stamped caps.
-   Reading: Source Serif 4. Figures: IBM Plex Mono, tabular.
+   THE DESK — DPPL, New Road, Kathmandu
+   A silver price is live market data, so the site is an
+   instrument panel: dot-grid substrate, machined panels,
+   monospaced figures, and light used only where it means
+   something. Chrome = the metal itself. Blue = interaction.
+   Amber = what you pay. Mint = what we pay you.
    ============================================================ */
 
 html { scroll-behavior: smooth; }
 body {
-  @apply bg-sheet text-body font-body;
-  font-size: 17px;
-  line-height: 1.65;
+  @apply bg-base text-body font-body;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-::selection { background: #B5122E; color: #EDEFF2; }
+::selection { background: rgba(77, 163, 255, 0.28); color: #E8EEF6; }
+
+/* the substrate: an engineering grid, barely there */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(circle at 1px 1px, rgba(138, 151, 168, 0.13) 1px, transparent 0);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(ellipse 110% 70% at 50% 0%, #000 35%, transparent 78%);
+}
 
 @layer components {
-  .stamp { @apply font-mono text-[0.66rem] tracking-[0.24em] uppercase text-mute; }
-  .title { @apply font-display uppercase text-ink font-semibold leading-[1.05] tracking-[0.02em]; }
-  .btn { @apply inline-flex items-center justify-center gap-2 font-mono text-[0.7rem] tracking-[0.16em] uppercase px-6 py-3.5 rounded-sm transition-colors duration-200; }
-  .btn-solid { @apply btn bg-ink text-sheet hover:bg-vermilion; }
-  .btn-out { @apply btn border border-line text-ink hover:border-ink; }
-  .btn-wa { @apply btn bg-[#1FA855] text-white hover:bg-[#178A45]; }
-  .panel { @apply bg-card border border-line rounded-sm; }
+  .mono-label { @apply font-mono text-[0.64rem] tracking-[0.22em] uppercase text-mute; }
+  .panel-surface { @apply bg-panel border border-line rounded-lg; }
+  .btn { @apply inline-flex items-center justify-center gap-2 font-mono text-[0.72rem] tracking-[0.1em] uppercase px-5 py-3 rounded-md transition-all duration-200; }
+  .btn-primary { @apply btn bg-signal text-base font-medium hover:bg-signal-light hover:-translate-y-px; }
+  .btn-ghost { @apply btn border border-line text-text hover:border-signal hover:text-signal; }
+  .btn-wa { @apply btn bg-[#1FA855] text-white hover:bg-[#25C263] hover:-translate-y-px; }
+  .kbd { @apply font-mono text-[0.62rem] px-1.5 py-0.5 rounded border border-line bg-raised text-mute; }
 }
 
-/* text links draw their own underline */
-.ln {
-  color: #14161A; text-decoration: none;
-  background-image: linear-gradient(#B5122E, #B5122E);
-  background-size: 0 1px; background-position: 0 100%; background-repeat: no-repeat;
-  transition: background-size 0.3s ease, color 0.2s ease;
+/* machined panel: hairline top highlight, like a bevelled faceplate */
+.faceplate { position: relative; }
+.faceplate::before {
+  content: ''; position: absolute; inset-inline: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232, 238, 246, 0.22), transparent);
 }
-.ln:hover { color: #B5122E; background-size: 100% 1px; }
 
-/* the hallmark: DPPL's diamond stamp — marker, bullet, and fulcrum */
-.hallmark { width: 9px; height: 9px; flex: none; transform: rotate(45deg); border: 1px solid #B5122E; position: relative; }
-.hallmark::after { content: ''; position: absolute; inset: 2px; background: #B5122E; }
+/* the metal itself, rendered as light */
+.chrome {
+  background: linear-gradient(178deg, #FFFFFF 0%, #DCE7F2 38%, #A9BACD 62%, #E9F1F8 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+
+.hallmark { width: 9px; height: 9px; flex: none; transform: rotate(45deg); border: 1px solid #4DA3FF; position: relative; }
+.hallmark::after { content: ''; position: absolute; inset: 2px; background: #4DA3FF; }
 
 .tnum, .font-mono { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 
-/* the balance: beam, hangers, pans */
-.beam { position: relative; height: 1px; background: #CDD2D8; }
-.hanger { position: relative; }
-.hanger::before {
-  content: ''; position: absolute; left: 50%; top: -22px; width: 1px; height: 22px;
-  background: #CDD2D8;
+/* live pulse for anything genuinely live */
+.pip { position: relative; }
+.pip::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 999px;
+  border: 1px solid currentColor; opacity: 0; animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+@keyframes ping { 0% { transform: scale(0.7); opacity: 0.8; } 100% { transform: scale(1.9); opacity: 0; } }
 
 /* rate strip */
 .ticker { overflow: hidden; }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.ticker-run { display: flex; width: max-content; animation: marquee 36s linear infinite; will-change: transform; }
+.ticker-run { display: flex; width: max-content; animation: marquee 40s linear infinite; will-change: transform; }
 .ticker:hover .ticker-run { animation-play-state: paused; }
 
-/* one orchestrated reveal, nothing scattered */
-html[data-js] [data-rv] { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+/* reveals */
+html[data-js] [data-rv] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
 html[data-js] [data-rv].in { opacity: 1; transform: none; }
 html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.07s; }
 html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.14s; }
 html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.21s; }
 
-html[data-js] .stag > * { opacity: 0; transform: translateY(12px); animation: stag-rise 0.85s cubic-bezier(0.22,1,0.36,1) forwards; }
-html[data-js] .stag > *:nth-child(2) { animation-delay: 0.1s; }
-html[data-js] .stag > *:nth-child(3) { animation-delay: 0.2s; }
-html[data-js] .stag > *:nth-child(4) { animation-delay: 0.34s; }
+html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
+html[data-js] .stag > *:nth-child(2) { animation-delay: 0.09s; }
+html[data-js] .stag > *:nth-child(3) { animation-delay: 0.18s; }
+html[data-js] .stag > *:nth-child(4) { animation-delay: 0.3s; }
 @keyframes stag-rise { to { opacity: 1; transform: none; } }
 
 /* quality floor */
-:focus-visible { outline: 2px solid #B5122E; outline-offset: 3px; }
-.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #14161A; color: #EDEFF2; padding: 0.7rem 1.2rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; transition: top 0.2s; }
+:focus-visible { outline: 2px solid #4DA3FF; outline-offset: 3px; border-radius: 2px; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #4DA3FF; color: #070A0F; padding: 0.7rem 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; transition: top 0.2s; border-radius: 6px; }
 .skip-link:focus { top: 1rem; }
-section[id] { scroll-margin-top: 5rem; }
+section[id] { scroll-margin-top: 5.5rem; }
 ::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #E3E6EA; }
-::-webkit-scrollbar-thumb { background: #C3C7CD; }
-::-webkit-scrollbar-thumb:hover { background: #B5122E; }
+::-webkit-scrollbar-track { background: #0B0F16; }
+::-webkit-scrollbar-thumb { background: #1F2A38; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #4DA3FF; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ticker-run { animation: none; }
+  .ticker-run, .pip::after { animation: none; }
   html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
 }
 
-.dppl-map { background: #DFE3E8; z-index: 0; }
-.dppl-map .leaflet-tile { filter: grayscale(0.55) contrast(1.02) brightness(1.02); }
-.dppl-map .leaflet-control-zoom a { background: #F8F9FB; color: #14161A; border-color: #CDD2D8; }
-.dppl-map .leaflet-control-zoom a:hover { background: #fff; color: #B5122E; }
-.dppl-map .leaflet-control-attribution { background: rgba(248,249,251,0.85); color: #6C737C; font-size: 9px; }
-.dppl-map .leaflet-control-attribution a { color: #3A4048; }
+.dppl-map { background: #0B0F16; z-index: 0; }
+.dppl-map .leaflet-tile { filter: invert(0.92) hue-rotate(185deg) saturate(0.55) brightness(0.95); }
+.dppl-map .leaflet-control-zoom a { background: #0D121A; color: #E8EEF6; border-color: #1F2A38; }
+.dppl-map .leaflet-control-zoom a:hover { background: #131A24; color: #4DA3FF; }
+.dppl-map .leaflet-control-attribution { background: rgba(7,10,15,0.8); color: #8A97A8; font-size: 9px; }
+.dppl-map .leaflet-control-attribution a { color: #B7C2D0; }
 
 .dppl-marker { position: relative; width: 0; height: 0; }
 .dppl-pulse {
   position: absolute; left: -26px; top: -26px; width: 52px; height: 52px;
-  border: 2px solid rgba(181, 18, 46, 0.6); border-radius: 50%;
+  border: 2px solid rgba(77, 163, 255, 0.6); border-radius: 50%;
   animation: dppl-pulse 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 .dppl-pulse-2 { animation-delay: 1.2s; }
@@ -105,22 +120,22 @@ section[id] { scroll-margin-top: 5rem; }
 }
 .dppl-core {
   position: absolute; left: -13px; top: -13px; width: 26px; height: 26px;
-  background: #14161A; border: 1.5px solid #B5122E; border-radius: 50%;
+  background: #070A0F; border: 1.5px solid #4DA3FF; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 18px rgba(20,22,26,0.35);
 }
-.dppl-diamond { width: 8px; height: 8px; background: #EDEFF2; transform: rotate(45deg); }
+.dppl-diamond { width: 8px; height: 8px; background: #4DA3FF; transform: rotate(45deg); }
 
 .dppl-map .leaflet-popup-content-wrapper {
-  background: #F8F9FB; border: 1px solid #CDD2D8;
-  border-radius: 2px; color: #3A4048; box-shadow: 0 18px 40px -22px rgba(20,22,26,0.45);
+  background: #0D121A; border: 1px solid #1F2A38;
+  border-radius: 2px; color: #B7C2D0; box-shadow: 0 18px 40px -22px rgba(20,22,26,0.45);
 }
-.dppl-map .leaflet-popup-tip { background: #F8F9FB; }
-.dppl-pop { font-family: 'Source Serif 4', Georgia, serif; font-weight: 400; padding: 2px 4px; }
-.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #B5122E; margin: 0 0 4px; }
-.dppl-pop h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.95rem; color: #14161A; margin: 0 0 4px; }
+.dppl-map .leaflet-popup-tip { background: #0D121A; }
+.dppl-pop { font-family: Sora, sans-serif; font-weight: 400; padding: 2px 4px; }
+.dppl-pop-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.32em; color: #4DA3FF; margin: 0 0 4px; }
+.dppl-pop h3 { font-family: Sora, sans-serif; font-weight: 600; font-size: 0.98rem; color: #E8EEF6; margin: 0 0 4px; }
 .dppl-pop p { font-size: 0.78rem; line-height: 1.55; margin: 0 0 8px; opacity: 0.85; }
-.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #B5122E; text-decoration: none; border-bottom: 1px solid #B5122E; padding-bottom: 2px; }
+.dppl-pop a { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #4DA3FF; text-decoration: none; border-bottom: 1px solid #4DA3FF; padding-bottom: 2px; }
 
 @media (prefers-reduced-motion: reduce) { .dppl-pulse { animation: none; opacity: 0; } }
 
