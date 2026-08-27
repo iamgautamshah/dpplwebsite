@@ -9,7 +9,11 @@ const RETRY_GAP_MS = 15 * 60 * 1000;
 const TOLA_PER_10G = 1.16638;         // (11.6638 g/tola) ÷ 10 g
 
 let memCache = null;
-let memEndpoint = null;
+let lastFailAt = 0;
+// short enough that the site recovers within a minute of a source coming
+// back, long enough that a sustained outage is not hammered on every request
+const FAIL_RETRY_MS = 60 * 1000;
+let memEndpoint = {};
 
 const UA_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
@@ -169,110 +173,135 @@ function collectNums(region) {
   return out;
 }
 
-/* ======================= KAGOSIDA (primary) ======================= */
+/* ============================ sources ============================= */
+/* Both federations publish the same daily Kathmandu reference, and both are
+   single-page apps whose figures come from an API the page loads. So each
+   source gets the same treatment: read the page, find the API its bundle
+   talks to, remember the endpoint that worked, and fall back to parsing the
+   HTML directly in case it is ever server-rendered. */
+
 const STATIC_HOST_RE = /(googleapis|gstatic|w3\.org|reactjs\.org|react\.dev|facebook|fbcdn|twitter|x\.com|youtube|youtu\.be|instagram|linkedin|jsdelivr|unpkg|cdnjs|cloudflareinsights|schema\.org|sentry|googletagmanager|google-analytics|maps\.google|goo\.gl|fonts\.|gravatar|wikipedia|github\.io|npmjs)/i;
 const ASSET_RE = /\.(png|jpe?g|svg|gif|webp|css|map|woff2?|ttf|eot|ico|mp4|pdf)(\?|#|$)/i;
 const SPA_ECHO_RE = /^\s*<!doctype html|^\s*<html/i;
 
-async function discoverKagosidaEndpoints(log) {
-  const home = await getText(KAGOSIDA + '/');
-  const scripts = [...home.matchAll(/(?:src|href)="([^"]+\.js[^"]*)"/g)]
-    .map((m) => m[1])
-    .map((s) => (s.startsWith('http') ? s : KAGOSIDA + (s.startsWith('/') ? '' : '/') + s));
-  log.push(`bundles: ${scripts.length}`);
+const SOURCES = [
+  {
+    name: 'FENEGOSIDA',
+    kvKey: 'silver-endpoint-fenegosida',
+    origins: ['https://www.fenegosida.org', 'https://fenegosida.org'],
+    seeds: [
+      '/api/v1/rate', '/api/v1/rates', '/api/v1/getcurrentrate', '/api/rate',
+      '/api/rates', '/api/today-rate', '/api/todayrate', '/api/current-rate',
+      '/api/daily-rate', '/api/gold-silver-rate', '/api/v1/todays-rate',
+    ],
+    subs: ['api', 'backend', 'admin', 'server', 'data'],
+  },
+  {
+    name: 'KAGOSIDA',
+    kvKey: 'silver-endpoint',
+    origins: ['https://kagosida.org.np'],
+    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory'],
+    subs: ['api', 'backend', 'admin', 'server'],
+  },
+];
 
-  const apiPaths = new Set(['/api/v1/getcurrentrate', '/api/v1/getratehistory']);
+const rateFirst = (arr) => arr.sort((a, b) =>
+  (/currentrate|todayrate|today-rate/i.test(a) ? 0 : /rate|price/i.test(a) ? 1 : 2) -
+  (/currentrate|todayrate|today-rate/i.test(b) ? 0 : /rate|price/i.test(b) ? 1 : 2));
+
+async function discoverEndpoints(cfg, log) {
+  const apiPaths = new Set(cfg.seeds);
   const bases = new Set();
 
-  for (const s of scripts.slice(0, 4)) {
-    let js = '';
-    try { js = await getText(s); } catch (e) { log.push(`bundle fail: ${e.message}`); continue; }
-    for (const m of js.matchAll(/["'`](\/(?:api|backend)\/[^"'`\s\\?]*)["'`]/g)) apiPaths.add(m[1]);
-    for (const m of js.matchAll(/https?:\/\/[A-Za-z0-9.-]+(?::\d+)?(?:\/[A-Za-z0-9._~\/-]*)?/g)) {
-      const u = m[0].replace(/[.,;'")\\]+$/, '');
-      if (STATIC_HOST_RE.test(u) || ASSET_RE.test(u)) continue;
-      try {
-        const { origin, pathname } = new URL(u);
-        if (origin === KAGOSIDA) continue;
-        bases.add(origin);
-        const pm = pathname.match(/^(.*?\/(?:api|backend)(?:\/v\d+)?)(?:\/|$)/);
-        if (pm) bases.add(origin + pm[1]);
-      } catch { /* not a URL */ }
-    }
-    for (const m of js.matchAll(/base(?:URL|Url|_url)?\s*[:=]\s*["'`](https?:\/\/[^"'`]+)["'`]/g)) {
-      try { bases.add(new URL(m[1]).origin); bases.add(m[1].replace(/\/$/, '')); } catch { /* ignore */ }
+  for (const origin of cfg.origins) {
+    let home = '';
+    try { home = await getText(origin + '/'); } catch (e) { log.push(`${cfg.name} home fail ${origin}: ${e.message}`); continue; }
+    bases.add(origin);
+
+    const scripts = [...home.matchAll(/(?:src|href)="([^"]+\.js[^"]*)"/g)]
+      .map((m) => m[1])
+      .map((s) => (s.startsWith('http') ? s : origin + (s.startsWith('/') ? '' : '/') + s));
+    log.push(`${cfg.name} bundles: ${scripts.length}`);
+
+    for (const s of scripts.slice(0, 4)) {
+      let js = '';
+      try { js = await getText(s); } catch (e) { log.push(`${cfg.name} bundle fail: ${e.message}`); continue; }
+      for (const m of js.matchAll(/["'`](\/(?:api|backend)\/[^"'`\s\\?]*)["'`]/g)) apiPaths.add(m[1]);
+      for (const m of js.matchAll(/https?:\/\/[A-Za-z0-9.-]+(?::\d+)?(?:\/[A-Za-z0-9._~\/-]*)?/g)) {
+        const u = m[0].replace(/[.,;'")\\]+$/, '');
+        if (STATIC_HOST_RE.test(u) || ASSET_RE.test(u)) continue;
+        try {
+          const { origin: o, pathname } = new URL(u);
+          bases.add(o);
+          const pm = pathname.match(/^(.*?\/(?:api|backend)(?:\/v\d+)?)(?:\/|$)/);
+          if (pm) bases.add(o + pm[1]);
+        } catch { /* not a URL */ }
+      }
+      for (const m of js.matchAll(/base(?:URL|Url|_url)?\s*[:=]\s*["'`](https?:\/\/[^"'`]+)["'`]/g)) {
+        try { bases.add(new URL(m[1]).origin); bases.add(m[1].replace(/\/$/, '')); } catch { /* ignore */ }
+      }
     }
   }
-  for (const sub of ['api', 'backend', 'admin', 'server']) bases.add(`https://${sub}.kagosida.org.np`);
-  log.push(`hosts: ${[...bases].filter((b) => !b.includes('/api')).join(', ') || 'none found in bundle'}`);
 
-  const rateFirst = (arr) => arr.sort((a, b) =>
-    (/currentrate/i.test(a) ? 0 : /rate|price/i.test(a) ? 1 : 2) -
-    (/currentrate/i.test(b) ? 0 : /rate|price/i.test(b) ? 1 : 2));
+  const host = new URL(cfg.origins[0]).hostname.replace(/^www\./, '');
+  for (const sub of cfg.subs) bases.add(`https://${sub}.${host}`);
+
   const paths = rateFirst([...apiPaths]);
-
   const candidates = [];
   for (const base of bases) {
-    for (const p of paths.slice(0, 6)) {
+    for (const p of paths.slice(0, 8)) {
       candidates.push(base.replace(/\/$/, '') + (base.includes('/api') ? p.replace(/^\/api(?:\/v\d+)?/, '') || '/' : p));
     }
   }
-  return rateFirst([...new Set(candidates)]).slice(0, 24);
+  return rateFirst([...new Set(candidates)]).slice(0, 28);
 }
 
-async function scrapeKagosida(env, log) {
-  const tryEndpoint = async (url) => {
+async function scrapeSource(cfg, env, log) {
+  const tryUrl = async (url, allowHtml = false) => {
     const body = await getText(url);
-    if (SPA_ECHO_RE.test(body)) throw new Error('SPA html echo');
+    if (!allowHtml && SPA_ECHO_RE.test(body)) throw new Error('SPA html echo');
     const q = extractQuote(body);
     if (!q || !q.sale) throw new Error('no silver in response');
     return q;
   };
 
-  let known = memEndpoint;
+  // 1. the endpoint that worked last time
+  let known = memEndpoint[cfg.name];
   if (!known && env.RATE_CACHE) {
-    try { known = await env.RATE_CACHE.get(KV_ENDPOINT_KEY); } catch { /* ignore */ }
+    try { known = await env.RATE_CACHE.get(cfg.kvKey); } catch { /* ignore */ }
   }
   if (known) {
     try {
-      const quote = await tryEndpoint(known);
-      log.push('kagosida ok (cached endpoint)');
+      const quote = await tryUrl(known);
+      log.push(`${cfg.name} ok (cached endpoint)`);
+      memEndpoint[cfg.name] = known;
+      // persist it: a fresh worker should not have to rediscover the API
+      if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(cfg.kvKey, known); } catch { /* ignore */ } }
       return { quote, endpoint: known };
-    } catch (e) { log.push(`cached endpoint failed: ${e.message}`); }
+    } catch (e) { log.push(`${cfg.name} cached endpoint failed: ${e.message}`); }
   }
 
-  const candidates = await discoverKagosidaEndpoints(log);
-  const score = (u) => /currentrate/i.test(u) ? 0 : /rate|price/i.test(u) ? 1 : 2;
+  // 2. the page itself, in case the rate is server-rendered
+  for (const origin of cfg.origins) {
+    try {
+      const quote = await tryUrl(origin + '/', true);
+      log.push(`${cfg.name} ok from page html`);
+      return { quote, endpoint: origin + '/' };
+    } catch (e) { log.push(`${cfg.name} html miss ${origin}: ${e.message}`); }
+  }
+
+  // 3. hunt for the API the bundle talks to
+  const candidates = await discoverEndpoints(cfg, log);
   for (const url of candidates) {
     try {
-      const body = await getText(url);
-      if (SPA_ECHO_RE.test(body)) { log.push(`miss ${url}: SPA html echo (not the API host)`); continue; }
-      const q = extractQuote(body);
-      if (!q || !q.sale) {
-        log.push(score(url) < 2
-          ? `miss ${url}: no silver in body: ${body.slice(0, 260).replace(/\s+/g, ' ')}`
-          : `miss ${url}: no silver in response`);
-        continue;
-      }
-      log.push(`kagosida ok via ${url}${q.purchase ? '' : ' (sale only)'}`);
-      memEndpoint = url;
-      if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(KV_ENDPOINT_KEY, url); } catch { /* ignore */ } }
-      return { quote: q, endpoint: url };
-    } catch (e) { log.push(`miss ${url}: ${e.message}`); }
+      const quote = await tryUrl(url);
+      log.push(`${cfg.name} ok via ${url}${quote.purchase ? '' : ' (sale only)'}`);
+      memEndpoint[cfg.name] = url;
+      if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(cfg.kvKey, url); } catch { /* ignore */ } }
+      return { quote, endpoint: url };
+    } catch (e) { log.push(`${cfg.name} miss ${url}: ${e.message}`); }
   }
-  throw new Error('kagosida: no working endpoint found');
-}
-
-/* ====================== FENEGOSIDA (fallback) ===================== */
-async function scrapeFenegosida(log) {
-  for (const url of FENEGOSIDA_SOURCES) {
-    try {
-      const q = extractQuote(await getText(url));
-      if (q && q.sale) { log.push(`fenegosida ok via ${url}`); return { quote: q, endpoint: url }; }
-      log.push(`fenegosida parse empty: ${url}`);
-    } catch (e) { log.push(`fenegosida fail ${url}: ${e.message}`); }
-  }
-  throw new Error('fenegosida: no rate found');
+  throw new Error(`${cfg.name}: no working endpoint found`);
 }
 
 /* ========================= combined scrape ======================== */
@@ -282,17 +311,18 @@ function sane(ref) {
   return ref.tola > 0 && ref.g10 > 0 && r > 1.1 && r < 1.25;
 }
 
+/** Try each federation in turn; the first that returns sensible figures wins. */
 async function scrape(env, log) {
-  try {
-    const { quote } = await scrapeKagosida(env, log);
-    if (sane(quote.sale) && (!quote.purchase || sane(quote.purchase))) {
-      return { quote, source: 'KAGOSIDA' };
-    }
-    log.push('kagosida values failed sanity check');
-  } catch (e) { log.push(e.message); }
-  const { quote } = await scrapeFenegosida(log);
-  if (!sane(quote.sale)) throw new Error('all sources failed sanity check');
-  return { quote, source: 'FENEGOSIDA' };
+  for (const cfg of SOURCES) {
+    try {
+      const { quote } = await scrapeSource(cfg, env, log);
+      if (sane(quote.sale) && (!quote.purchase || sane(quote.purchase))) {
+        return { quote, source: cfg.name };
+      }
+      log.push(`${cfg.name} values failed sanity check`);
+    } catch (e) { log.push(e.message); }
+  }
+  throw new Error('all sources failed');
 }
 
 /* ========================= quote & cache ========================== */
@@ -335,7 +365,12 @@ function buildPayload(quote, source, day, minutes, updatedToday, prevRatio) {
 }
 
 async function readCache(env) {
-  if (env.RATE_CACHE) { try { return await env.RATE_CACHE.get(KV_KEY, 'json'); } catch { /* ignore */ } }
+  if (env.RATE_CACHE) {
+    try {
+      const v = await env.RATE_CACHE.get(KV_KEY, 'json');
+      if (v) return v;                 // fall through to memory on a KV miss
+    } catch { /* ignore */ }
+  }
   return memCache;
 }
 async function writeCache(env, data) {
@@ -344,8 +379,10 @@ async function writeCache(env, data) {
 }
 
 function shouldScrape(cached, day, minutes) {
-  if (!cached) return true;
-  if (cached.dateAD !== day) return true;
+  if (!cached) return Date.now() - lastFailAt > FAIL_RETRY_MS;
+  // a cache from an earlier day is not today's price, so keep trying for a
+  // fresh one — but not on literally every request while a source is down
+  if (cached.dateAD !== day) return Date.now() - (cached.lastAttempt || 0) > FAIL_RETRY_MS;
   const afterPublish = minutes >= PUBLISH_MINUTES;
   if (!afterPublish) return false;
   if (cached.fetchedMinutes < PUBLISH_MINUTES) return true;
@@ -392,15 +429,25 @@ export async function onRequestGet(context) {
     } catch (err) {
       log.push(`FINAL: ${err.message}`);
       console.error('[silver]', log.join(' | '));
-      if (!cached) {
-        return json({ error: 'Rate not available yet. Try again shortly.', ...(debug ? { trace: log } : {}) }, 503);
+      lastFailAt = Date.now();
+      if (cached) {
+        cached = { ...cached, lastAttempt: Date.now() };
+        await writeCache(env, cached);
       }
-      cached = { ...cached, lastAttempt: Date.now() };
-      await writeCache(env, cached);
     }
   }
 
-  const resp = json({ ...cached, stale: cached.dateAD !== day, ...(debug ? { trace: log } : {}) });
+  // Only today's rate is ever published. An older figure would look live and
+  // send someone to the counter expecting the wrong price, so it is withheld
+  // and the site says the rate is unavailable instead.
+  if (!cached || cached.dateAD !== day) {
+    return json({
+      error: 'Today\u2019s rate is not available yet. Please call the counter on 01-5915052.',
+      ...(debug ? { trace: log, heldBack: cached ? { dateAD: cached.dateAD, tolaSale: cached.tolaSale } : null } : {}),
+    }, 503);
+  }
+
+  const resp = json({ ...cached, stale: false, ...(debug ? { trace: log } : {}) });
   if (!debug) context.waitUntil(caches.default.put(cacheKey, resp.clone()));
   return resp;
 }
