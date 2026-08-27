@@ -33,8 +33,27 @@ const num = (s) => parseFloat(String(s).replace(/,/g, ''));
 const r2 = (x) => Math.round(x * 100) / 100;
 
 /** Normalize Devanagari + escaped-unicode keywords into English markers. */
+/* FENEGOSIDA serves a server-rendered PHP table, so the label and its figure
+   are separated by markup: <td>चाँदी</td><td>Rs 4,975</td>. Tags have to go
+   before any label/value pattern can match. JSON bodies pass through
+   untouched. */
+function stripMarkup(t) {
+  if (!/<[a-z!/][^>]*>/i.test(t)) return t;
+  return t
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]{0,400}>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+    .replace(/[ \t]+/g, ' ');
+}
+
+// Nepali numerals appear on Nepali-language pages; the figure is the same
+const NP_DIGITS = { '\u0966': '0', '\u0967': '1', '\u0968': '2', '\u0969': '3', '\u096A': '4', '\u096B': '5', '\u096C': '6', '\u096D': '7', '\u096E': '8', '\u096F': '9' };
+
 function normalize(raw) {
-  return raw
+  return stripMarkup(raw)
+    .replace(/[\u0966-\u096F]/g, (d) => NP_DIGITS[d])
     .replace(/\\u091a\\u093e(?:\\u0901)?\\u0926\\u0940/g, 'silver')  // चाँदी escaped
     .replace(/चा[ँ]?दी/g, 'silver')
     .replace(/\\u092c\\u093f\\u0915\\u094d\\u0930\\u0940/g, 'sale')  // बिक्री escaped
@@ -189,10 +208,13 @@ const SOURCES = [
     name: 'FENEGOSIDA',
     kvKey: 'silver-endpoint-fenegosida',
     origins: ['https://www.fenegosida.org', 'https://fenegosida.org'],
+    // fenegosida.org is a PHP site, so the real pages matter more than /api/*
+    pages: ['/', '/index.php', '/rate-history.php', '/rate.php', '/todays-rate.php'],
     seeds: [
       '/api/v1/rate', '/api/v1/rates', '/api/v1/getcurrentrate', '/api/rate',
       '/api/rates', '/api/today-rate', '/api/todayrate', '/api/current-rate',
       '/api/daily-rate', '/api/gold-silver-rate', '/api/v1/todays-rate',
+      '/ajax/rate.php', '/getrate.php', '/rate.php', '/api/rate.php',
     ],
     subs: ['api', 'backend', 'admin', 'server', 'data'],
   },
@@ -272,7 +294,7 @@ async function scrapeSource(cfg, env, log) {
   }
   if (known) {
     try {
-      const quote = await tryUrl(known);
+      const quote = await tryUrl(known, /\.php$|\/$/.test(known));
       log.push(`${cfg.name} ok (cached endpoint)`);
       memEndpoint[cfg.name] = known;
       // persist it: a fresh worker should not have to rediscover the API
@@ -281,13 +303,18 @@ async function scrapeSource(cfg, env, log) {
     } catch (e) { log.push(`${cfg.name} cached endpoint failed: ${e.message}`); }
   }
 
-  // 2. the page itself, in case the rate is server-rendered
+  // 2. the pages themselves, in case the rate is server-rendered
   for (const origin of cfg.origins) {
-    try {
-      const quote = await tryUrl(origin + '/', true);
-      log.push(`${cfg.name} ok from page html`);
-      return { quote, endpoint: origin + '/' };
-    } catch (e) { log.push(`${cfg.name} html miss ${origin}: ${e.message}`); }
+    for (const page of cfg.pages || ['/']) {
+      const url = origin + page;
+      try {
+        const quote = await tryUrl(url, true);
+        log.push(`${cfg.name} ok from html ${url}`);
+        memEndpoint[cfg.name] = url;
+        if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(cfg.kvKey, url); } catch { /* ignore */ } }
+        return { quote, endpoint: url };
+      } catch (e) { log.push(`${cfg.name} html miss ${url}: ${e.message}`); }
+    }
   }
 
   // 3. hunt for the API the bundle talks to
