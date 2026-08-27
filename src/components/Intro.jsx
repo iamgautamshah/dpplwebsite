@@ -138,7 +138,7 @@ export default function Intro({ onEnter }) {
         <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
           Hello, <span className="text-gold">Investors.</span>
         </h1>
-        <p className="mt-5 max-w-xl px-6 text-steel tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
+        <p className="mt-5 max-w-xl px-6 text-silver/75 tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
           Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine silver is being weighed, sealed, and priced for today. Let us take you there.
         </p>
       </section>

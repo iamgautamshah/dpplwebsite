@@ -3,43 +3,43 @@ const UPDATED = '1 August 2026';
 function Shell({ title, updated, children }) {
   return (
     <main className="relative z-10 bg-graphite min-h-screen">
-      <nav className="sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line">
+      <nav className="sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10">
         <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
           <a href="/" className="flex items-center gap-3">
             <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
-            <span className="font-display text-xl tracking-[0.14em] text-text leading-none">
-              DP<span className="text-signal">PL</span>
-              <small className="block font-body text-[0.5rem] tracking-[0.3em] text-mute mt-1">NEW ROAD · KATHMANDU</small>
+            <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
+              DP<span className="text-gold">PL</span>
+              <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
             </span>
           </a>
-          <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">← Back to site</a>
+          <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-steel transition-colors hover:text-gold">← Back to site</a>
         </div>
       </nav>
 
       <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <article className="panel-surface max-w-4xl mx-auto p-5 sm:p-8 md:p-12">
-          <p className="flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase text-mute">
+        <article className="frame max-w-4xl mx-auto p-5 sm:p-8 md:p-12">
+          <p className="flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase text-steel">
             <span className="hallmark" aria-hidden="true" />
             <span>Legal</span>
-            <span className="flex-1 h-px bg-line" aria-hidden="true" />
+            <span className="flex-1 h-px bg-silver/15" aria-hidden="true" />
           </p>
-          <h1 className="font-display font-semibold text-text text-[clamp(1.9rem,4.6vw,2.9rem)]">{title}</h1>
-          <p className="mt-3 font-mono text-[0.68rem] tracking-[0.24em] uppercase text-signal">Last updated · {updated}</p>
+          <h1 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.6vw,2.9rem)]">{title}</h1>
+          <p className="mt-3 font-mono text-[0.68rem] tracking-[0.24em] uppercase text-gold/80">Last updated · {updated}</p>
           <div className="mt-8 space-y-8">{children}</div>
 
-          <div className="mt-12 pt-8 border-t border-line flex flex-wrap gap-3">
-            <a href="/" className="btn-ghost">← Back to DPPL</a>
-            <a href="mailto:dppl2080@gmail.com" className="btn-ghost">dppl2080@gmail.com</a>
+          <div className="mt-12 pt-8 border-t border-silver/10 flex flex-wrap gap-3">
+            <a href="/" className="btn-line">← Back to DPPL</a>
+            <a href="mailto:dppl2080@gmail.com" className="btn-line">dppl2080@gmail.com</a>
           </div>
         </article>
       </div>
 
       <footer className="bg-[#080C14] border-t border-silver/[0.07] px-5 md:px-16 py-8">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-mute tracking-wide">© 2026 DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
-          <p className="flex gap-5 text-xs text-mute tracking-wide">
-            <a href="/privacy" className="transition-colors hover:text-signal">Privacy Policy</a>
-            <a href="/terms" className="transition-colors hover:text-signal">Terms of Use</a>
+          <p className="text-xs text-steel tracking-wide">© 2026 DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
+          <p className="flex gap-5 text-xs text-steel tracking-wide">
+            <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
+            <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
           </p>
         </div>
       </footer>
@@ -50,8 +50,8 @@ function Shell({ title, updated, children }) {
 function Section({ heading, children }) {
   return (
     <section>
-      <h2 className="font-display font-semibold text-text text-[clamp(1.15rem,2.6vw,1.45rem)] mb-3">{heading}</h2>
-      <div className="space-y-3 text-[0.95rem] leading-relaxed text-body/85">{children}</div>
+      <h2 className="font-display text-silverhi text-[clamp(1.15rem,2.6vw,1.45rem)] mb-3">{heading}</h2>
+      <div className="space-y-3 text-[0.95rem] leading-relaxed text-silver/80">{children}</div>
     </section>
   );
 }
@@ -59,7 +59,7 @@ function Section({ heading, children }) {
 export function Privacy() {
   return (
     <Shell title="Privacy Policy" updated={UPDATED}>
-      <p className="text-[0.95rem] leading-relaxed text-body/85">
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
         This policy explains what information is collected when you visit dppl.com.np, why it is collected, and what
         choices you have. DPPL operates a silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
         an information and enquiry channel — it does not sell online, take payments, or hold accounts.
@@ -67,7 +67,7 @@ export function Privacy() {
 
       <Section heading="Information we collect">
         <p>
-          <b className="text-text font-medium">We do not ask you to create an account, and there is no checkout, payment form, or login on this site.</b>{' '}
+          <b className="text-silverhi font-medium">We do not ask you to create an account, and there is no checkout, payment form, or login on this site.</b>{' '}
           The website itself collects no name, address, or payment information from you.
         </p>
         <p>
@@ -102,9 +102,9 @@ export function Privacy() {
         <p>
           Google's use of advertising cookies enables it and its partners to serve ads to you based on your visit to this
           site and/or other sites on the Internet. You may opt out of personalised advertising by visiting{' '}
-          <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-signal border-b border-signal/50 hover:border-signal">Google Ads Settings</a>.
+          <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-gold border-b border-gold/40 hover:border-gold">Google Ads Settings</a>.
           You can also opt out of a third-party vendor's use of cookies for personalised advertising at{' '}
-          <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-signal border-b border-signal/50 hover:border-signal">aboutads.info</a>.
+          <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-gold border-b border-gold/40 hover:border-gold">aboutads.info</a>.
         </p>
         <p>
           Third-party ad servers or ad networks may use cookies, JavaScript, or web beacons in the advertisements shown
@@ -179,7 +179,7 @@ export function Privacy() {
 export function Terms() {
   return (
     <Shell title="Terms of Use" updated={UPDATED}>
-      <p className="text-[0.95rem] leading-relaxed text-body/85">
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
         These terms govern your use of dppl.com.np. By using the site, you accept them.
       </p>
 
@@ -198,7 +198,7 @@ export function Terms() {
           counter at the time of that transaction.
         </p>
         <p>
-          <b className="text-text font-medium">Bar and grain prices follow the published rate by weight and are exclusive of making charges</b>,
+          <b className="text-silverhi font-medium">Bar and grain prices follow the published rate by weight and are exclusive of making charges</b>,
           which are added at the counter and itemised on your invoice. Rates may change during the day and can be
           affected by market movement.
         </p>
@@ -263,25 +263,25 @@ export function Terms() {
 export function NotFound() {
   return (
     <Shell title="Page not found" updated={UPDATED}>
-      <p className="text-[0.95rem] leading-relaxed text-body/85">
+      <p className="text-[0.95rem] leading-relaxed text-silver/80">
         The page you were looking for is not here — it may have been moved, or the address may be slightly off.
         Everything on this site is reachable from the links below.
       </p>
 
       <Section heading="Where to go next">
         <ul className="space-y-3">
-          <li><a href="/home" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
-          <li><a href="/products" className="text-signal border-b border-signal/50 hover:border-signal">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
-          <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how silver is priced, verified and stored</li>
-          <li><a href="/contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
+          <li><a href="/home" className="text-gold border-b border-gold/40 hover:border-gold">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
+          <li><a href="/products" className="text-gold border-b border-gold/40 hover:border-gold">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
+          <li><a href="/articles" className="text-gold border-b border-gold/40 hover:border-gold">The DPPL Journal</a> — how silver is priced, verified and stored</li>
+          <li><a href="/contact" className="text-gold border-b border-gold/40 hover:border-gold">Contact and directions</a> — Sasa Complex, New Road</li>
         </ul>
       </Section>
 
       <Section heading="Still stuck?">
         <p>
-          Call the counter on <a href="tel:+97715915052" className="text-signal">01-5915052</a>, message us on
-          WhatsApp at <a href="tel:+9779805617932" className="text-signal">+977 980-561-7932</a>, or email
-          <a href="mailto:dppl2080@gmail.com" className="text-signal"> dppl2080@gmail.com</a>.
+          Call the counter on <a href="tel:+97715915052" className="text-gold">01-5915052</a>, message us on
+          WhatsApp at <a href="tel:+9779805617932" className="text-gold">+977 980-561-7932</a>, or email
+          <a href="mailto:dppl2080@gmail.com" className="text-gold"> dppl2080@gmail.com</a>.
         </p>
       </Section>
     </Shell>
