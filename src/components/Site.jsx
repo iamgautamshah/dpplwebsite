@@ -12,34 +12,13 @@ const PhoneIcon = () => (
 );
 
 const FAQS = [
-  {
-    q: 'Where can I buy the best silver in Kathmandu?',
-    a: 'DPPL trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.',
-  },
-  {
-    q: 'What is today\u2019s silver price in Nepal?',
-    a: 'The current silver rate for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.',
-  },
-  {
-    q: 'Is DPPL a silver importer or a retail dealer?',
-    a: 'Both sides of the trade run through the counter. DPPL supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.',
-  },
-  {
-    q: 'What does 999 fine silver mean?',
-    a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every DPPL bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.',
-  },
-  {
-    q: 'How much do making charges add to a silver bar?',
-    a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.',
-  },
-  {
-    q: 'Does DPPL buy silver back?',
-    a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.',
-  },
-  {
-    q: 'What are your opening hours and where exactly are you?',
-    a: 'DPPL is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 980-561-7932 on WhatsApp before visiting for large orders.',
-  },
+  { q: 'Where can I buy the best silver in Kathmandu?', a: 'DPPL trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
+  { q: 'What is today\u2019s silver price in Nepal?', a: 'The current silver rate for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
+  { q: 'Is DPPL a silver importer or a retail dealer?', a: 'Both sides of the trade run through the counter. DPPL supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
+  { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every DPPL bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
+  { q: 'How much do making charges add to a silver bar?', a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.' },
+  { q: 'Does DPPL buy silver back?', a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
+  { q: 'What are your opening hours and where exactly are you?', a: 'DPPL is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 980-561-7932 on WhatsApp before visiting for large orders.' },
 ];
 
 const SOCIALS = [
@@ -71,10 +50,10 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: '100 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
-  { name: '500 g Silver Bar', img: '/images/bar.webp', alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
-  { name: '1 kg Silver Bar', img: '/images/bar.webp', alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
-  { name: 'Silver Grains', img: '/images/grains.webp', alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
+  { name: '100 g Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
+  { name: '500 g Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
+  { name: '1 kg Silver Bar', img: '/images/bar.webp', w: 430, h: 796, alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
+  { name: 'Silver Grains', img: '/images/grains.webp', w: 430, h: 573, alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
 ];
 
 
@@ -107,34 +86,35 @@ function Nav() {
   openRef.current = open;
 
   useEffect(() => {
-    const onScroll = () => {
+    // batched into one frame, and driven by transform so no layout is forced
+    let ticking = false;
+    const frame = () => {
+      ticking = false;
       const y = scrollY;
       const max = document.documentElement.scrollHeight - innerHeight;
-      if (bar.current) bar.current.style.width = `${max > 0 ? (y / max) * 100 : 0}%`;
+      if (bar.current) bar.current.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
       if (openRef.current) setOpen(false);                    // scrolling dismisses the menu
       if (y > lastY.current + 6 && y > 90) setHidden(true);   // scrolling down → tuck away
       else if (y < lastY.current - 4 || y < 90) setHidden(false); // scrolling up → return
       lastY.current = y;
     };
-    onScroll();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(frame);
+    };
+    frame();
     addEventListener('scroll', onScroll, { passive: true });
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
     addEventListener('keydown', onKey);
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  // 'page' items navigate; 'scroll' items jump to a section of the home page
-  const links = [
-    ['home', 'HOME', 'scroll'],
-    ['products', 'PRODUCTS', 'scroll'],
-    ['articles', 'JOURNAL', 'page'],
-    ['about', 'ABOUT US', 'scroll'],
-    ['contact', 'CONTACT', 'scroll'],
-  ];
+  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
 
   return (
-    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-xl border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
-      <div ref={bar} className="absolute top-0 left-0 h-[2px] bg-gold" aria-hidden="true" />
+    <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
+      <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
         <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
           <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
@@ -144,17 +124,12 @@ function Nav() {
           </span>
         </a>
         <ul className="hidden md:flex gap-8 items-center">
-          {links.map(([href, label, kind]) => (
+          {links.map(([href, label]) => (
             <li key={href}>
-              <a
-                href={`/${href}`}
-                onClick={kind === 'page' ? undefined : (e) => scrollToSection(e, href)}
-                className="block py-1 font-mono text-[0.68rem] tracking-[0.2em] text-steel transition-colors hover:text-gold"
-              >
-                {label}
-              </a>
+              <a href={`/${href}`} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
             </li>
           ))}
+          <li><a href="/articles" className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">JOURNAL</a></li>
         </ul>
         <button
           className="md:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
@@ -172,27 +147,25 @@ function Nav() {
 
             <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
-          {links.map(([href, label, kind]) => (
+          {links.map(([href, label]) => (
             <li key={href}>
               <a
                 href={`/${href}`}
-                onClick={kind === 'page' ? () => setOpen(false) : (e) => { setOpen(false); scrollToSection(e, href); }}
-                className="block px-6 py-4 text-center font-mono text-[0.76rem] tracking-[0.22em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
+                onClick={(e) => { setOpen(false); scrollToSection(e, href); }}
+                className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
                 {label}
               </a>
             </li>
           ))}
+          <li><a href="/articles" onClick={() => setOpen(false)} className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]">JOURNAL</a></li>
         </ul>
       </div>
     </nav>
   );
 }
 
-// Ad units go in once AdSense approves the site and issues a slot ID. Rendering
-// a placeholder slot only produces failed ad requests in the console.
 const AD_SLOT = '';
-
 function AdSlot() {
   useEffect(() => {
     if (!AD_SLOT) return;
@@ -233,7 +206,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1400px' }} id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The collection</Ledger>
@@ -247,7 +220,7 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" width="700" height="933" className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
@@ -262,7 +235,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }} id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
@@ -286,9 +259,9 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '800px' }} id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" width="512" height="512" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
@@ -310,7 +283,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>Common questions</Ledger>
@@ -331,7 +304,7 @@ export default function Site() {
         </div>
       </section>
 
-      <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+      <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>
@@ -372,7 +345,7 @@ export default function Site() {
       <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="flex items-center gap-3.5">
-          <img src="/images/logo.webp" alt="DPPL seal" width="40" height="40" className="w-10 h-10 rounded-full" />
+          <img src="/images/logo.webp" alt="DPPL seal" className="w-10 h-10 rounded-full" />
           <p className="text-xs text-steel leading-relaxed tracking-wide">
             <span className="font-display text-silver tracking-[0.14em] text-sm">DPPL</span><br />Est. 2080 B.S.
           </p>

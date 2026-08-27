@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { formatAD, formatBS, toNepaliDigits } from '../lib/nepaliDate.js';
+import { getSilver } from '../lib/ui.jsx';
 
 const fmtNum = (n) =>
   Number.isInteger(n)
@@ -11,49 +12,72 @@ const I18N = {
     head: "Today's Silver Price",
     thSale: 'SALE', thBuy: 'PURCHASE',
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
-    updated: 'Updated', live: 'LIVE',
+    updated: 'Rate set', checked: 'checked', live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',
+    fetching: 'Fetching today\u2019s rate\u2026',
+    unavailable: 'Rate unavailable right now \u2014 please call the counter on 01-5915052 for today\u2019s price.',
     cur: (n) => 'Rs ' + fmtNum(n),
   },
   np: {
     head: 'आजको चाँदीको मूल्य',
     thSale: 'बिक्री', thBuy: 'खरिद',
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
-    updated: 'अद्यावधिक', live: 'लाइभ',
+    updated: 'दर तय', checked: 'जाँच', live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
+    fetching: 'आजको दर ल्याउँदै\u2026',
+    unavailable: 'अहिले दर उपलब्ध छैन \u2014 आजको मूल्यको लागि ०१-५९१५०५२ मा फोन गर्नुहोस्।',
     cur: (n) => 'रु ' + toNepaliDigits(fmtNum(n)),
   },
 };
 
 // shown until /api/silver responds
-const FALLBACK = { tolaSale: 4360, tolaPurchase: 4300, g10Sale: 3738, g10Purchase: 3686.5 };
-
 export default function PriceCard() {
   const [lang, setLang] = useState('en');
-  const [prices, setPrices] = useState(FALLBACK);
+  const [prices, setPrices] = useState(null);
   const [live, setLive] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [now, setNow] = useState(new Date());
   const t = I18N[lang];
   const np = lang === 'np';
 
   useEffect(() => {
     let alive = true;
-    async function load() {
-      try {
-        const res = await fetch('/api/silver', { cache: 'no-store' });
-        if (!res.ok) throw 0;
-        const d = await res.json();
-        if (alive) { setPrices(d); setLive(true); setNow(new Date()); }
-      } catch {}
-    }
-    load();
-    const id = setInterval(load, 30 * 60 * 1000);
-    const vis = () => document.visibilityState === 'visible' && load();
+    let retries = [];
+    // shared with the ticker, so the page makes one request, not two
+    const load = (refresh, attempt = 0) =>
+      getSilver(refresh)
+        .then((d) => {
+          if (!alive) return;
+          setPrices(d);
+          setLive(true);
+          setFailed(false);
+          setNow(new Date());
+        })
+        .catch(() => {
+          if (!alive) return;
+          if (attempt < 3) {
+            // 1s, 3s, 7s — covers a slow cold start or a dropped connection
+            const wait = [1000, 3000, 7000][attempt];
+            retries.push(setTimeout(() => load(true, attempt + 1), wait));
+          } else {
+            setFailed(true);
+          }
+        });
+    load(false);
+    const id = setInterval(() => load(true), 30 * 60 * 1000);
+    const vis = () => document.visibilityState === 'visible' && load(true);
     document.addEventListener('visibilitychange', vis);
-    return () => { alive = false; clearInterval(id); document.removeEventListener('visibilitychange', vis); };
+    return () => {
+      alive = false;
+      clearInterval(id);
+      retries.forEach(clearTimeout);
+      document.removeEventListener('visibilitychange', vis);
+    };
   }, []);
 
-  const updated = prices?.fetchedAt
-    ? new Date(prices.fetchedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kathmandu' })
-    : null;
+  const npt = (d) => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kathmandu' });
+  // when the market rate itself was set — fixed each morning, so it does not move
+  const rateAt = prices?.fetchedAt ? npt(new Date(prices.fetchedAt)) : null;
+  // when this browser last confirmed it — this is what moves through the day
+  const checkedAt = live ? npt(now) : null;
 
   const Tab = ({ id, label, ne }) => (
     <button
@@ -71,27 +95,29 @@ export default function PriceCard() {
     </button>
   );
 
-  const COLS = 'grid grid-cols-[1fr_1.15fr_1.15fr] items-center gap-2 sm:gap-3';
+  const COLS = 'grid grid-cols-[0.72fr_1.24fr_1.24fr] items-center gap-2 sm:gap-3';
 
   const Pill = ({ v, buy }) => (
     <span
-      className={`block w-full text-center rounded-xl border px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
-        text-[clamp(1.1rem,3.4vw,1.5rem)] transition-colors duration-500
-        ${buy
-          ? 'bg-[#9FD8B4]/[0.08] border-[#9FD8B4]/40 text-[#9FD8B4]'
-          : 'bg-gold/[0.12] border-gold/50 text-gold shadow-[inset_0_0_18px_rgba(216,179,106,0.08)]'}
+      className={`block w-full text-center rounded-xl border px-1 sm:px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
+        text-[clamp(0.74rem,3.5vw,1.5rem)] transition-colors duration-500
+        ${!Number.isFinite(v)
+          ? 'bg-silver/[0.04] border-silver/15 text-steel'
+          : buy
+            ? 'bg-[#9FD8B4]/[0.08] border-[#9FD8B4]/40 text-[#9FD8B4]'
+            : 'bg-gold/[0.12] border-gold/50 text-gold shadow-[inset_0_0_18px_rgba(216,179,106,0.08)]'}
         ${np ? 'font-np' : ''}`}
     >
-      {t.cur(v)}
+      <span className="whitespace-nowrap">{Number.isFinite(v) ? t.cur(v) : <span className="opacity-40">—</span>}</span>
     </span>
   );
 
   return (
     <div className="relative">
-            <div className="absolute -inset-4 rounded-[2rem] bg-gold/10 blur-3xl pointer-events-none" aria-hidden="true" />
+            <div className="absolute -inset-2 rounded-[2rem] bg-gold/[0.07] blur-2xl pointer-events-none" aria-hidden="true" />
 
       <div className="plate relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
-        <div className="plate-in relative p-4 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
+        <div className="plate-in relative p-3 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
           <span className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.62rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
 
                     <div className="flex items-start justify-between gap-3 mb-4">
@@ -99,9 +125,9 @@ export default function PriceCard() {
               <h2 className={`font-display text-silverhi tracking-wide text-[clamp(1.25rem,3vw,1.6rem)] ${np ? 'font-np' : ''}`}>{t.head}</h2>
             </div>
             <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[0.6rem] tracking-[0.24em] font-mono
-              ${live ? 'border-[#3DDC84]/50 text-[#3DDC84]' : 'border-steel/40 text-steel'}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-[#3DDC84] shadow-[0_0_8px_#3DDC84] animate-pulse' : 'bg-steel'}`} />
-              {t.live}
+              ${live ? 'border-[#3DDC84]/50 text-[#3DDC84]' : failed ? 'border-[#E0A0A0]/50 text-[#E0A0A0]' : 'border-steel/40 text-steel'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${live ? 'bg-[#3DDC84] shadow-[0_0_8px_#3DDC84]' : failed ? 'bg-[#E0A0A0]' : 'bg-steel animate-pulse'}`} />
+              {live ? t.live : failed ? t.offline : t.checking}
             </span>
           </div>
 
@@ -117,21 +143,25 @@ export default function PriceCard() {
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-[#9FD8B4] font-medium">{t.thBuy}</span>
             </div>
             <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(1rem,2.6vw,1.15rem)] tracking-wide">{t.rowTola}</span>
-              <Pill v={prices.tolaSale} />
-              <Pill v={prices.tolaPurchase} buy />
+              <span className="text-silverhi text-[clamp(0.82rem,2.4vw,1.15rem)] tracking-wide">{t.rowTola}</span>
+              <Pill v={prices?.tolaSale} />
+              <Pill v={prices?.tolaPurchase} buy />
             </div>
             <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(1rem,2.6vw,1.15rem)] tracking-wide">{t.rowG10}</span>
-              <Pill v={prices.g10Sale} />
-              <Pill v={prices.g10Purchase} buy />
+              <span className="text-silverhi text-[clamp(0.82rem,2.4vw,1.15rem)] tracking-wide">{t.rowG10}</span>
+              <Pill v={prices?.g10Sale} />
+              <Pill v={prices?.g10Purchase} buy />
             </div>
           </div>
-          {updated && (
-            <p className={`mt-4 font-mono text-[0.66rem] tracking-[0.18em] uppercase text-steel ${np ? 'font-np tracking-normal' : ''}`}>
-              {t.updated}: {np ? toNepaliDigits(updated) : updated} NPT{prices.source ? ` · ${prices.source}` : ''}
-            </p>
-          )}
+          <p className={`mt-4 font-mono text-[0.66rem] tracking-[0.18em] uppercase ${failed ? 'text-[#E0A0A0] tracking-normal' : 'text-steel'} ${np ? 'font-np tracking-normal' : ''}`} aria-live="polite">
+            {failed
+              ? t.unavailable
+              : !prices
+                ? t.fetching
+                : rateAt
+                  ? `${t.updated} ${np ? toNepaliDigits(rateAt) : rateAt} NPT${prices?.source ? ` · ${prices.source}` : ''}${checkedAt ? ` · ${t.checked} ${np ? toNepaliDigits(checkedAt) : checkedAt}` : ''}`
+                  : ''}
+          </p>
         </div>
       </div>
     </div>

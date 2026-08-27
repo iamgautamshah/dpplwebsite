@@ -29,17 +29,39 @@
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" /></noscript>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6267575917692101" crossorigin="anonymous"></script>
+    <script>
+      // load AdSense once the page is idle; the google-adsense-account meta tag
+      // and ads.txt are what verification actually reads
+      addEventListener('load', function () {
+        var go = function () {
+          var s = document.createElement('script');
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6267575917692101';
+          document.head.appendChild(s);
+        };
+        'requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 3000 }) : setTimeout(go, 1800);
+      });
+    </script>
     <script type="application/ld+json">
       {"@context": "https://schema.org", "@type": "JewelryStore", "@id": "https://dppl.com.np/#business", "name": "DPPL", "url": "https://dppl.com.np/", "logo": "https://dppl.com.np/images/logo.webp", "image": ["https://dppl.com.np/images/logo.webp", "https://dppl.com.np/images/bar.webp", "https://dppl.com.np/images/grains.webp"], "description": "Silver bullion dealer, importer and supplier on New Road, Kathmandu — widely regarded as one of the best places to buy silver in Kathmandu. DPPL publishes the daily silver sale and purchase rate for Nepal and supplies 999 fine silver bars (100g, 500g, 1kg) and loose silver grains, weighed on calibrated scales and sold with a full VAT invoice. Making charges apply on bars.", "email": "dppl2080@gmail.com", "telephone": ["+97715915052", "+9779805617932"], "address": {"@type": "PostalAddress", "streetAddress": "5th Floor, Sasa Complex, New Road", "addressLocality": "Kathmandu", "postalCode": "44600", "addressRegion": "Bagmati", "addressCountry": "NP"}, "geo": {"@type": "GeoCoordinates", "latitude": 27.7032447, "longitude": 85.3111961}, "hasMap": "https://maps.app.goo.gl/vi1fuUN78UcsuRTA7", "sameAs": ["https://maps.app.goo.gl/vi1fuUN78UcsuRTA7", "https://www.facebook.com/dppl2080", "https://www.instagram.com/dppl2080", "https://www.tiktok.com/@dppl2080"], "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "10:30", "closes": "18:00"}], "currenciesAccepted": "NPR", "priceRange": "₨₨", "areaServed": {"@type": "City", "name": "Kathmandu"}, "knowsAbout": ["Fine silver 999", "Silver bars", "Silver grains", "Daily silver rate in Nepal"], "foundingDate": "2023"}
     </script>
       <style>
       html.intro-pending::before {
         content: ''; position: fixed; inset: 0; z-index: 40; pointer-events: none;
-        background: radial-gradient(1200px 700px at 50% 118%, rgba(216,179,106,0.16), transparent 60%),
-                    linear-gradient(180deg, #04060D 0%, #0A1322 70%, #0E1626 100%);
+        background: radial-gradient(1100px 640px at 50% 116%, rgba(77,163,255,0.12), transparent 62%),
+                    linear-gradient(180deg, #05070B 0%, #070A0F 60%, #0B111A 100%);
       }
     </style>
+    <script>
+      // start fetching today's rate immediately, before React exists, so the
+      // price is already in hand when the intro finishes
+      try {
+        window.__silver = fetch('/api/silver', { cache: 'no-store' })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .catch(function () { return null; });
+      } catch (e) {}
+    </script>
     <script>
       // decide before first paint whether the intro will run, so the page is
       // never shown and then covered

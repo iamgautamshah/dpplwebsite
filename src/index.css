@@ -151,3 +151,18 @@ section[id] { scroll-margin-top: 4.75rem; }
   .frame, .frame-light { border-radius: 1.15rem; }
   body::after { opacity: 0.02; }
 }
+
+
+/* aliases so the journal, legal and 404 views render on the gold system */
+@layer components {
+  .panel-surface { @apply bg-panel border border-silver/10 rounded-2xl; }
+  .mono-label { @apply font-mono text-[0.64rem] tracking-[0.24em] uppercase text-steel; }
+  .btn-primary { @apply btn-gold; }
+  .btn-ghost { @apply btn-line; }
+  .btn-out { @apply btn-line; }
+  .btn-solid { @apply btn-gold; }
+  .stamp { @apply mono-label; }
+  .kbd { @apply font-mono text-[0.62rem] px-1.5 py-0.5 rounded border border-silver/20 bg-silver/5 text-steel; }
+}
+.faceplate { position: relative; }
+.title { @apply font-display uppercase text-silverhi; }
