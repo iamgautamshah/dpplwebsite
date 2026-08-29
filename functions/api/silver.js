@@ -61,9 +61,22 @@ function stripMarkup(t) {
 // Nepali numerals appear on Nepali-language pages; the figure is the same
 const NP_DIGITS = { '\u0966': '0', '\u0967': '1', '\u0968': '2', '\u0969': '3', '\u096A': '4', '\u096B': '5', '\u096C': '6', '\u096D': '7', '\u096E': '8', '\u096F': '9' };
 
+const MONTHS = 'jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec';
+
+/* A Bikram Sambat year (2083) sits right inside the plausible tola range, so
+   dates have to be removed before any figure is read off the page. */
+function stripDates(t) {
+  return t
+    .replace(/\b(?:19|20)\d{2}\s*[-/.]\s*\d{1,2}\s*[-/.]\s*\d{1,2}\b/g, ' ')   // 2026-08-29, 2083-05-11
+    .replace(/\b\d{1,2}\s*[-/.]\s*\d{1,2}\s*[-/.]\s*(?:19|20)\d{2}\b/g, ' ')   // 29-08-2026
+    .replace(new RegExp(`\\b\\d{1,2}\\s+(?:${MONTHS})[a-z]*,?\\s*(?:19|20|2[01])\\d{2}\\b`, 'gi'), ' ')
+    .replace(new RegExp(`\\b(?:${MONTHS})[a-z]*\\s+\\d{1,2},?\\s*(?:19|20)\\d{2}\\b`, 'gi'), ' ')
+    .replace(/\b(?:20[5-9]\d|21\d\d)\s*[-/]\s*\d{1,2}\b/g, ' ');                // 2083-05
+}
+
 function normalize(raw) {
-  return stripMarkup(raw)
-    .replace(/[\u0966-\u096F]/g, (d) => NP_DIGITS[d])
+  return stripDates(stripMarkup(raw)
+    .replace(/[\u0966-\u096F]/g, (d) => NP_DIGITS[d]))
     .replace(/\\u091a\\u093e(?:\\u0901)?\\u0926\\u0940/g, 'silver')  // चाँदी escaped
     .replace(/चा[ँ]?दी/g, 'silver')
     .replace(/\\u092c\\u093f\\u0915\\u094d\\u0930\\u0940/g, 'sale')  // बिक्री escaped
@@ -73,7 +86,11 @@ function normalize(raw) {
     .replace(/&nbsp;|&#160;|\u00A0/g, ' ');
 }
 
+const YEAR_LIKE = (v) => Number.isInteger(v) && ((v >= 1990 && v <= 2100) || (v >= 2050 && v <= 2110));
+
 function plausible(unit, v) {
+  // 2026 (AD) and 2083 (BS) both land inside the tola range; neither is a price
+  if ((unit === 'tola' || unit === 'g10') && YEAR_LIKE(v)) return false;
   if (unit === 'tola') return v >= 800 && v <= 50000;
   if (unit === 'g10') return v >= 600 && v <= 45000;
   if (unit === 'gram') return v >= 60 && v <= 4500;
@@ -230,7 +247,7 @@ const SOURCES = [
     kvKey: 'silver-endpoint-kagosida-alt',
     origins: ['https://kagosida.autonomoustechnology.net'],
     pages: ['/'],
-    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory', '/api/rate', '/api/v1/rate', '/api/current-rate'],
+    seeds: ['/api/v1/getcurrentrate', '/api/v1/rate', '/api/rate', '/api/v1/rates', '/api/current-rate', '/api/v1/getratehistory'],
     subs: ['api', 'backend', 'server'],
   },
   /* FENEGOSIDA sets Nepal's official rate but serves it through a React app
@@ -318,13 +335,24 @@ async function discoverEndpoints(cfg, log) {
   }
 
   const paths = rateFirst([...apiPaths]);
+  // a host with "api" in its name is the likeliest backend — ask it first
+  const ordered = [...bases].sort((a, b) => (/api/i.test(b) ? 1 : 0) - (/api/i.test(a) ? 1 : 0));
   const candidates = [];
-  for (const base of bases) {
+  for (const base of ordered) {
     for (const p of paths.slice(0, 8)) {
       let basePath = '';
       try { basePath = new URL(base).pathname; } catch { /* ignore */ }
-      const trimmed = basePath.includes('/api') ? p.replace(/^\/api(?:\/v\d+)?/, '') || '/' : p;
-      candidates.push(base.replace(/\/$/, '') + trimmed);
+      const stem = base.replace(/\/$/, '');
+      if (basePath.includes('/api')) {
+        candidates.push(stem + (p.replace(/^\/api/, '') || '/'));
+      } else {
+        candidates.push(stem + p);
+        // an api.* host often serves the same route without the /api prefix
+        if (/api/i.test(new URL(base).hostname)) {
+          const bare = p.replace(/^\/api/, '');
+          if (bare && bare !== p) candidates.push(stem + bare);
+        }
+      }
     }
   }
   return rateFirst([...new Set(candidates)]).slice(0, 28);
@@ -372,7 +400,7 @@ async function scrapeSource(cfg, env, log) {
   if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
 
   // 3. hunt for the API the bundle talks to
-  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 10);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 13);
   for (const url of candidates) {
     try {
       const quote = await tryUrl(url);
@@ -396,17 +424,20 @@ function sane(ref) {
    rate is almost certainly a mis-read of some other number on the page, so it
    is only published if a second, independent source reports the same thing. */
 const MAX_DAILY_MOVE = 0.18;
+// silver does not halve or double in a day; beyond this a reading is refused
+// outright, however many sources repeat it
+const IMPOSSIBLE_MOVE = 0.4;
 const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
 
 /** Ask the sources in order and publish only a figure we can stand behind. */
 async function scrape(env, log, prev) {
-  budget = 36;   // comfortably under Cloudflare's per-invocation cap
+  budget = 44;   // comfortably under Cloudflare's per-invocation cap
   floor = 0;
   const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
-    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 11));
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 14));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
@@ -424,6 +455,11 @@ async function scrape(env, log, prev) {
 
       // otherwise look for a second source saying the same thing, which is how
       // a genuine large move gets through
+      if (prev && !near(tola, prev, IMPOSSIBLE_MOVE)) {
+        log.push(`${cfg.name} (${cfg.via}) says ${tola} — impossible against ${prev}; discarded`);
+        continue;
+      }
+
       const agrees = seen.find((o) => near(o.quote.sale.tola, tola, 0.03));
       if (agrees) {
         // keep the higher-priority source's reading — it was asked first for a
