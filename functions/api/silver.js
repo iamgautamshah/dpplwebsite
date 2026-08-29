@@ -392,23 +392,61 @@ function sane(ref) {
   return ref.tola > 0 && ref.g10 > 0 && r > 1.1 && r < 1.25;
 }
 
-/** Try each federation in turn; the first that returns sensible figures wins. */
-async function scrape(env, log) {
+/* Silver does not move 50% overnight. A figure that far from the last known
+   rate is almost certainly a mis-read of some other number on the page, so it
+   is only published if a second, independent source reports the same thing. */
+const MAX_DAILY_MOVE = 0.18;
+const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
+
+/** Ask the sources in order and publish only a figure we can stand behind. */
+async function scrape(env, log, prev) {
   budget = 36;   // comfortably under Cloudflare's per-invocation cap
   floor = 0;
+  const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
     floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 11));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
-      if (sane(quote.sale) && (!quote.purchase || sane(quote.purchase))) {
-        return { quote, source: cfg.name, via: cfg.via || null };
+      if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
+        log.push(`${cfg.name} (${cfg.via}) values failed sanity check`);
+        continue;
       }
-      log.push(`${cfg.name} values failed sanity check`);
+      const hit = { quote, source: cfg.name, via: cfg.via || null };
+      const tola = quote.sale.tola;
+
+      // in line with the last known rate — publish it
+      if (prev && near(tola, prev, MAX_DAILY_MOVE)) {
+        floor = 0;
+        return hit;
+      }
+
+      // otherwise look for a second source saying the same thing, which is how
+      // a genuine large move gets through
+      const agrees = seen.find((o) => near(o.quote.sale.tola, tola, 0.03));
+      if (agrees) {
+        // keep the higher-priority source's reading — it was asked first for a
+        // reason, and it is the one more likely to carry a purchase rate too
+        log.push(`corroborated: ${agrees.via} and ${cfg.via} agree on ${tola}`);
+        floor = 0;
+        return agrees;
+      }
+
+      log.push(`${cfg.name} (${cfg.via}) says ${tola}${prev ? ` — ${Math.round(Math.abs(tola - prev) / prev * 100)}% from last known ${prev}` : ''}; seeking a second opinion`);
+      seen.push(hit);
     } catch (e) { log.push(`${cfg.name} (${cfg.via}): ${e.message}`); }
   }
   floor = 0;
+
+  // nothing to compare against yet: take what we have rather than show nothing
+  if (!prev && seen.length) {
+    log.push('no previous rate to check against; publishing the single reading');
+    return seen[0];
+  }
+  if (seen.length) {
+    throw new Error(`readings (${seen.map((o) => o.quote.sale.tola).join(', ')}) disagree with the last known rate ${prev} and each other`);
+  }
   throw new Error('all sources failed');
 }
 
@@ -507,7 +545,7 @@ export async function onRequestGet(context) {
 
   if (shouldScrape(cached, day, minutes)) {
     try {
-      const { quote, source, via } = await scrape(env, log);
+      const { quote, source, via } = await scrape(env, log, cached?.tolaSale ?? null);
       const changed = !cached || cached.tolaSale !== r2(quote.sale.tola);
       const updatedToday = changed || (!!cached?.updatedToday && cached.dateAD === day);
       const prevRatio = cached ? cached.tolaPurchase / cached.tolaSale : null;
