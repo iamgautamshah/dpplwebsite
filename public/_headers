@@ -1,5 +1,5 @@
 /images/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=86400, must-revalidate
 
 /ads.txt
   Cache-Control: public, max-age=86400

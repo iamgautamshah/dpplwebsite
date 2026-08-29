@@ -210,13 +210,15 @@ function extractQuote(raw) {
   return { sale: fromUnits(u), purchase: null };
 }
 
+function isYear(v) { return Number.isInteger(v) && v >= 1900 && v <= 2110; }
+
 function collectNums(region) {
   const out = [];
   for (const m of region.matchAll(new RegExp(NUM_RE, 'g'))) {
     const v = num(m[1]);
     if (v >= 60 && v <= 4500000 && !out.includes(v)) out.push(v);
   }
-  return out;
+  return (out).filter((v) => !isYear(v));
 }
 
 /* ============================ sources ============================= */
@@ -414,10 +416,17 @@ async function scrapeSource(cfg, env, log) {
 }
 
 /* ========================= combined scrape ======================== */
+/* Absolute floor and ceiling for silver per tola in Nepal. Dates, percentages
+   and stray page numbers all fall outside this; adjust if the market ever
+   genuinely moves beyond it. */
+const TOLA_MIN = 2500;
+const TOLA_MAX = 25000;
+
 function sane(ref) {
   if (!ref) return false;
   const r = ref.tola / ref.g10;
-  return ref.tola > 0 && ref.g10 > 0 && r > 1.1 && r < 1.25;
+  if (!(ref.tola > 0 && ref.g10 > 0 && r > 1.1 && r < 1.25)) return false;
+  return ref.tola >= TOLA_MIN && ref.tola <= TOLA_MAX;
 }
 
 /* Silver does not move 50% overnight. A figure that far from the last known
@@ -455,9 +464,11 @@ async function scrape(env, log, prev) {
 
       // otherwise look for a second source saying the same thing, which is how
       // a genuine large move gets through
+      // A reading wildly off the stored rate is suspect — but the stored rate
+      // may itself be the wrong one, so it is held for corroboration rather
+      // than thrown away outright.
       if (prev && !near(tola, prev, IMPOSSIBLE_MOVE)) {
-        log.push(`${cfg.name} (${cfg.via}) says ${tola} — impossible against ${prev}; discarded`);
-        continue;
+        log.push(`${cfg.name} (${cfg.via}) says ${tola} vs stored ${prev}; needs a second source`);
       }
 
       const agrees = seen.find((o) => near(o.quote.sale.tola, tola, 0.03));
@@ -539,7 +550,13 @@ async function writeCache(env, data) {
   if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(KV_KEY, JSON.stringify(data)); } catch { /* ignore */ } }
 }
 
-function shouldScrape(cached, day, minutes) {
+// Re-check every few minutes rather than trusting one reading for the whole
+// day. The rate itself rarely moves, but a bad reading now corrects itself
+// instead of sitting on the page until tomorrow.
+const REFRESH_MS = 5 * 60 * 1000;
+
+function shouldScrape(cached, day, minutes, force) {
+  if (force) return true;
   if (!cached) return Date.now() - lastFailAt > FAIL_RETRY_MS;
   // a cache from an earlier day is not today's price, so keep trying for a
   // fresh one — but not on literally every request while a source is down
@@ -549,7 +566,7 @@ function shouldScrape(cached, day, minutes) {
   if (cached.fetchedMinutes < PUBLISH_MINUTES) return true;
   if (!cached.updatedToday && minutes <= RETRY_WINDOW_END &&
       Date.now() - (cached.lastAttempt || 0) > RETRY_GAP_MS) return true;
-  return false;
+  return Date.now() - (cached.lastAttempt || 0) > REFRESH_MS;
 }
 
 function json(body, status = 200) {
@@ -565,7 +582,9 @@ function json(body, status = 200) {
 
 export async function onRequestGet(context) {
   const { request, env } = context;
-  const debug = new URL(request.url).searchParams.has('debug');
+  const url = new URL(request.url);
+  const debug = url.searchParams.has('debug');
+  const force = url.searchParams.has('refresh');
 
   // Edge cache: under load, most requests are answered straight from the
   // Cloudflare data center without touching KV or this function's logic.
@@ -579,7 +598,7 @@ export async function onRequestGet(context) {
   let cached = await readCache(env);
   const log = [];
 
-  if (shouldScrape(cached, day, minutes)) {
+  if (shouldScrape(cached, day, minutes, force)) {
     try {
       const { quote, source, via } = await scrape(env, log, cached?.tolaSale ?? null);
       const changed = !cached || cached.tolaSale !== r2(quote.sale.tola);
