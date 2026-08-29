@@ -21,8 +21,18 @@ const UA_HEADERS = {
   'Accept-Language': 'en-US,en;q=0.9,ne;q=0.8',
 };
 
+// Cloudflare caps subrequests per invocation; discovery used to blow through
+// it and starve the later sources. Every outbound call is now counted.
+let budget = 0;
+let floor = 0;      // no single source may spend past this
+const spend = () => {
+  if (budget <= 0 || budget <= floor) throw new Error('subrequest budget spent');
+  budget -= 1;
+};
+
 async function getText(url) {
-  const res = await fetch(url, { headers: UA_HEADERS, redirect: 'follow', signal: AbortSignal.timeout(20000) });
+  spend();
+  const res = await fetch(url, { headers: UA_HEADERS, redirect: 'follow', signal: AbortSignal.timeout(12000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
@@ -204,26 +214,56 @@ const ASSET_RE = /\.(png|jpe?g|svg|gif|webp|css|map|woff2?|ttf|eot|ico|mp4|pdf)(
 const SPA_ECHO_RE = /^\s*<!doctype html|^\s*<html/i;
 
 const SOURCES = [
+  /* KAGOSIDA publishes a sale and a purchase rate, which is what this counter
+     actually quotes, so it is asked first: its own domain, then the host the
+     association now runs on. */
   {
-    name: 'FENEGOSIDA',
-    kvKey: 'silver-endpoint-fenegosida',
-    origins: ['https://www.fenegosida.org', 'https://fenegosida.org'],
-    // fenegosida.org is a PHP site, so the real pages matter more than /api/*
-    pages: ['/', '/index.php', '/rate-history.php', '/rate.php', '/todays-rate.php'],
-    seeds: [
-      '/api/v1/rate', '/api/v1/rates', '/api/v1/getcurrentrate', '/api/rate',
-      '/api/rates', '/api/today-rate', '/api/todayrate', '/api/current-rate',
-      '/api/daily-rate', '/api/gold-silver-rate', '/api/v1/todays-rate',
-      '/ajax/rate.php', '/getrate.php', '/rate.php', '/api/rate.php',
-    ],
-    subs: ['api', 'backend', 'admin', 'server', 'data'],
-  },
-  {
-    name: 'KAGOSIDA',
+    name: 'KAGOSIDA', via: 'kagosida.org.np',
     kvKey: 'silver-endpoint',
     origins: ['https://kagosida.org.np'],
-    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory'],
-    subs: ['api', 'backend', 'admin', 'server'],
+    pages: ['/'],
+    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory', '/api/rate'],
+    subs: ['api', 'backend'],
+  },
+  {
+    name: 'KAGOSIDA', via: 'kagosida.autonomoustechnology.net',
+    kvKey: 'silver-endpoint-kagosida-alt',
+    origins: ['https://kagosida.autonomoustechnology.net'],
+    pages: ['/'],
+    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory', '/api/rate', '/api/v1/rate', '/api/current-rate'],
+    subs: ['api', 'backend', 'server'],
+  },
+  /* FENEGOSIDA sets Nepal's official rate but serves it through a React app
+     whose API answers 401 without a key, so it is read from sites that
+     republish it as plain HTML. One cheap request each; `via` records the route. */
+  {
+    name: 'FENEGOSIDA', via: 'arthakendra.com',
+    kvKey: 'silver-endpoint-arthakendra',
+    origins: ['https://arthakendra.com'],
+    pages: ['/gold-silver-price-in-nepal'],
+    htmlOnly: true,
+  },
+  {
+    name: 'FENEGOSIDA', via: 'nepaliconsultancy.com',
+    kvKey: 'silver-endpoint-nc',
+    origins: ['https://www.nepaliconsultancy.com'],
+    pages: ['/forex/gold-silver-price'],
+    htmlOnly: true,
+  },
+  {
+    name: 'FENEGOSIDA', via: 'hamropatro.com',
+    kvKey: 'silver-endpoint-hp',
+    origins: ['https://www.hamropatro.com'],
+    pages: ['/gold'],
+    htmlOnly: true,
+  },
+  {
+    name: 'FENEGOSIDA', via: 'fenegosida.org',
+    kvKey: 'silver-endpoint-fenegosida',
+    origins: ['https://www.fenegosida.org'],
+    pages: ['/', '/rate-history.php'],
+    seeds: ['/api/v1/rate', '/api/rate', '/api/today-rate'],
+    subs: ['api', 'backend'],
   },
 ];
 
@@ -267,12 +307,24 @@ async function discoverEndpoints(cfg, log) {
 
   const host = new URL(cfg.origins[0]).hostname.replace(/^www\./, '');
   for (const sub of cfg.subs) bases.add(`https://${sub}.${host}`);
+  // the bundle also references the framework and the agency that built it, so
+  // keep only hosts on this source's own domain — matching the base domain, in
+  // case the backend lives on a sibling host
+  const parts = host.split('.');
+  const twoPartTld = /\.(org|com|net|gov|edu|co)\.[a-z]{2}$/i.test(host);
+  const baseDomain = parts.slice(twoPartTld ? -3 : -2).join('.');
+  for (const b of [...bases]) {
+    try { if (!new URL(b).hostname.endsWith(baseDomain)) bases.delete(b); } catch { bases.delete(b); }
+  }
 
   const paths = rateFirst([...apiPaths]);
   const candidates = [];
   for (const base of bases) {
     for (const p of paths.slice(0, 8)) {
-      candidates.push(base.replace(/\/$/, '') + (base.includes('/api') ? p.replace(/^\/api(?:\/v\d+)?/, '') || '/' : p));
+      let basePath = '';
+      try { basePath = new URL(base).pathname; } catch { /* ignore */ }
+      const trimmed = basePath.includes('/api') ? p.replace(/^\/api(?:\/v\d+)?/, '') || '/' : p;
+      candidates.push(base.replace(/\/$/, '') + trimmed);
     }
   }
   return rateFirst([...new Set(candidates)]).slice(0, 28);
@@ -317,8 +369,10 @@ async function scrapeSource(cfg, env, log) {
     }
   }
 
+  if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
+
   // 3. hunt for the API the bundle talks to
-  const candidates = await discoverEndpoints(cfg, log);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 10);
   for (const url of candidates) {
     try {
       const quote = await tryUrl(url);
@@ -340,15 +394,21 @@ function sane(ref) {
 
 /** Try each federation in turn; the first that returns sensible figures wins. */
 async function scrape(env, log) {
+  budget = 36;   // comfortably under Cloudflare's per-invocation cap
+  floor = 0;
   for (const cfg of SOURCES) {
+    // a page-only source needs a couple of requests; one that must hunt for an
+    // API gets more, but never enough to starve the sources behind it
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 11));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (sane(quote.sale) && (!quote.purchase || sane(quote.purchase))) {
-        return { quote, source: cfg.name };
+        return { quote, source: cfg.name, via: cfg.via || null };
       }
       log.push(`${cfg.name} values failed sanity check`);
-    } catch (e) { log.push(e.message); }
+    } catch (e) { log.push(`${cfg.name} (${cfg.via}): ${e.message}`); }
   }
+  floor = 0;
   throw new Error('all sources failed');
 }
 
@@ -447,11 +507,11 @@ export async function onRequestGet(context) {
 
   if (shouldScrape(cached, day, minutes)) {
     try {
-      const { quote, source } = await scrape(env, log);
+      const { quote, source, via } = await scrape(env, log);
       const changed = !cached || cached.tolaSale !== r2(quote.sale.tola);
       const updatedToday = changed || (!!cached?.updatedToday && cached.dateAD === day);
       const prevRatio = cached ? cached.tolaPurchase / cached.tolaSale : null;
-      cached = buildPayload(quote, source, day, minutes, updatedToday, prevRatio);
+      cached = { ...buildPayload(quote, source, day, minutes, updatedToday, prevRatio), via };
       await writeCache(env, cached);
     } catch (err) {
       log.push(`FINAL: ${err.message}`);
