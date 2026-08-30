@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
+// How far the intro reaches past each edge of the viewport. Mobile browsers
+// collapse their toolbars after load, which makes the visual viewport taller
+// than 100vh — without this, the page underneath peeks out top and bottom.
+const OVERSCAN = 90;
+
 // one read of the Kathmandu clock drives both the caption and the arrival sky,
 // so the visitor sees the valley as it actually looks there right now
 function timeOfDay() {
@@ -123,7 +128,10 @@ export default function Intro({ onEnter }) {
   const on = (p) => (phase === p ? 'is-on' : '');
 
   return (
-    <div className="fixed inset-0 z-[45] overflow-hidden bg-void">
+    <div
+      className="fixed inset-x-0 z-[45] overflow-hidden bg-void"
+      style={{ top: `-${OVERSCAN}px`, height: `calc(100dvh + ${OVERSCAN * 2}px)`, minHeight: `calc(100vh + ${OVERSCAN * 2}px)` }}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(1200px_700px_at_50%_118%,rgba(216,179,106,0.16),transparent_60%),linear-gradient(180deg,#04060D_0%,#0A1322_70%,#0E1626_100%)]" />
       <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out bg-[radial-gradient(900px_520px_at_50%_112%,rgba(216,179,106,0.28),transparent_62%)] ${phase === 'cap2' ? 'opacity-100' : 'opacity-0'}`} aria-hidden="true" />
 
@@ -133,7 +141,7 @@ export default function Intro({ onEnter }) {
       </div>
       <Stars count={phase === "arrive" ? 0 : 220} />
 
-      <section className={`ov ${on('hero')} stag absolute inset-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`}>
+      <section className={`ov ${on('hero')} stag absolute inset-x-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
         <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
           Hello, <span className="text-gold">Investors.</span>
@@ -143,20 +151,20 @@ export default function Intro({ onEnter }) {
         </p>
       </section>
 
-            <section className={`ov ${on('cap1')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
+            <section className={`ov ${on('cap1')} absolute inset-x-0 z-[4] flex items-center justify-center text-center pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
           Four hundred kilometres above the Himalaya, {scene.line}
           <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">27.7041° N · 85.3125° E</small>
         </div>
       </section>
-      <section className={`ov ${on('cap2')} absolute inset-0 z-[4] flex items-center justify-center text-center pointer-events-none`}>
+      <section className={`ov ${on('cap2')} absolute inset-x-0 z-[4] flex items-center justify-center text-center pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
           Down through the clouds — past Tundikhel, along Kantipath — to a street traders have trusted for a century.
           <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">New Road · Kathmandu</small>
         </div>
       </section>
 
-      <section className={`ov ${on('arrive')} absolute inset-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`}>
+      <section className={`ov ${on('arrive')} absolute inset-x-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <img src="/images/logo.webp" alt="" width="64" height="64" className="w-16 h-16 rounded-full mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
         <p className="text-[0.62rem] tracking-[0.44em] uppercase text-gold mb-3">You have arrived</p>
         <h2 className="font-display text-silverhi leading-tight text-[clamp(2.2rem,7vw,4.2rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">DPPL</h2>

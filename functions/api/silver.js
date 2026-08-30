@@ -536,14 +536,25 @@ function buildPayload(quote, source, day, minutes, updatedToday, prevRatio) {
   };
 }
 
+/** A stored payload has to pass the same test a fresh reading would. */
+function usablePayload(v) {
+  return !!v && Number.isFinite(v.tolaSale) && v.tolaSale >= TOLA_MIN && v.tolaSale <= TOLA_MAX
+    && !isYear(v.tolaSale);
+}
+
 async function readCache(env) {
+  let v = null;
   if (env.RATE_CACHE) {
-    try {
-      const v = await env.RATE_CACHE.get(KV_KEY, 'json');
-      if (v) return v;                 // fall through to memory on a KV miss
-    } catch { /* ignore */ }
+    try { v = await env.RATE_CACHE.get(KV_KEY, 'json'); } catch { /* ignore */ }
   }
-  return memCache;
+  if (!v) v = memCache;
+  if (v && !usablePayload(v)) {
+    // written before these checks existed, or simply wrong — drop it and
+    // re-scrape rather than serve it for another minute
+    console.warn('[silver] discarding unusable cached rate', v.tolaSale);
+    return null;
+  }
+  return v;
 }
 async function writeCache(env, data) {
   memCache = data;
@@ -588,9 +599,9 @@ export async function onRequestGet(context) {
 
   // Edge cache: under load, most requests are answered straight from the
   // Cloudflare data center without touching KV or this function's logic.
-  const cacheKey = new Request(new URL('/api/silver', request.url).toString());
+  const cacheKey = new Request(new URL(`/api/silver${force ? '?refresh=1' : ''}`, request.url).toString());
   if (!debug) {
-    const hit = await caches.default.match(cacheKey);
+    const hit = force ? null : await caches.default.match(cacheKey);
     if (hit) return hit;
   }
 
@@ -628,6 +639,6 @@ export async function onRequestGet(context) {
   }
 
   const resp = json({ ...cached, stale: false, ...(debug ? { trace: log } : {}) });
-  if (!debug) context.waitUntil(caches.default.put(cacheKey, resp.clone()));
+  if (!debug && !force) context.waitUntil(caches.default.put(cacheKey, resp.clone()));
   return resp;
 }
