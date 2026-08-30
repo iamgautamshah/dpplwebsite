@@ -113,11 +113,12 @@ export default function PriceCard() {
   );
 
   return (
-    <div className="relative">
+    <div className="relative card-stage">
             <div className="absolute -inset-2 rounded-[2rem] bg-gold/[0.07] blur-2xl pointer-events-none" aria-hidden="true" />
 
-      <div className="plate relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
+      <div className="plate plate-open relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
         <div className="plate-in relative p-3 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
+          <span className="sheen" aria-hidden="true" />
           <span className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.62rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
 
                     <div className="flex items-start justify-between gap-3 mb-4">
@@ -136,7 +137,7 @@ export default function PriceCard() {
             <Tab id="np" label={formatBS(now)} ne />
           </div>
 
-                    <div className={np ? 'font-np' : ''}>
+                    <div className={`rows-in ${np ? 'font-np' : ''}`}>
             <div className={`${COLS} mb-2`}>
               <span aria-hidden="true" />
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>
