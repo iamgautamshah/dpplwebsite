@@ -116,7 +116,10 @@ export default function PriceCard() {
     <div className="relative card-stage">
             <div className="absolute -inset-2 rounded-[2rem] bg-gold/[0.07] blur-2xl pointer-events-none" aria-hidden="true" />
 
-      <div className="plate plate-open relative shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
+      <div className="drop-fall">
+        <div className="drop-tip-right">
+          <div className="drop-tip-left">
+            <div className="plate drop-shade relative">
         <div className="plate-in relative p-3 sm:p-7 overflow-hidden" lang={np ? 'ne' : 'en'}>
           <span className="sheen" aria-hidden="true" />
           <span className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.62rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
@@ -163,6 +166,9 @@ export default function PriceCard() {
                   ? `${t.updated} ${np ? toNepaliDigits(rateAt) : rateAt} NPT${prices?.source ? ` · ${prices.source}` : ''}${checkedAt ? ` · ${t.checked} ${np ? toNepaliDigits(checkedAt) : checkedAt}` : ''}`
                   : ''}
           </p>
+        </div>
+      </div>
+          </div>
         </div>
       </div>
     </div>
