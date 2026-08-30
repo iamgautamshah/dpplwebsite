@@ -83,7 +83,8 @@ function normalize(raw) {
     .replace(/बिक्री|बिक्रि/g, 'sale')
     .replace(/\\u0916\\u0930\\u093f\\u0926/g, 'purchase')            // खरिद escaped
     .replace(/खरिद/g, 'purchase')
-    .replace(/&nbsp;|&#160;|\u00A0/g, ' ');
+    .replace(/&nbsp;|&#160;|\u00A0/g, ' ')
+    .replace(/\b10\s*(?:gram|grams|gm|g)\b/gi, 'tengram');
 }
 
 const YEAR_LIKE = (v) => Number.isInteger(v) && ((v >= 1990 && v <= 2100) || (v >= 2050 && v <= 2110));
@@ -127,8 +128,26 @@ function classifyKey(k) {
  *          (ratio 1.001–1.12) read as sale > purchase
  * pass 3 — single value → treated as the sale price.
  */
+/* Rate pages list gold first, and headings like "Gold Silver Rates" mean the
+   word silver can appear a long way from the silver figures. Cut the page into
+   runs that each belong to one metal and keep only silver's, so a gold number
+   can never be read as a silver price. */
+function silverOnly(text) {
+  const marks = [...text.matchAll(/\b(gold|silver|platinum|chandi|sun)\b/gi)];
+  if (marks.length < 2) return text;
+  const parts = [];
+  marks.forEach((m, i) => {
+    if (!/^silver$/i.test(m[1])) return;
+    const from = m.index;
+    const to = i + 1 < marks.length ? marks[i + 1].index : text.length;
+    parts.push(text.slice(from, to));
+  });
+  const joined = parts.join(' \n ');
+  return joined.trim().length > 8 ? joined : text;
+}
+
 function extractQuote(raw) {
-  const text = normalize(raw);
+  const text = silverOnly(normalize(raw));
   const low = text.toLowerCase();
 
   const idxs = [];
@@ -232,29 +251,18 @@ const STATIC_HOST_RE = /(googleapis|gstatic|w3\.org|reactjs\.org|react\.dev|face
 const ASSET_RE = /\.(png|jpe?g|svg|gif|webp|css|map|woff2?|ttf|eot|ico|mp4|pdf)(\?|#|$)/i;
 const SPA_ECHO_RE = /^\s*<!doctype html|^\s*<html/i;
 
+/* FENEGOSIDA sets Nepal's official rate. Its own site is a React app whose
+   API answers 401 without a key, so the figure is read from pages that
+   republish it. The widget page is first: it carries the rate and almost
+   nothing else, which is what makes it safe to parse. */
 const SOURCES = [
-  /* KAGOSIDA publishes a sale and a purchase rate, which is what this counter
-     actually quotes, so it is asked first: its own domain, then the host the
-     association now runs on. */
   {
-    name: 'KAGOSIDA', via: 'kagosida.org.np',
-    kvKey: 'silver-endpoint',
-    origins: ['https://kagosida.org.np'],
-    pages: ['/'],
-    seeds: ['/api/v1/getcurrentrate', '/api/v1/getratehistory', '/api/rate'],
-    subs: ['api', 'backend'],
+    name: 'FENEGOSIDA', via: 'arthakendra.com/widget',
+    kvKey: 'silver-endpoint-artha-widget',
+    origins: ['https://arthakendra.com'],
+    pages: ['/widget/gold-silver-widget'],
+    htmlOnly: true,
   },
-  {
-    name: 'KAGOSIDA', via: 'kagosida.autonomoustechnology.net',
-    kvKey: 'silver-endpoint-kagosida-alt',
-    origins: ['https://kagosida.autonomoustechnology.net'],
-    pages: ['/'],
-    seeds: ['/api/v1/getcurrentrate', '/api/v1/rate', '/api/rate', '/api/v1/rates', '/api/current-rate', '/api/v1/getratehistory'],
-    subs: ['api', 'backend', 'server'],
-  },
-  /* FENEGOSIDA sets Nepal's official rate but serves it through a React app
-     whose API answers 401 without a key, so it is read from sites that
-     republish it as plain HTML. One cheap request each; `via` records the route. */
   {
     name: 'FENEGOSIDA', via: 'arthakendra.com',
     kvKey: 'silver-endpoint-arthakendra',
@@ -273,16 +281,8 @@ const SOURCES = [
     name: 'FENEGOSIDA', via: 'hamropatro.com',
     kvKey: 'silver-endpoint-hp',
     origins: ['https://www.hamropatro.com'],
-    pages: ['/gold'],
+    pages: ['/en/gold', '/gold'],
     htmlOnly: true,
-  },
-  {
-    name: 'FENEGOSIDA', via: 'fenegosida.org',
-    kvKey: 'silver-endpoint-fenegosida',
-    origins: ['https://www.fenegosida.org'],
-    pages: ['/', '/rate-history.php'],
-    seeds: ['/api/v1/rate', '/api/rate', '/api/today-rate'],
-    subs: ['api', 'backend'],
   },
 ];
 
@@ -456,8 +456,14 @@ async function scrape(env, log, prev) {
       const hit = { quote, source: cfg.name, via: cfg.via || null };
       const tola = quote.sale.tola;
 
-      // No page is trusted on its own any more: a single mis-read number on a
-      // single site is exactly what put a wrong price in front of customers.
+      // A figure in line with the last confirmed rate is published as-is.
+      if (prev && near(tola, prev, MAX_DAILY_MOVE)) {
+        log.push(`${cfg.via} says ${tola}, in line with the confirmed ${prev}`);
+        floor = 0;
+        return hit;
+      }
+
+      // Anything unusual has to be backed by a second route before it goes out.
       const agrees = seen.find((o) => near(o.quote.sale.tola, tola, 0.03));
       if (agrees) {
         // keep the higher-priority source's reading — it was asked first for a
@@ -478,8 +484,8 @@ async function scrape(env, log, prev) {
   // than risk quoting a customer a number no one else agrees with.
   if (seen.length === 1) {
     const only = seen[0];
-    if (prev && near(only.quote.sale.tola, prev, 0.05)) {
-      log.push(`only ${only.via} responded; ${only.quote.sale.tola} matches the confirmed ${prev}`);
+    if (!prev) {
+      log.push(`only ${only.via} responded and there is nothing to compare with; publishing it`);
       return only;
     }
     throw new Error(`only ${only.via} responded (${only.quote.sale.tola}) and nothing confirms it`);
