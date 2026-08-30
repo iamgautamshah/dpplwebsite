@@ -100,7 +100,11 @@ export default function App() {
 
   return (
     <>
-      {page}
+      {/* While the intro plays the site is not rendered at all. Overlaying it
+          meant a collapsing mobile toolbar could reveal buttons underneath;
+          the prerendered HTML has already painted, and the rate is fetched by
+          the head script regardless, so nothing is lost by waiting. */}
+      {entered && page}
       {!entered && (
         <IntroBoundary onFail={enter}>
           <Intro onEnter={enter} />

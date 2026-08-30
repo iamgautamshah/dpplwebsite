@@ -456,43 +456,36 @@ async function scrape(env, log, prev) {
       const hit = { quote, source: cfg.name, via: cfg.via || null };
       const tola = quote.sale.tola;
 
-      // in line with the last known rate — publish it
-      if (prev && near(tola, prev, MAX_DAILY_MOVE)) {
-        floor = 0;
-        return hit;
-      }
-
-      // otherwise look for a second source saying the same thing, which is how
-      // a genuine large move gets through
-      // A reading wildly off the stored rate is suspect — but the stored rate
-      // may itself be the wrong one, so it is held for corroboration rather
-      // than thrown away outright.
-      if (prev && !near(tola, prev, IMPOSSIBLE_MOVE)) {
-        log.push(`${cfg.name} (${cfg.via}) says ${tola} vs stored ${prev}; needs a second source`);
-      }
-
+      // No page is trusted on its own any more: a single mis-read number on a
+      // single site is exactly what put a wrong price in front of customers.
       const agrees = seen.find((o) => near(o.quote.sale.tola, tola, 0.03));
       if (agrees) {
         // keep the higher-priority source's reading — it was asked first for a
         // reason, and it is the one more likely to carry a purchase rate too
-        log.push(`corroborated: ${agrees.via} and ${cfg.via} agree on ${tola}`);
+        log.push(`agreed: ${agrees.via} and ${cfg.via} both say ${tola}`);
         floor = 0;
         return agrees;
       }
 
-      log.push(`${cfg.name} (${cfg.via}) says ${tola}${prev ? ` — ${Math.round(Math.abs(tola - prev) / prev * 100)}% from last known ${prev}` : ''}; seeking a second opinion`);
+      log.push(`${cfg.name} (${cfg.via}) says ${tola}${prev ? ` (last confirmed ${prev})` : ''}; waiting for a second source to confirm`);
       seen.push(hit);
     } catch (e) { log.push(`${cfg.name} (${cfg.via}): ${e.message}`); }
   }
   floor = 0;
 
-  // nothing to compare against yet: take what we have rather than show nothing
-  if (!prev && seen.length) {
-    log.push('no previous rate to check against; publishing the single reading');
-    return seen[0];
+  // Only one source was reachable. It is published solely if it sits close to
+  // a rate already confirmed earlier; otherwise the site says nothing rather
+  // than risk quoting a customer a number no one else agrees with.
+  if (seen.length === 1) {
+    const only = seen[0];
+    if (prev && near(only.quote.sale.tola, prev, 0.05)) {
+      log.push(`only ${only.via} responded; ${only.quote.sale.tola} matches the confirmed ${prev}`);
+      return only;
+    }
+    throw new Error(`only ${only.via} responded (${only.quote.sale.tola}) and nothing confirms it`);
   }
   if (seen.length) {
-    throw new Error(`readings (${seen.map((o) => o.quote.sale.tola).join(', ')}) disagree with the last known rate ${prev} and each other`);
+    throw new Error(`sources disagree: ${seen.map((o) => `${o.via}=${o.quote.sale.tola}`).join(', ')}`);
   }
   throw new Error('all sources failed');
 }
