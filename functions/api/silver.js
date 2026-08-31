@@ -513,23 +513,26 @@ function nptNow() {
   return { day: `${get('year')}-${get('month')}-${get('day')}`, minutes: Number(get('hour')) * 60 + Number(get('minute')) };
 }
 
-function buildPayload(quote, source, day, minutes, updatedToday, prevRatio) {
-  const sale = quote.sale;
-  let purchase = quote.purchase;
-  let purchaseDerived = false;
-  if (!purchase) {
-    // Source published no buyback price — estimate from the last known
-    // KAGOSIDA sale↔purchase ratio (default 0.96 until one is learned).
-    const ratio = prevRatio && prevRatio > 0.85 && prevRatio < 1 ? prevRatio : 0.96;
-    purchase = { tola: round50(sale.tola * ratio), g10: round50(sale.g10 * ratio) };
-    purchaseDerived = true;
-  }
+/* DPPL buys back at a fixed margin under the day's sale rate, so the purchase
+   figure is set here rather than taken from whatever a rate page publishes.
+   Every figure is rounded to the nearest half rupee: 4,588.15 becomes 4,588.00
+   and 4,588.48 becomes 4,588.50. */
+const DEALER_SPREAD = 0.04;
+const toHalf = (n) => Math.round(n * 2) / 2;
+
+function buildPayload(quote, source, day, minutes, updatedToday) {
+  const sale = { tola: toHalf(quote.sale.tola), g10: toHalf(quote.sale.g10) };
+  const purchase = {
+    tola: toHalf(sale.tola * (1 - DEALER_SPREAD)),
+    g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)),
+  };
   return {
-    tolaSale: r2(sale.tola),
-    tolaPurchase: r2(purchase.tola),
-    g10Sale: r2(sale.g10),
-    g10Purchase: r2(purchase.g10),
-    purchaseDerived,
+    tolaSale: sale.tola,
+    tolaPurchase: purchase.tola,
+    g10Sale: sale.g10,
+    g10Purchase: purchase.g10,
+    purchaseDerived: true,
+    spread: DEALER_SPREAD,
     reference: { tola: sale.tola, g10: sale.g10 },
     dateAD: day,
     fetchedAt: new Date().toISOString(),
@@ -618,8 +621,7 @@ export async function onRequestGet(context) {
       const { quote, source, via } = await scrape(env, log, cached?.tolaSale ?? null);
       const changed = !cached || cached.tolaSale !== r2(quote.sale.tola);
       const updatedToday = changed || (!!cached?.updatedToday && cached.dateAD === day);
-      const prevRatio = cached ? cached.tolaPurchase / cached.tolaSale : null;
-      cached = { ...buildPayload(quote, source, day, minutes, updatedToday, prevRatio), via };
+      cached = { ...buildPayload(quote, source, day, minutes, updatedToday), via };
       await writeCache(env, cached);
     } catch (err) {
       log.push(`FINAL: ${err.message}`);
