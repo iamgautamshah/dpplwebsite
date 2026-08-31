@@ -422,10 +422,15 @@ async function scrapeSource(cfg, env, log) {
 const TOLA_MIN = 2500;
 const TOLA_MAX = 25000;
 
+/* One tola is exactly 11.6638 g, so a genuine pair must sit within rounding
+   distance of that ratio. A loose band let a mis-read tola pass alongside a
+   correct 10-gram figure; anything outside ±1.5% now means one of the two was
+   read off the wrong part of the page, and the whole reading is discarded. */
 function sane(ref) {
   if (!ref) return false;
+  if (!(ref.tola > 0 && ref.g10 > 0)) return false;
   const r = ref.tola / ref.g10;
-  if (!(ref.tola > 0 && ref.g10 > 0 && r > 1.1 && r < 1.25)) return false;
+  if (r < TOLA_PER_10G * 0.985 || r > TOLA_PER_10G * 1.015) return false;
   return ref.tola >= TOLA_MIN && ref.tola <= TOLA_MAX;
 }
 
