@@ -174,7 +174,9 @@ function extractQuote(raw) {
       const u = unit || 'tola';
       if (plausible(u, v) && acc[kind][u] === undefined) acc[kind][u] = v;
     }
-    let sale = fromUnits(Object.keys(acc.sale).length ? acc.sale : null);
+    const plain = Object.keys(acc.sale).length ? acc.sale
+      : Object.keys(acc.na).length ? acc.na : null;
+    let sale = fromUnits(plain);
     let purchase = fromUnits(Object.keys(acc.purchase).length ? acc.purchase : null);
     if (sale && purchase) {
       if (purchase.tola > sale.tola) [sale, purchase] = [purchase, sale]; // labels swapped? sale is the higher
@@ -521,7 +523,8 @@ const DEALER_SPREAD = 0.04;
 const toHalf = (n) => Math.round(n * 2) / 2;
 
 function buildPayload(quote, source, day, minutes, updatedToday) {
-  const sale = { tola: toHalf(quote.sale.tola), g10: toHalf(quote.sale.g10) };
+  // the sale rate is quoted exactly as published — 4,085.50 stays 4,085.50
+  const sale = { tola: r2(quote.sale.tola), g10: r2(quote.sale.g10) };
   const purchase = {
     tola: toHalf(sale.tola * (1 - DEALER_SPREAD)),
     g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)),
