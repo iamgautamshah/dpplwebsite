@@ -30,6 +30,31 @@ export function getSilver(refresh = false) {
   return cached;
 }
 
+/** A slow parallax drift, batched into one frame like the scroll bar. */
+export function useParallax() {
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const els = [...document.querySelectorAll('[data-parallax]')];
+    if (!els.length) return;
+    let ticking = false;
+    const frame = () => {
+      ticking = false;
+      const mid = innerHeight / 2;
+      for (const el of els) {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > innerHeight + 200) continue;
+        const depth = Number(el.dataset.parallax) || 0.06;
+        el.style.transform = `translate3d(0, ${((r.top + r.height / 2 - mid) * -depth).toFixed(1)}px, 0)`;
+      }
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+    frame();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll, { passive: true });
+    return () => { removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll); };
+  }, []);
+}
+
 export function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll('[data-rv]');

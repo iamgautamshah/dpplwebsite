@@ -12,8 +12,9 @@ const I18N = {
     head: "Today's Silver Price",
     thSale: 'SALE', thBuy: 'PURCHASE',
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
-    updated: 'Rate set', checked: 'checked', live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',
+    live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',
     fetching: 'Fetching today\u2019s rate\u2026',
+    src: 'Source: Federation Of Nepal Gold & Silver Dealers\u2019 Association (FENEGOSIDA).',
     unavailable: 'Rate unavailable right now \u2014 please call the counter on 01-5915052 for today\u2019s price.',
     cur: (n) => 'Rs ' + fmtNum(n),
   },
@@ -21,8 +22,9 @@ const I18N = {
     head: 'आजको चाँदीको मूल्य',
     thSale: 'बिक्री', thBuy: 'खरिद',
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
-    updated: 'दर तय', checked: 'जाँच', live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
+    live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
     fetching: 'आजको दर ल्याउँदै\u2026',
+    src: 'स्रोत: नेपाल सुनचाँदी व्यवसायी महासंघ (फेनेगोसिडा)।',
     unavailable: 'अहिले दर उपलब्ध छैन \u2014 आजको मूल्यको लागि ०१-५९१५०५२ मा फोन गर्नुहोस्।',
     cur: (n) => 'रु ' + toNepaliDigits(fmtNum(n)),
   },
@@ -72,12 +74,6 @@ export default function PriceCard() {
       document.removeEventListener('visibilitychange', vis);
     };
   }, []);
-
-  const npt = (d) => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kathmandu' });
-  // when the market rate itself was set — fixed each morning, so it does not move
-  const rateAt = prices?.fetchedAt ? npt(new Date(prices.fetchedAt)) : null;
-  // when this browser last confirmed it — this is what moves through the day
-  const checkedAt = live ? npt(now) : null;
 
   const Tab = ({ id, label, ne }) => (
     <button
@@ -157,14 +153,8 @@ export default function PriceCard() {
               <Pill v={prices?.g10Purchase} buy />
             </div>
           </div>
-          <p className={`mt-4 font-mono text-[0.66rem] tracking-[0.18em] uppercase ${failed ? 'text-[#E0A0A0] tracking-normal' : 'text-steel'} ${np ? 'font-np tracking-normal' : ''}`} aria-live="polite">
-            {failed
-              ? t.unavailable
-              : !prices
-                ? t.fetching
-                : rateAt
-                  ? `${t.updated} ${np ? toNepaliDigits(rateAt) : rateAt} NPT${prices?.source ? ` · ${prices.source}` : ''}${checkedAt ? ` · ${t.checked} ${np ? toNepaliDigits(checkedAt) : checkedAt}` : ''}`
-                  : ''}
+          <p className={`mt-4 text-[0.72rem] leading-relaxed ${failed ? 'text-[#E0A0A0]' : 'text-steel'} ${np ? 'font-np' : ''}`} aria-live="polite">
+            {failed ? t.unavailable : !prices ? t.fetching : t.src}
           </p>
         </div>
       </div>

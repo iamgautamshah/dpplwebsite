@@ -249,3 +249,52 @@ html[data-js] .rows-in > *:nth-child(4) { animation-delay: 1.32s; }
 @media (prefers-reduced-motion: reduce) {
   html[data-js] .rows-in > * { animation: none; opacity: 1; transform: none; }
 }
+
+/* ── menu spark burst ─────────────────────────────────────────────────────
+   Fired from the click point when a menu item is chosen. Transform and
+   opacity only, so it composites without touching layout. */
+.spark-layer { position: fixed; z-index: 90; pointer-events: none; width: 0; height: 0; }
+.spark {
+  position: absolute;
+  width: 5px; height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 999px;
+  opacity: 0;
+  animation: spark-fly var(--d, 620ms) cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+@keyframes spark-fly {
+  0%   { transform: translate3d(0, 0, 0) scale(0.4); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate3d(var(--dx), calc(var(--dy) + 14px), 0) scale(0.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .spark { display: none; } }
+
+/* ── motion, in the manner of the reference ───────────────────────────────
+   Unhurried eases (0.7–1.1s), nothing bouncy: headlines rise line by line
+   from behind a mask, supporting text drifts up a beat later, and images
+   settle out of a slight over-scale. */
+.mask-line { display: block; overflow: hidden; }
+html[data-js] .mask-inner {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: mask-rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+html[data-js] .mask-inner.mask-delay-1 { animation-delay: 0.28s; }
+@keyframes mask-rise { to { transform: translateY(0); } }
+
+/* the same reveal, but triggered on scroll for headings further down */
+html[data-js] [data-rv] { transition-duration: 0.95s; transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+html[data-js] [data-rv]:not(.in) { transform: translateY(26px); }
+
+/* images ease out of a slight over-scale as their panel arrives */
+html[data-js] [data-rv] img { transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+html[data-js] [data-rv]:not(.in) img { transform: scale(1.05); }
+
+/* a slow parallax drift for the product plates, set from JS */
+.parallax { will-change: transform; transition: transform 0.1s linear; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-js] .mask-inner { animation: none; transform: none; }
+  html[data-js] [data-rv]:not(.in) { transform: none; }
+  html[data-js] [data-rv]:not(.in) img { transform: none; }
+}

@@ -1,11 +1,41 @@
 import { useEffect, useRef, useState } from 'react';
-import { Ticker, useReveal } from '../lib/ui.jsx';
+import { Ticker, useParallax, useReveal } from '../lib/ui.jsx';
 import { ARTICLES } from '../content/articles.js';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
 
 const WA = (msg) => `https://wa.me/9779805617932?text=${encodeURIComponent(msg)}`;
 const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
+
+/* A short burst of sparks fired from the point of the click. Particles are
+   plain absolutely-positioned spans animated with transforms only, removed as
+   soon as they finish, and skipped entirely for reduced-motion visitors. */
+function spark(e) {
+  try {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const x = e.clientX;
+    const y = e.clientY;
+    if (!x && !y) return;
+    const layer = document.createElement('div');
+    layer.className = 'spark-layer';
+    layer.style.left = `${x}px`;
+    layer.style.top = `${y}px`;
+    const COLOURS = ['#D8B36A', '#E9CA85', '#FFF3D6', '#B8934A'];
+    for (let i = 0; i < 14; i += 1) {
+      const p = document.createElement('span');
+      const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
+      const dist = 26 + Math.random() * 34;
+      p.className = 'spark';
+      p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+      p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+      p.style.setProperty('--d', `${520 + Math.random() * 260}ms`);
+      p.style.background = COLOURS[i % COLOURS.length];
+      layer.appendChild(p);
+    }
+    document.body.appendChild(layer);
+    setTimeout(() => layer.remove(), 950);
+  } catch { /* decoration only — never let this break a navigation */ }
+}
 
 const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -110,7 +140,14 @@ function Nav() {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  const links = [['home', 'HOME'], ['products', 'PRODUCTS'], ['about', 'ABOUT US'], ['contact', 'CONTACT']];
+  // 'page' navigates, 'scroll' jumps to a section of the home page
+  const links = [
+    ['home', 'HOME', 'scroll'],
+    ['products', 'PRODUCTS', 'scroll'],
+    ['articles', 'JOURNAL', 'page'],
+    ['about', 'ABOUT US', 'scroll'],
+    ['contact', 'CONTACT', 'scroll'],
+  ];
 
   return (
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
@@ -124,12 +161,17 @@ function Nav() {
           </span>
         </a>
         <ul className="hidden md:flex gap-8 items-center">
-          {links.map(([href, label]) => (
+          {links.map(([href, label, kind]) => (
             <li key={href}>
-              <a href={`/${href}`} onClick={(e) => scrollToSection(e, href)} className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">{label}</a>
+              <a
+                href={`/${href}`}
+                onClick={(e) => { spark(e); if (kind !== 'page') scrollToSection(e, href); }}
+                className="block py-1 text-[0.72rem] tracking-[0.22em] text-silver/90 transition-colors duration-300 hover:text-gold"
+              >
+                {label}
+              </a>
             </li>
           ))}
-          <li><a href="/articles" className="block py-1 text-[0.72rem] tracking-[0.22em] text-steel transition-colors hover:text-gold">JOURNAL</a></li>
         </ul>
         <button
           className="md:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
@@ -151,14 +193,13 @@ function Nav() {
             <li key={href}>
               <a
                 href={`/${href}`}
-                onClick={(e) => { setOpen(false); scrollToSection(e, href); }}
+                onClick={(e) => { spark(e); setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
                 {label}
               </a>
             </li>
           ))}
-          <li><a href="/articles" onClick={() => setOpen(false)} className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]">JOURNAL</a></li>
         </ul>
       </div>
     </nav>
@@ -181,6 +222,7 @@ function AdSlot() {
 
 export default function Site() {
   useReveal();
+  useParallax();
   return (
     <main className="relative z-10 bg-[#0B0F16]">
       <a href="/home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
@@ -193,14 +235,15 @@ export default function Site() {
             <Ledger>Rates · New Road ledger</Ledger>
             <p className="eyebrow mb-6">Silver bullion · <b className="text-gold font-medium">999 fine</b> · Weighed before your eyes</p>
             <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(2.1rem,5.4vw,3.8rem)]">
-              Today's silver price, <em className="not-italic text-gold">straight from New Road.</em>
+              <span className="mask-line"><span className="mask-inner">Today's silver price,</span></span>
+              <span className="mask-line"><span className="mask-inner mask-delay-1 text-gold">straight from New Road.</span></span>
             </h1>
             <div className="mt-8 flex flex-wrap gap-3.5">
               <a href="/products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
               <a href={WA('Hello DPPL, I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
             </div>
           </div>
-          <div className="relative order-1 lg:order-2" data-rv data-rv-d="1">
+          <div className="relative order-1 lg:order-2 w-full max-w-[560px] mx-auto lg:mx-0 lg:max-w-none" data-rv data-rv-d="1">
             <PriceCard />
           </div>
         </div>
@@ -220,7 +263,7 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} className="h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
+                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} data-parallax="0.05" className="parallax h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
@@ -261,7 +304,7 @@ export default function Site() {
 
             <section style={{ contentVisibility: 'auto', containIntrinsicSize: '800px' }} id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" className="w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
