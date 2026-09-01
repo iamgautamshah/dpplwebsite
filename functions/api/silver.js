@@ -30,9 +30,12 @@ const spend = () => {
   budget -= 1;
 };
 
-async function getText(url) {
+async function getText(url, referer) {
   spend();
-  const res = await fetch(url, { headers: UA_HEADERS, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+  const headers = referer
+    ? { ...UA_HEADERS, Referer: referer + '/', Origin: referer }
+    : UA_HEADERS;
+  const res = await fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(12000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
@@ -257,7 +260,24 @@ const SPA_ECHO_RE = /^\s*<!doctype html|^\s*<html/i;
    API answers 401 without a key, so the figure is read from pages that
    republish it. The widget page is first: it carries the rate and almost
    nothing else, which is what makes it safe to parse. */
+/* FENEGOSIDA sets Nepal's official rate, so its own site is asked first: the
+   published pages, then the API its front end talks to. That API answers 401
+   to anonymous requests, so the request is made the way a browser on their own
+   site would make it. If none of that yields a figure, sites that republish
+   the same federation rate are used, and `via` records which. */
 const SOURCES = [
+  {
+    name: 'FENEGOSIDA', via: 'fenegosida.org',
+    kvKey: 'silver-endpoint-fenegosida',
+    origins: ['https://www.fenegosida.org'],
+    pages: ['/', '/rate-history.php'],
+    seeds: [
+      '/api/v1/rate', '/api/v1/rates', '/api/v1/getcurrentrate', '/api/v1/todays-rate',
+      '/api/rate', '/api/rates', '/api/today-rate', '/api/current-rate', '/api/daily-rate',
+      '/ajax/rate.php', '/getrate.php', '/rate.php', '/api/rate.php',
+    ],
+    subs: ['api', 'backend', 'admin', 'server', 'data'],
+  },
   {
     name: 'FENEGOSIDA', via: 'arthakendra.com/widget',
     kvKey: 'silver-endpoint-artha-widget',
@@ -359,12 +379,15 @@ async function discoverEndpoints(cfg, log) {
       }
     }
   }
-  return rateFirst([...new Set(candidates)]).slice(0, 28);
+  // candidates are already built api-host-first with paths in priority order;
+  // re-sorting them globally meant only the top one or two path shapes were
+  // ever reached before the budget ran out
+  return [...new Set(candidates)].slice(0, 28);
 }
 
 async function scrapeSource(cfg, env, log) {
   const tryUrl = async (url, allowHtml = false) => {
-    const body = await getText(url);
+    const body = await getText(url, cfg.origins[0]);
     if (!allowHtml && SPA_ECHO_RE.test(body)) throw new Error('SPA html echo');
     const q = extractQuote(body);
     if (!q || !q.sale) throw new Error('no silver in response');
@@ -404,7 +427,7 @@ async function scrapeSource(cfg, env, log) {
   if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
 
   // 3. hunt for the API the bundle talks to
-  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 13);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 16);
   for (const url of candidates) {
     try {
       const quote = await tryUrl(url);
@@ -447,13 +470,13 @@ const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
 
 /** Ask the sources in order and publish only a figure we can stand behind. */
 async function scrape(env, log, prev) {
-  budget = 44;   // comfortably under Cloudflare's per-invocation cap
+  budget = 46;   // comfortably under Cloudflare's per-invocation cap
   floor = 0;
   const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
-    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 14));
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 20));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
