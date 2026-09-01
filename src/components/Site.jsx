@@ -89,13 +89,27 @@ const PRODUCTS = [
 
 // scroll to the section and put its own path in the address bar — /contact,
 // /products and so on, each of which is also a real page if reloaded
+const NAV_H = 74;   // sticky bar, so a heading is not hidden under it
+
 const scrollToSection = (e, href) => {
   const id = href.replace('#', '').replace('/', '');
   const el = document.getElementById(id);
   if (!el) return;
-  e.preventDefault();
-  try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  catch { scrollTo(0, el.offsetTop || 0); }
+  if (e) e.preventDefault();
+
+  const go = () => {
+    const y = el.getBoundingClientRect().top + scrollY - NAV_H;
+    try { scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); }
+    catch { scrollTo(0, Math.max(0, y)); }
+  };
+  go();
+  // anything still loading above the target shifts it, so measure again once
+  // the first scroll has settled and correct if it moved
+  setTimeout(() => {
+    const off = el.getBoundingClientRect().top - NAV_H;
+    if (Math.abs(off) > 8) go();
+  }, 450);
+
   history.replaceState(null, '', '/' + id);
 };
 
@@ -144,7 +158,7 @@ function Nav() {
   const links = [
     ['home', 'HOME', 'scroll'],
     ['products', 'PRODUCTS', 'scroll'],
-    ['articles', 'JOURNAL', 'page'],
+    ['articles', 'JOURNAL', 'scroll'],
     ['about', 'ABOUT US', 'scroll'],
     ['contact', 'CONTACT', 'scroll'],
   ];
@@ -249,7 +263,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1400px' }} id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The collection</Ledger>
@@ -278,7 +292,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }} id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
@@ -302,7 +316,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '800px' }} id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
           <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
@@ -326,7 +340,7 @@ export default function Site() {
         </div>
       </section>
 
-            <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+            <section id="faq" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>Common questions</Ledger>
@@ -347,7 +361,7 @@ export default function Site() {
         </div>
       </section>
 
-      <section style={{ contentVisibility: 'auto', containIntrinsicSize: '900px' }} id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+      <section id="contact" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The counter</Ledger>

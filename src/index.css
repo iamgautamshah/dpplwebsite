@@ -180,10 +180,14 @@ html[data-js] .drop-fall {
   will-change: transform, opacity;
   animation: drop-fall 0.6s cubic-bezier(0.55, 0.06, 0.68, 0.19) both;
 }
+/* The fall carries no rotation. Rotating here about the element's centre and
+   unrotating about a corner leaves a residual translation — two equal
+   rotations about different points do not cancel — which pushed the card
+   permanently off-centre. The tilt belongs to the pivot layer alone. */
 @keyframes drop-fall {
-  0%   { transform: translate3d(0, -118%, 0) rotate(5.5deg); opacity: 0; }
+  0%   { transform: translate3d(0, -118%, 0); opacity: 0; }
   14%  { opacity: 1; }
-  100% { transform: translate3d(0, 0, 0) rotate(5.5deg); opacity: 1; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
 }
 
 /* 2. the right corner has landed; the plate swings flat about that corner */
@@ -192,9 +196,11 @@ html[data-js] .drop-tip-right {
   will-change: transform;
   animation: tip-right 0.34s cubic-bezier(0.33, 0.9, 0.4, 1) 0.6s both;
 }
+/* Holds the tilt through the fall (backwards fill), then swings flat about the
+   bottom-right corner, finishing at exactly rotate(0) — no residue. */
 @keyframes tip-right {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(-5.5deg); }
+  0%   { transform: rotate(5.5deg); }
+  100% { transform: rotate(0deg); }
 }
 
 /* 3. the left corner takes the weight and the plate rocks itself level */
