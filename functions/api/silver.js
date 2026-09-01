@@ -523,8 +523,13 @@ const DEALER_SPREAD = 0.04;
 const toHalf = (n) => Math.round(n * 2) / 2;
 
 function buildPayload(quote, source, day, minutes, updatedToday) {
-  // the sale rate is quoted exactly as published — 4,085.50 stays 4,085.50
-  const sale = { tola: r2(quote.sale.tola), g10: r2(quote.sale.g10) };
+  /* The tola rate is the primary quote in Nepal and is taken exactly as
+     published. The ten-gram figure is then derived from it and rounded to the
+     nearest half rupee, which is the convention FENEGOSIDA itself uses:
+     4,765 ÷ 11.6638 = 4,085.44 → 4,085.50. Rate sites that round to a whole
+     rupee would otherwise report 4,086. */
+  const tola = r2(quote.sale.tola);
+  const sale = { tola, g10: toHalf(tola / TOLA_PER_10G) };
   const purchase = {
     tola: toHalf(sale.tola * (1 - DEALER_SPREAD)),
     g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)),
