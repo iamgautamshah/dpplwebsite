@@ -147,7 +147,7 @@ export default function Intro({ onEnter }) {
           Hello, <span className="text-gold">Investors.</span>
         </h1>
         <p className="mt-5 max-w-xl px-6 text-steel tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
-          Somewhere on the planet below - in the oldest bazaar of Kathmandu - fine silver is being weighed, sealed, and priced for today. Let us take you there.
+          Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine silver is being weighed, sealed, and priced for today. Let us take you there.
         </p>
       </section>
 
@@ -159,7 +159,7 @@ export default function Intro({ onEnter }) {
       </section>
       <section className={`ov ${on('cap2')} absolute inset-x-0 z-[4] flex items-center justify-center text-center pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <div className="font-display text-silverhi max-w-2xl px-8 leading-snug text-[clamp(1.4rem,4vw,2.6rem)]">
-          Down through the clouds - past Tundikhel, along Kantipath - to a street traders have trusted for a century.
+          Down through the clouds — past Tundikhel, along Kantipath — to a street traders have trusted for a century.
           <small className="block mt-4 font-body text-[clamp(0.7rem,1.5vw,0.82rem)] tracking-[0.34em] uppercase text-gold">New Road · Kathmandu</small>
         </div>
       </section>

@@ -27,17 +27,26 @@ export default function KathmanduMap({ className = '' }) {
       });
       map.on('click', () => map.scrollWheelZoom.enable());
 
-      /* CARTO's open tiles now need a key. This is the account key for
-         dppl.com.np; it is a public, domain-restricted map key, which is how
-         browser map tiles work — it grants nothing but tile access. The
-         voyager style ships light, so it is turned dark in CSS to match. */
-      L.tileLayer(
-        'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2qgk_1_221faa526fce46dd4f05a577',
-        {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-          maxZoom: 20,
-        },
-      ).addTo(map);
+      /* Back to the previous dark-map design. CARTO's tiles now need a key, so
+         the account key is used; it is a public, domain-restricted map key,
+         which is how browser tiles work — it grants nothing but tile access.
+         If the dark style is not available on this key the voyager style is
+         used instead and darkened in CSS, so the map never comes up blank. */
+      const KEY = 'cb1_2qgk_1_221faa526fce46dd4f05a577';
+      const tileOpts = {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+        maxZoom: 20,
+      };
+      let layer = L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${KEY}`, tileOpts).addTo(map);
+
+      let failures = 0;
+      layer.on('tileerror', () => {
+        if (++failures < 3 || cancelled) return;
+        layer.off('tileerror');
+        map.removeLayer(layer);
+        document.documentElement.classList.add('map-voyager');
+        layer = L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${KEY}`, tileOpts).addTo(map);
+      });
 
       const icon = L.divIcon({
         className: '',

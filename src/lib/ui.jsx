@@ -151,3 +151,42 @@ export function Ticker() {
     </section>
   );
 }
+
+/* A short burst of sparks from the point of any click on something clickable.
+   One delegated listener covers every button and link on every page, including
+   anything added later. Particles are transform-only and remove themselves. */
+const SPARK_COLOURS = ['#D8B36A', '#E9CA85', '#FFF3D6', '#B8934A'];
+
+function burst(x, y) {
+  const layer = document.createElement('div');
+  layer.className = 'spark-layer';
+  layer.style.left = `${x}px`;
+  layer.style.top = `${y}px`;
+  for (let i = 0; i < 14; i += 1) {
+    const p = document.createElement('span');
+    const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
+    const dist = 26 + Math.random() * 34;
+    p.className = 'spark';
+    p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+    p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+    p.style.setProperty('--d', `${520 + Math.random() * 260}ms`);
+    p.style.background = SPARK_COLOURS[i % SPARK_COLOURS.length];
+    layer.appendChild(p);
+  }
+  document.body.appendChild(layer);
+  setTimeout(() => layer.remove(), 950);
+}
+
+export function installSparks() {
+  try {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.addEventListener('click', (e) => {
+      try {
+        const el = e.target.closest?.('a, button, summary, [role="button"]');
+        if (!el || el.hasAttribute('data-nospark')) return;
+        if (!e.clientX && !e.clientY) return;   // keyboard activation, not a click
+        burst(e.clientX, e.clientY);
+      } catch { /* decoration only */ }
+    }, true);
+  } catch { /* decoration only */ }
+}

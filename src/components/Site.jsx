@@ -7,36 +7,6 @@ import KathmanduMap from './KathmanduMap.jsx';
 const WA = (msg) => `https://wa.me/9779805617932?text=${encodeURIComponent(msg)}`;
 const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
 
-/* A short burst of sparks fired from the point of the click. Particles are
-   plain absolutely-positioned spans animated with transforms only, removed as
-   soon as they finish, and skipped entirely for reduced-motion visitors. */
-function spark(e) {
-  try {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const x = e.clientX;
-    const y = e.clientY;
-    if (!x && !y) return;
-    const layer = document.createElement('div');
-    layer.className = 'spark-layer';
-    layer.style.left = `${x}px`;
-    layer.style.top = `${y}px`;
-    const COLOURS = ['#D8B36A', '#E9CA85', '#FFF3D6', '#B8934A'];
-    for (let i = 0; i < 14; i += 1) {
-      const p = document.createElement('span');
-      const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
-      const dist = 26 + Math.random() * 34;
-      p.className = 'spark';
-      p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
-      p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
-      p.style.setProperty('--d', `${520 + Math.random() * 260}ms`);
-      p.style.background = COLOURS[i % COLOURS.length];
-      layer.appendChild(p);
-    }
-    document.body.appendChild(layer);
-    setTimeout(() => layer.remove(), 950);
-  } catch { /* decoration only — never let this break a navigation */ }
-}
-
 const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 );
@@ -179,7 +149,7 @@ function Nav() {
             <li key={href}>
               <a
                 href={`/${href}`}
-                onClick={(e) => { spark(e); if (kind !== 'page') scrollToSection(e, href); }}
+                onClick={(e) => { if (kind !== 'page') scrollToSection(e, href); }}
                 className="block py-1 text-[0.72rem] tracking-[0.22em] text-silver/90 transition-colors duration-300 hover:text-gold"
               >
                 {label}
@@ -207,7 +177,7 @@ function Nav() {
             <li key={href}>
               <a
                 href={`/${href}`}
-                onClick={(e) => { spark(e); setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
+                onClick={(e) => { setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
                 {label}

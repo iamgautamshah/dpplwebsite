@@ -96,9 +96,9 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 }
 
 .dppl-map { background: #0d1a29; z-index: 0; }
-.dppl-map .leaflet-tile {
-  /* voyager is a light style; inverting and rotating the hue back gives a dark
-     map whose greens and blues still read correctly against the night palette */
+.dppl-map .leaflet-tile { filter: saturate(0.85) brightness(0.96); }
+/* only if the dark style is unavailable and voyager is substituted */
+html.map-voyager .dppl-map .leaflet-tile {
   filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.65);
 }
 .dppl-map .leaflet-control-zoom a { background: #0a1322; color: #c9d1de; border-color: rgba(201, 209, 222, 0.2); }
