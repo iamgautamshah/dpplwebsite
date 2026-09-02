@@ -96,7 +96,11 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 }
 
 .dppl-map { background: #0d1a29; z-index: 0; }
-.dppl-map .leaflet-tile { filter: saturate(0.85) brightness(0.96); }
+.dppl-map .leaflet-tile {
+  /* voyager is a light style; inverting and rotating the hue back gives a dark
+     map whose greens and blues still read correctly against the night palette */
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.65);
+}
 .dppl-map .leaflet-control-zoom a { background: #0a1322; color: #c9d1de; border-color: rgba(201, 209, 222, 0.2); }
 .dppl-map .leaflet-control-zoom a:hover { background: #141a28; color: #d8b36a; }
 .dppl-map .leaflet-control-attribution { background: rgba(10, 14, 22, 0.7); color: #6b7890; font-size: 9px; }

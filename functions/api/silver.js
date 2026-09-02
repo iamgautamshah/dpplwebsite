@@ -265,7 +265,23 @@ const SPA_ECHO_RE = /^\s*<!doctype html|^\s*<html/i;
    to anonymous requests, so the request is made the way a browser on their own
    site would make it. If none of that yields a figure, sites that republish
    the same federation rate are used, and `via` records which. */
+/* Two sources only, in this order:
+     1. KAGOSIDA — the Kathmandu association this counter trades against. It
+        publishes both a sale and a purchase rate; both are used as given.
+     2. FENEGOSIDA — the national federation, which publishes a single official
+        rate, so the buy-back is calculated from it. */
 const SOURCES = [
+  {
+    name: 'KAGOSIDA', via: 'kagosida.org.np',
+    kvKey: 'silver-endpoint-kagosida',
+    origins: ['https://kagosida.org.np'],
+    pages: ['/'],
+    seeds: [
+      '/api/v1/getcurrentrate', '/api/v1/rate', '/api/v1/rates', '/api/rate',
+      '/api/current-rate', '/api/todayrate', '/api/v1/getratehistory',
+    ],
+    subs: ['api', 'backend', 'server'],
+  },
   {
     name: 'FENEGOSIDA', via: 'fenegosida.org',
     kvKey: 'silver-endpoint-fenegosida',
@@ -273,38 +289,10 @@ const SOURCES = [
     pages: ['/', '/rate-history.php'],
     seeds: [
       '/api/v1/rate', '/api/v1/rates', '/api/v1/getcurrentrate', '/api/v1/todays-rate',
-      '/api/rate', '/api/rates', '/api/today-rate', '/api/current-rate', '/api/daily-rate',
+      '/api/rate', '/api/rates', '/api/today-rate', '/api/current-rate',
       '/ajax/rate.php', '/getrate.php', '/rate.php', '/api/rate.php',
     ],
     subs: ['api', 'backend', 'admin', 'server', 'data'],
-  },
-  {
-    name: 'FENEGOSIDA', via: 'arthakendra.com/widget',
-    kvKey: 'silver-endpoint-artha-widget',
-    origins: ['https://arthakendra.com'],
-    pages: ['/widget/gold-silver-widget'],
-    htmlOnly: true,
-  },
-  {
-    name: 'FENEGOSIDA', via: 'arthakendra.com',
-    kvKey: 'silver-endpoint-arthakendra',
-    origins: ['https://arthakendra.com'],
-    pages: ['/gold-silver-price-in-nepal'],
-    htmlOnly: true,
-  },
-  {
-    name: 'FENEGOSIDA', via: 'nepaliconsultancy.com',
-    kvKey: 'silver-endpoint-nc',
-    origins: ['https://www.nepaliconsultancy.com'],
-    pages: ['/forex/gold-silver-price'],
-    htmlOnly: true,
-  },
-  {
-    name: 'FENEGOSIDA', via: 'hamropatro.com',
-    kvKey: 'silver-endpoint-hp',
-    origins: ['https://www.hamropatro.com'],
-    pages: ['/en/gold', '/gold'],
-    htmlOnly: true,
   },
 ];
 
@@ -427,7 +415,7 @@ async function scrapeSource(cfg, env, log) {
   if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
 
   // 3. hunt for the API the bundle talks to
-  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 16);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 12);
   for (const url of candidates) {
     try {
       const quote = await tryUrl(url);
@@ -470,13 +458,13 @@ const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
 
 /** Ask the sources in order and publish only a figure we can stand behind. */
 async function scrape(env, log, prev) {
-  budget = 46;   // comfortably under Cloudflare's per-invocation cap
+  budget = 42;   // seven sources share this, under the per-invocation cap
   floor = 0;
   const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
-    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 20));
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 2 : 10));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
@@ -553,17 +541,22 @@ function buildPayload(quote, source, day, minutes, updatedToday) {
      rupee would otherwise report 4,086. */
   const tola = r2(quote.sale.tola);
   const sale = { tola, g10: toHalf(tola / TOLA_PER_10G) };
-  const purchase = {
-    tola: toHalf(sale.tola * (1 - DEALER_SPREAD)),
-    g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)),
-  };
+
+  /* KAGOSIDA publishes its own buy-back rate, so that is what gets quoted.
+     FENEGOSIDA publishes only the official sale rate, so there the buy-back
+     is worked out at the house margin. */
+  const published = !!quote.purchase && Number.isFinite(quote.purchase.tola)
+    && quote.purchase.tola > 0 && quote.purchase.tola < sale.tola;
+  const purchase = published
+    ? { tola: r2(quote.purchase.tola), g10: toHalf(quote.purchase.tola / TOLA_PER_10G) }
+    : { tola: toHalf(sale.tola * (1 - DEALER_SPREAD)), g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)) };
   return {
     tolaSale: sale.tola,
     tolaPurchase: purchase.tola,
     g10Sale: sale.g10,
     g10Purchase: purchase.g10,
-    purchaseDerived: true,
-    spread: DEALER_SPREAD,
+    purchaseDerived: !published,
+    spread: published ? null : DEALER_SPREAD,
     reference: { tola: sale.tola, g10: sale.g10 },
     dateAD: day,
     fetchedAt: new Date().toISOString(),

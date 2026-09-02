@@ -203,7 +203,7 @@ function Nav() {
 
             <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
-          {links.map(([href, label]) => (
+          {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
                 href={`/${href}`}

@@ -27,11 +27,17 @@ export default function KathmanduMap({ className = '' }) {
       });
       map.on('click', () => map.scrollWheelZoom.enable());
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20,
-      }).addTo(map);
+      /* CARTO's open tiles now need a key. This is the account key for
+         dppl.com.np; it is a public, domain-restricted map key, which is how
+         browser map tiles work — it grants nothing but tile access. The
+         voyager style ships light, so it is turned dark in CSS to match. */
+      L.tileLayer(
+        'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2qgk_1_221faa526fce46dd4f05a577',
+        {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          maxZoom: 20,
+        },
+      ).addTo(map);
 
       const icon = L.divIcon({
         className: '',

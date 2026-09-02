@@ -14,7 +14,8 @@ const I18N = {
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
     live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',
     fetching: 'Fetching today\u2019s rate\u2026',
-    src: 'Source: Federation Of Nepal Gold & Silver Dealers\u2019 Association (FENEGOSIDA).',
+    srcKago: 'Source: Kathmandu Gold and Silver Dealers\u2019 Association (KAGOSIDA).',
+    srcFene: 'Source: Federation Of Nepal Gold & Silver Dealers\u2019 Association (FENEGOSIDA).',
     unavailable: 'Rate unavailable right now \u2014 please call the counter on 01-5915052 for today\u2019s price.',
     cur: (n) => 'Rs ' + fmtNum(n),
   },
@@ -24,7 +25,8 @@ const I18N = {
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
     live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
     fetching: 'आजको दर ल्याउँदै\u2026',
-    src: 'स्रोत: नेपाल सुनचाँदी व्यवसायी महासंघ (फेनेगोसिडा)।',
+    srcKago: 'स्रोत: काठमाडौँ सुनचाँदी व्यवसायी संघ (कागोसिडा)।',
+    srcFene: 'स्रोत: नेपाल सुनचाँदी व्यवसायी महासंघ (फेनेगोसिडा)।',
     unavailable: 'अहिले दर उपलब्ध छैन \u2014 आजको मूल्यको लागि ०१-५९१५०५२ मा फोन गर्नुहोस्।',
     cur: (n) => 'रु ' + toNepaliDigits(fmtNum(n)),
   },
@@ -154,7 +156,7 @@ export default function PriceCard() {
             </div>
           </div>
           <p className={`mt-4 text-[0.72rem] leading-relaxed ${failed ? 'text-[#E0A0A0]' : 'text-steel'} ${np ? 'font-np' : ''}`} aria-live="polite">
-            {failed ? t.unavailable : !prices ? t.fetching : t.src}
+            {failed ? t.unavailable : !prices ? t.fetching : prices.source === 'KAGOSIDA' ? t.srcKago : t.srcFene}
           </p>
         </div>
       </div>
