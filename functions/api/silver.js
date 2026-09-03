@@ -12,7 +12,7 @@ let memCache = null;
 let lastFailAt = 0;
 // short enough that the site recovers within a minute of a source coming
 // back, long enough that a sustained outage is not hammered on every request
-const FAIL_RETRY_MS = 60 * 1000;
+const FAIL_RETRY_MS = 25 * 1000;
 let memEndpoint = {};
 
 const UA_HEADERS = {
@@ -606,16 +606,20 @@ const REFRESH_MS = 5 * 60 * 1000;
 
 function shouldScrape(cached, day, minutes, force) {
   if (force) return true;
-  if (!cached) return Date.now() - lastFailAt > FAIL_RETRY_MS;
-  // a cache from an earlier day is not today's price, so keep trying for a
-  // fresh one — but not on literally every request while a source is down
-  if (cached.dateAD !== day) return Date.now() - (cached.lastAttempt || 0) > FAIL_RETRY_MS;
+  const since = (t) => {
+    const d = Date.now() - (t || 0);
+    return d < 0 ? Infinity : d;   // a future timestamp must not block forever
+  };
+  if (!cached) return since(lastFailAt) > FAIL_RETRY_MS;
+  // yesterday's cache is not today's price, so keep trying — but not on
+  // literally every request while a source is refusing
+  if (cached.dateAD !== day) return since(cached.lastAttempt) > FAIL_RETRY_MS;
   const afterPublish = minutes >= PUBLISH_MINUTES;
   if (!afterPublish) return false;
   if (cached.fetchedMinutes < PUBLISH_MINUTES) return true;
   if (!cached.updatedToday && minutes <= RETRY_WINDOW_END &&
-      Date.now() - (cached.lastAttempt || 0) > RETRY_GAP_MS) return true;
-  return Date.now() - (cached.lastAttempt || 0) > REFRESH_MS;
+      since(cached.lastAttempt) > RETRY_GAP_MS) return true;
+  return since(cached.lastAttempt) > REFRESH_MS;
 }
 
 function json(body, status = 200) {
@@ -633,7 +637,7 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const debug = url.searchParams.has('debug');
-  const force = url.searchParams.has('refresh');
+  const force = url.searchParams.has('refresh') || url.searchParams.has('debug');
 
   // Edge cache: under load, most requests are answered straight from the
   // Cloudflare data center without touching KV or this function's logic.
@@ -669,6 +673,9 @@ export async function onRequestGet(context) {
   // send someone to the counter expecting the wrong price, so it is withheld
   // and the site says the rate is unavailable instead.
   if (!cached || cached.dateAD !== day) {
+    if (!log.length) {
+      log.push(`no attempt on this request: last try ${Math.round((Date.now() - (cached?.lastAttempt || 0)) / 1000)}s ago, retry gap ${FAIL_RETRY_MS / 1000}s — add ?refresh=1 to force one`);
+    }
     return json({
       error: 'Today\u2019s rate is not available yet. Please call the counter on 01-5915052.',
       ...(debug ? { trace: log, heldBack: cached ? { dateAD: cached.dateAD, tolaSale: cached.tolaSale } : null } : {}),
