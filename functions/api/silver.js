@@ -35,7 +35,14 @@ async function getText(url, referer) {
   const headers = referer
     ? { ...UA_HEADERS, Referer: referer + '/', Origin: referer }
     : UA_HEADERS;
-  const res = await fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+  let res = await fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+
+  // some servers reject a cross-site Origin outright; others require it. If the
+  // first shape is refused, try once more without those headers.
+  if ((res.status === 401 || res.status === 403) && referer) {
+    spend();
+    res = await fetch(url, { headers: UA_HEADERS, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
@@ -415,7 +422,7 @@ async function scrapeSource(cfg, env, log) {
   if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
 
   // 3. hunt for the API the bundle talks to
-  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 12);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 18);
   for (const url of candidates) {
     try {
       const quote = await tryUrl(url);
@@ -458,13 +465,13 @@ const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
 
 /** Ask the sources in order and publish only a figure we can stand behind. */
 async function scrape(env, log, prev) {
-  budget = 42;   // seven sources share this, under the per-invocation cap
+  budget = 44;   // two sources share this, under the per-invocation cap
   floor = 0;
   const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
-    floor = Math.max(0, budget - (cfg.htmlOnly ? 2 : 10));
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 21));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
