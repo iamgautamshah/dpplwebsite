@@ -349,13 +349,31 @@ async function discoverEndpoints(cfg, log) {
   const parts = host.split('.');
   const twoPartTld = /\.(org|com|net|gov|edu|co)\.[a-z]{2}$/i.test(host);
   const baseDomain = parts.slice(twoPartTld ? -3 : -2).join('.');
+  // .at() — parts[-3] is not an index in JavaScript and yields undefined
+  const name = parts.at(twoPartTld ? -3 : -2) || host;   // e.g. "kagosida"
+
+  /* A backend often lives on a different domain from the site that uses it, so
+     hosts found in the bundle are kept even when they are off-domain — only
+     framework and CDN noise is dropped. Own-domain and name-matching hosts are
+     tried first. */
   for (const b of [...bases]) {
-    try { if (!new URL(b).hostname.endsWith(baseDomain)) bases.delete(b); } catch { bases.delete(b); }
+    try {
+      const h = new URL(b).hostname;
+      if (/^(localhost|127\.|0\.0\.0\.0)/.test(h) || STATIC_HOST_RE.test(h)) bases.delete(b);
+    } catch { bases.delete(b); }
   }
+  const rank = (b) => {
+    const h = (() => { try { return new URL(b).hostname; } catch { return ''; } })();
+    if (h.includes(name) && /api|backend|server/i.test(h)) return 0;   // kagosidaapi.…
+    if (h.endsWith(baseDomain)) return 1;
+    if (h.includes(name)) return 2;
+    return 3;
+  };
 
   const paths = rateFirst([...apiPaths]);
   // a host with "api" in its name is the likeliest backend — ask it first
-  const ordered = [...bases].sort((a, b) => (/api/i.test(b) ? 1 : 0) - (/api/i.test(a) ? 1 : 0));
+  const ordered = [...bases].sort((a, b) => rank(a) - rank(b));
+  log.push(`${cfg.name} hosts: ${ordered.slice(0, 4).join(', ')}`);
   const candidates = [];
   for (const base of ordered) {
     for (const p of paths.slice(0, 8)) {
@@ -423,14 +441,37 @@ async function scrapeSource(cfg, env, log) {
 
   // 3. hunt for the API the bundle talks to
   const candidates = (await discoverEndpoints(cfg, log)).slice(0, 18);
+  const strikes = new Map();          // per host: how many times it has refused
+  const dead = new Set();
+
   for (const url of candidates) {
+    let base = '';
+    try { base = new URL(url).host; } catch { /* ignore */ }
+    if (dead.has(base)) continue;     // costs nothing, spends no budget
     try {
       const quote = await tryUrl(url);
       log.push(`${cfg.name} ok via ${url}${quote.purchase ? '' : ' (sale only)'}`);
       memEndpoint[cfg.name] = url;
       if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(cfg.kvKey, url); } catch { /* ignore */ } }
       return { quote, endpoint: url };
-    } catch (e) { log.push(`${cfg.name} miss ${url}: ${e.message}`); }
+    } catch (e) {
+      log.push(`${cfg.name} miss ${url}: ${e.message}`);
+      /* A 404 only means that path is wrong — the next one may be right, so it
+         never condemns a host. A 5xx means the host does not resolve, a 401/403
+         means it refuses us whatever the path, and an SPA echo means it answers
+         every unknown path with the app shell. Those are host-level, so stop
+         after two rather than working through the whole list. */
+      const hostLevel = /HTTP (5\d\d|401|403)|SPA html echo/.test(e.message);
+      if (hostLevel && base) {
+        const n = (strikes.get(base) || 0) + 1;
+        strikes.set(base, n);
+        if (n >= 2) {
+          dead.add(base);
+          log.push(`${cfg.name} giving up on ${base} after ${n} refusals`);
+        }
+      }
+      if (/budget spent/.test(e.message)) break;
+    }
   }
   throw new Error(`${cfg.name}: no working endpoint found`);
 }
