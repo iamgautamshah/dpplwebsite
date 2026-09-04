@@ -24,7 +24,7 @@ function Chrome({ children }) {
       {children}
       <footer className="border-t border-line px-4 sm:px-6 md:px-12 py-8">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-mute tracking-wide">
-          <p>DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu · © 2026</p>
+          <p>Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu · © 2026</p>
           <p className="flex flex-wrap gap-x-5 gap-y-2">
             <a href="/articles" className="transition-colors hover:text-signal">Journal</a>
             <a href="/privacy" className="transition-colors hover:text-signal">Privacy Policy</a>
@@ -56,7 +56,7 @@ function Blocks({ blocks }) {
           {b.note}
         </p>
       );
-    return <p key={i} className="my-4 text-[1.02rem] leading-[1.75] text-body/85" dangerouslySetInnerHTML={{ __html: b.p }} />;
+    return <p key={i} className="prose-justify my-4 text-[1.02rem] leading-[1.75] text-body/85" dangerouslySetInnerHTML={{ __html: b.p }} />;
   });
 }
 
@@ -109,7 +109,7 @@ export function ArticlePage({ slug }) {
       <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <article className="panel-surface max-w-3xl mx-auto p-5 sm:p-8 md:p-12">
           <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-mute">
-            <a href="/home" className="transition-colors hover:text-signal">DPPL</a>
+            <a href="/home" className="transition-colors hover:text-signal">Diamond Palace Pvt. Ltd.</a>
             <span className="mx-2" aria-hidden="true">/</span>
             <a href="/articles" className="transition-colors hover:text-signal">Journal</a>
             <span className="mx-2" aria-hidden="true">/</span>
@@ -121,7 +121,7 @@ export function ArticlePage({ slug }) {
             <span className="text-signal">{a.category}</span><span aria-hidden="true">·</span>
             <span>{fmtDate(a.date)}</span><span aria-hidden="true">·</span>
             <span>{a.minutes} min read</span><span aria-hidden="true">·</span>
-            <span>DPPL</span>
+            <span>Diamond Palace Pvt. Ltd.</span>
           </p>
 
           <div className="mt-8 border-t border-line pt-6">

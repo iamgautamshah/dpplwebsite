@@ -12,13 +12,13 @@ const PhoneIcon = () => (
 );
 
 const FAQS = [
-  { q: 'Where can I buy the best silver in Kathmandu?', a: 'DPPL trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
+  { q: 'Where can I buy the best silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
   { q: 'What is today\u2019s silver price in Nepal?', a: 'The current silver rate for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
-  { q: 'Is DPPL a silver importer or a retail dealer?', a: 'Both sides of the trade run through the counter. DPPL supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
-  { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every DPPL bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
+  { q: 'Is Diamond Palace Pvt. Ltd. a silver importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
+  { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
   { q: 'How much do making charges add to a silver bar?', a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.' },
-  { q: 'Does DPPL buy silver back?', a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
-  { q: 'What are your opening hours and where exactly are you?', a: 'DPPL is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 980-561-7932 on WhatsApp before visiting for large orders.' },
+  { q: 'Does Diamond Palace Pvt. Ltd. buy silver back?', a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
+  { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
 ];
 
 const SOCIALS = [
@@ -50,10 +50,10 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'DPPL 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello DPPL, I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
-  { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'DPPL 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello DPPL, I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
-  { name: '1 kg Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'DPPL 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello DPPL, I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
-  { name: 'Silver Grains', img: '/images/grains.webp', w: 430, h: 573, alt: 'DPPL silver grains 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello DPPL, I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
+  { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
+  { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
+  { name: '1 kg Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
+  { name: 'Silver Grains', img: '/images/grains.webp', w: 430, h: 573, alt: 'Diamond Palace Pvt. Ltd. silver grains, 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
 ];
 
 
@@ -224,7 +224,7 @@ export default function Site() {
             </h1>
             <div className="mt-8 flex flex-wrap gap-3.5">
               <a href="/products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
-              <a href={WA('Hello DPPL, I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
+              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
             </div>
           </div>
           <div className="relative order-1 lg:order-2 w-full max-w-[560px] mx-auto lg:mx-0 lg:max-w-none" data-rv data-rv-d="1">
@@ -288,14 +288,14 @@ export default function Site() {
 
             <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="DPPL official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo.webp" alt="Diamond Palace Pvt. Ltd. official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
-            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">DPPL</h2>
-            <p className="mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
-              DPPL was established in 2080 B.S. with a simple conviction: that buying silver in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in one thing only: fine silver, 999 purity, in bars of 100 g, 500 g, and 1 kg, and in loose grains for jewellers and manufacturers.
+            <h2 className="engraved font-display text-silverhi text-[clamp(1.5rem,3.6vw,2.4rem)]">Diamond Palace Pvt. Ltd.</h2>
+            <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
+              Diamond Palace Pvt. Ltd. was established in 2080 B.S. with a simple conviction: that buying silver in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in one thing only: fine silver, 999 purity, in bars of 100 g, 500 g, and 1 kg, and in loose grains for jewellers and manufacturers.
             </p>
-            <p className="mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
+            <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
               Every bar we sell carries the DPPL diamond stamp, is weighed on calibrated scales in front of the customer, and leaves the counter with a full VAT invoice. Every bar we sold, we also buy back — at the purchase rate published on this page, the same day. That is the whole business model: honest metal, honest weight, honest paper.
             </p>
             <div className="flex flex-wrap gap-10 mt-8">
@@ -324,7 +324,7 @@ export default function Site() {
                   <h3 className="flex-1 font-body font-medium text-silverhi text-[1.02rem] leading-snug transition-colors group-hover:text-gold">{f.q}</h3>
                   <span className="mt-1 text-gold text-lg leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
                 </summary>
-                <p className="mt-3 pl-7 text-[0.95rem] leading-relaxed text-silver/75">{f.a}</p>
+                <p className="prose-justify mt-3 pl-7 text-[0.95rem] leading-relaxed text-silver/75">{f.a}</p>
               </details>
             ))}
           </div>
@@ -337,7 +337,7 @@ export default function Site() {
             <Ledger>The counter</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Visit the counter.</h2>
             <address className="mt-6 not-italic text-lg leading-relaxed text-silver/85">
-              <b className="text-gold font-medium">DPPL</b><br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600, Nepal
+              <b className="text-gold font-medium">Diamond Palace Pvt. Ltd.</b><br />5th Floor, Sasa Complex<br />New Road, Kathmandu 44600, Nepal
             </address>
             <ul className="mt-6 space-y-3.5 text-[0.95rem] text-silver/85">
               <li className="flex gap-4">
@@ -350,7 +350,7 @@ export default function Site() {
               </li>
               <li className="flex gap-4 items-center">
                 <span className="w-[4.5rem] shrink-0 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">MOBILE</span>
-                <a href="tel:+9779805617932" className="tnum transition-colors hover:text-gold">+977 980-561-7932</a>
+                <a href="tel:+9779805617932" className="tnum transition-colors hover:text-gold">+977 9805617932</a>
               </li>
               <li className="flex gap-4 items-center">
                 <span className="w-[4.5rem] shrink-0 font-mono text-[0.6rem] tracking-[0.24em] text-gold/80">EMAIL</span>
@@ -359,7 +359,7 @@ export default function Site() {
             </ul>
             <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
               <a href="tel:+97715915052" className="btn-gold inline-flex items-center justify-center gap-2"><PhoneIcon /> CALL US</a>
-              <a href={WA('Hello DPPL, I have an enquiry.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP</a>
+              <a href={WA('Hello Diamond Palace Pvt. Ltd., I have an enquiry.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP</a>
               <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="btn-line inline-flex items-center justify-center">GOOGLE MAPS ↗</a>
             </div>
           </div>
@@ -374,11 +374,11 @@ export default function Site() {
         <div className="flex items-center gap-3.5">
           <img src="/images/logo.webp" alt="DPPL seal" className="w-10 h-10 rounded-full" />
           <p className="text-xs text-steel leading-relaxed tracking-wide">
-            <span className="font-display text-silver tracking-[0.14em] text-sm">DPPL</span><br />Est. 2080 B.S.
+            <span className="font-display text-silver tracking-[0.14em] text-sm">Diamond Palace Pvt. Ltd.</span><br />Est. 2080 B.S.
           </p>
         </div>
           <div className="text-xs text-steel leading-relaxed tracking-wide sm:text-right">
-            <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 DPPL. All rights reserved.</p>
+            <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 Diamond Palace Pvt. Ltd. All rights reserved.</p>
               <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
               <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
               <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>

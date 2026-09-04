@@ -308,3 +308,14 @@ html[data-js] [data-rv]:not(.in) img { transform: scale(1.05); }
   html[data-js] [data-rv]:not(.in) { transform: none; }
   html[data-js] [data-rv]:not(.in) img { transform: none; }
 }
+
+
+/* ── justified body copy ──────────────────────────────────────────────────
+   Applied to running prose only: multi-line paragraphs in the essay-like
+   sections. Justification without hyphenation opens rivers of white space, so
+   hyphens are enabled, and it starts at the small breakpoint because a phone
+   column is too narrow to justify cleanly. */
+.prose-justify { hyphens: auto; -webkit-hyphens: auto; }
+@media (min-width: 640px) {
+  .prose-justify { text-align: justify; text-justify: inter-word; }
+}

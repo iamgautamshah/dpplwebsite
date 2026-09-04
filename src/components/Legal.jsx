@@ -28,7 +28,7 @@ function Shell({ title, updated, children }) {
           <div className="mt-8 space-y-8">{children}</div>
 
           <div className="mt-12 pt-8 border-t border-line flex flex-wrap gap-3">
-            <a href="/" className="btn-ghost">← Back to DPPL</a>
+            <a href="/" className="btn-ghost">← Back to Diamond Palace Pvt. Ltd.</a>
             <a href="mailto:dppl2080@gmail.com" className="btn-ghost">dppl2080@gmail.com</a>
           </div>
         </article>
@@ -36,7 +36,7 @@ function Shell({ title, updated, children }) {
 
       <footer className="bg-[#080C14] border-t border-silver/[0.07] px-5 md:px-16 py-8">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-mute tracking-wide">© 2026 DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
+          <p className="text-xs text-mute tracking-wide">© 2026 Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
           <p className="flex gap-5 text-xs text-mute tracking-wide">
             <a href="/privacy" className="transition-colors hover:text-signal">Privacy Policy</a>
             <a href="/terms" className="transition-colors hover:text-signal">Terms of Use</a>
@@ -61,7 +61,7 @@ export function Privacy() {
     <Shell title="Privacy Policy" updated={UPDATED}>
       <p className="text-[0.95rem] leading-relaxed text-body/85">
         This policy explains what information is collected when you visit dppl.com.np, why it is collected, and what
-        choices you have. DPPL operates a silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
+        choices you have. Diamond Palace Pvt. Ltd. operates a silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
         an information and enquiry channel — it does not sell online, take payments, or hold accounts.
       </p>
 
@@ -84,7 +84,7 @@ export function Privacy() {
 
       <Section heading="Cookies and similar technologies">
         <p>
-          A cookie is a small file placed on your device by a website. DPPL does not set any cookies of its own for
+          A cookie is a small file placed on your device by a website. Diamond Palace Pvt. Ltd. does not set any cookies of its own for
           tracking or profiling, and the site works fully without them.
         </p>
         <p>
@@ -108,7 +108,7 @@ export function Privacy() {
         </p>
         <p>
           Third-party ad servers or ad networks may use cookies, JavaScript, or web beacons in the advertisements shown
-          on this site. They receive your IP address automatically when this occurs. DPPL has no access to or control
+          on this site. They receive your IP address automatically when this occurs. Diamond Palace Pvt. Ltd. has no access to or control
           over cookies used by third-party advertisers.
         </p>
       </Section>
@@ -168,7 +168,7 @@ export function Privacy() {
 
       <Section heading="Contact">
         <p>
-          DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
+          Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
           Counter: 01-5915052 · Mobile: +977 980-561-7932 · Email: dppl2080@gmail.com
         </p>
       </Section>
@@ -185,7 +185,7 @@ export function Terms() {
 
       <Section heading="About this site">
         <p>
-          This website provides information about DPPL and publishes the daily silver rate for reference. It is not an
+          This website provides information about Diamond Palace Pvt. Ltd. and publishes the daily silver rate for reference. It is not an
           online shop: no purchase, sale, payment, or reservation can be completed through this site. All transactions
           take place in person at our counter on New Road, Kathmandu.
         </p>
@@ -214,7 +214,7 @@ export function Terms() {
 
       <Section heading="Products and purchases">
         <p>
-          All bullion sold by DPPL is 999 fine silver, weighed on calibrated scales in the presence of the customer and
+          All bullion sold by Diamond Palace Pvt. Ltd. is 999 fine silver, weighed on calibrated scales in the presence of the customer and
           supplied with a full VAT invoice. Availability of any weight or format is subject to stock at the time of
           purchase. We buy back documented bullion we have sold at the purchase rate published on the day of the
           buy-back.
@@ -225,13 +225,13 @@ export function Terms() {
         <p>
           We take care to keep this site accurate and available, but we do not guarantee that it will be uninterrupted,
           error-free, or that published rates will always reflect the latest market movement. The site is provided on an
-          "as is" basis, and DPPL is not liable for loss arising from reliance on information published here.
+          "as is" basis, and Diamond Palace Pvt. Ltd. is not liable for loss arising from reliance on information published here.
         </p>
       </Section>
 
       <Section heading="Intellectual property">
         <p>
-          The DPPL name, seal, site text, images, and design are the property of DPPL and may not be copied or reproduced
+          The Diamond Palace Pvt. Ltd. name, seal, site text, images, and design are the property of Diamond Palace Pvt. Ltd. and may not be copied or reproduced
           without permission. Map data is © OpenStreetMap contributors and CARTO.
         </p>
       </Section>
@@ -239,7 +239,7 @@ export function Terms() {
       <Section heading="External links and advertising">
         <p>
           This site links to third-party services such as WhatsApp and Google Maps, and displays third-party advertising.
-          DPPL does not control and is not responsible for the content, products, or practices of those third parties.
+          Diamond Palace Pvt. Ltd. does not control and is not responsible for the content, products, or practices of those third parties.
         </p>
       </Section>
 
@@ -252,7 +252,7 @@ export function Terms() {
 
       <Section heading="Contact">
         <p>
-          DPPL · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
+          Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu 44600, Nepal<br />
           Counter: 01-5915052 · Mobile: +977 980-561-7932 · Email: dppl2080@gmail.com
         </p>
       </Section>
