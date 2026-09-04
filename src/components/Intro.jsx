@@ -142,7 +142,7 @@ export default function Intro({ onEnter }) {
       <Stars count={phase === "arrive" ? 0 : 220} />
 
       <section className={`ov ${on('hero')} stag absolute inset-x-0 z-[4] flex flex-col items-center justify-center text-center pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
-        <p className="eyebrow mb-6">DPPL · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
+        <p className="eyebrow mb-6">Diamond Palace Pvt. Ltd. · <b className="text-gold font-medium">Est. 2080 B.S.</b> · New Road, Kathmandu</p>
         <h1 className="font-display text-silverhi leading-[1.04] text-[clamp(2.6rem,8.5vw,6.4rem)]">
           Hello, <span className="text-gold">Investors.</span>
         </h1>
@@ -167,7 +167,7 @@ export default function Intro({ onEnter }) {
       <section className={`ov ${on('arrive')} absolute inset-x-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
         <img src="/images/logo.webp" alt="" width="64" height="64" className="w-16 h-16 rounded-full mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
         <p className="text-[0.62rem] tracking-[0.44em] uppercase text-gold mb-3">You have arrived</p>
-        <h2 className="font-display text-silverhi leading-tight text-[clamp(2.2rem,7vw,4.2rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">DPPL</h2>
+        <h2 className="font-display text-silverhi leading-[1.12] text-[clamp(1.5rem,4.6vw,2.9rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">Diamond Palace Pvt. Ltd.</h2>
         <p className="mt-4 max-w-md text-silverhi/90 tracking-wide text-[clamp(0.9rem,2vw,1.05rem)] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
           5th Floor, Sasa Complex, New Road,<br />Kathmandu 44600, Nepal
         </p>

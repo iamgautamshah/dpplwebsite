@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export const MAPS_URL = 'https://maps.app.goo.gl/vi1fuUN78UcsuRTA7';
+export const MAPS_URL = 'https://maps.app.goo.gl/5yAecqdMx1nu1hKc8';
 const DPPL = [27.7032447, 85.3111961];
 
 export default function KathmanduMap({ className = '' }) {
