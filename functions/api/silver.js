@@ -2,6 +2,7 @@
 const KAGOSIDA = 'https://kagosida.org.np';
 const FENEGOSIDA_SOURCES = ['https://www.fenegosida.org/', 'https://fenegosida.org/'];
 const KV_KEY = 'silver';
+const MANUAL_KEY = 'manual-rate';
 const KV_ENDPOINT_KEY = 'silver-endpoint';
 const PUBLISH_MINUTES = 10 * 60 + 55; // 10:55 NPT
 const RETRY_WINDOW_END = 15 * 60;     // keep retrying until 3:00 PM NPT
@@ -30,18 +31,23 @@ const spend = () => {
   budget -= 1;
 };
 
-async function getText(url, referer) {
+async function getText(url, referer, method = 'GET') {
   spend();
   const headers = referer
     ? { ...UA_HEADERS, Referer: referer + '/', Origin: referer }
     : UA_HEADERS;
-  let res = await fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+  const init = { method, headers, redirect: 'follow', signal: AbortSignal.timeout(12000) };
+  if (method === 'POST') {
+    init.headers = { ...headers, 'Content-Type': 'application/json' };
+    init.body = '{}';
+  }
+  let res = await fetch(url, init);
 
   // some servers reject a cross-site Origin outright; others require it. If the
   // first shape is refused, try once more without those headers.
   if ((res.status === 401 || res.status === 403) && referer) {
     spend();
-    res = await fetch(url, { headers: UA_HEADERS, redirect: 'follow', signal: AbortSignal.timeout(12000) });
+    res = await fetch(url, { ...init, headers: UA_HEADERS });
   }
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
@@ -111,7 +117,7 @@ function plausible(unit, v) {
 
 function fromUnits(u) {
   if (!u) return null;
-  if (u.tola && u.g10) return { tola: u.tola, g10: u.g10 };
+  if (u.tola && u.g10) return { tola: u.tola, g10: u.g10, g10Given: true };
   if (u.tola) return { tola: u.tola, g10: r2(u.tola / TOLA_PER_10G) };
   if (u.g10) return { tola: r2(u.g10 * TOLA_PER_10G), g10: u.g10 };
   if (u.gram) return { tola: r2(u.gram * 11.6638), g10: r2(u.gram * 10) };
@@ -156,7 +162,38 @@ function silverOnly(text) {
   return joined.trim().length > 8 ? joined : text;
 }
 
+/* KAGOSIDA publishes structured JSON:
+     silverRates: [{ sellingPerTola, sellingPer10g, buyingPerTola, buyingPer10g }]
+   Their buyingPerTola is currently 5,474 — above the selling price, and a
+   transposition of 4,574 — so each figure is checked against its counterpart
+   before use, and the ten-gram value wins when they disagree. */
+function fromKagosidaJson(raw) {
+  let d;
+  try { d = JSON.parse(raw); } catch { return null; }
+  const row = Array.isArray(d?.silverRates) ? d.silverRates[0] : null;
+  if (!row) return null;
+  const n = (v) => (Number.isFinite(v) && v > 0 ? v : null);
+  const consistent = (tola, g10) => tola && g10 && Math.abs(tola / g10 - TOLA_PER_10G) / TOLA_PER_10G < 0.015;
+
+  const pick = (tola, g10) => {
+    if (consistent(tola, g10)) return { tola: r2(tola), g10: r2(g10), g10Given: true };
+    if (g10) return { tola: toHalf(g10 * TOLA_PER_10G), g10: r2(g10), g10Given: true };
+    if (tola) return { tola: r2(tola), g10: r2(tola / TOLA_PER_10G) };
+    return null;
+  };
+
+  const sale = pick(n(row.sellingPerTola), n(row.sellingPer10g));
+  if (!sale) return null;
+  let purchase = pick(n(row.buyingPerTola), n(row.buyingPer10g));
+  if (purchase && purchase.tola >= sale.tola) purchase = null;   // never quote a buy above the sell
+  // structured figures from the association itself need no second opinion
+  return { sale, purchase, trusted: true };
+}
+
 function extractQuote(raw) {
+  const kago = fromKagosidaJson(raw);
+  if (kago) return kago;
+
   const text = silverOnly(normalize(raw));
   const low = text.toLowerCase();
 
@@ -282,10 +319,19 @@ const SOURCES = [
     name: 'KAGOSIDA', via: 'kagosida.org.np',
     kvKey: 'silver-endpoint-kagosida',
     origins: ['https://kagosida.org.np'],
+    /* Their front end calls the API with relative paths, so the backend host
+       never appears in the bundle. These are the hosts their app is known to
+       run on; they are tried before any guessed subdomain. */
+    /* Their front end calls this host; it is not discoverable from the bundle
+       because the calls are relative, so it is named here. */
+    extraBases: [
+      'https://node.kagosida.org.np',
+      'https://kagosidaapi.autonomoustechnology.net',
+    ],
     pages: ['/'],
     seeds: [
       '/api/v1/getcurrentrate', '/api/v1/rate', '/api/v1/rates', '/api/rate',
-      '/api/current-rate', '/api/todayrate', '/api/v1/getratehistory',
+      '/api/currentrate', '/api/current-rate', '/api/todayrate',
     ],
     subs: ['api', 'backend', 'server'],
   },
@@ -300,6 +346,19 @@ const SOURCES = [
       '/ajax/rate.php', '/getrate.php', '/rate.php', '/api/rate.php',
     ],
     subs: ['api', 'backend', 'admin', 'server', 'data'],
+  },
+  /* Last resort. Both associations serve JavaScript-rendered sites and lock
+     their APIs, so when neither answers the rate is read from a page that
+     republishes FENEGOSIDA's official figure. It is the same federation rate —
+     `via` records that it came the long way round — and it is only ever used
+     when both associations have refused. */
+  {
+    name: 'FENEGOSIDA', via: 'arthakendra.com (republished)',
+    kvKey: 'silver-endpoint-republished',
+    origins: ['https://arthakendra.com'],
+    pages: ['/widget/gold-silver-widget', '/gold-silver-price-in-nepal'],
+    htmlOnly: true,
+    lastResort: true,
   },
 ];
 
@@ -342,6 +401,7 @@ async function discoverEndpoints(cfg, log) {
   }
 
   const host = new URL(cfg.origins[0]).hostname.replace(/^www\./, '');
+  for (const b of cfg.extraBases || []) bases.add(b);
   for (const sub of cfg.subs) bases.add(`https://${sub}.${host}`);
   // the bundle also references the framework and the agency that built it, so
   // keep only hosts on this source's own domain — matching the base domain, in
@@ -362,7 +422,9 @@ async function discoverEndpoints(cfg, log) {
       if (/^(localhost|127\.|0\.0\.0\.0)/.test(h) || STATIC_HOST_RE.test(h)) bases.delete(b);
     } catch { bases.delete(b); }
   }
+  const known = new Set(cfg.extraBases || []);
   const rank = (b) => {
+    if (known.has(b)) return -1;      // told to us, not guessed
     const h = (() => { try { return new URL(b).hostname; } catch { return ''; } })();
     if (h.includes(name) && /api|backend|server/i.test(h)) return 0;   // kagosidaapi.…
     if (h.endsWith(baseDomain)) return 1;
@@ -395,12 +457,12 @@ async function discoverEndpoints(cfg, log) {
   // candidates are already built api-host-first with paths in priority order;
   // re-sorting them globally meant only the top one or two path shapes were
   // ever reached before the budget ran out
-  return [...new Set(candidates)].slice(0, 28);
+  return [...new Set(candidates)].slice(0, 26);
 }
 
 async function scrapeSource(cfg, env, log) {
-  const tryUrl = async (url, allowHtml = false) => {
-    const body = await getText(url, cfg.origins[0]);
+  const tryUrl = async (url, allowHtml = false, method = 'GET') => {
+    const body = await getText(url, cfg.origins[0], method);
     if (!allowHtml && SPA_ECHO_RE.test(body)) throw new Error('SPA html echo');
     const q = extractQuote(body);
     if (!q || !q.sale) throw new Error('no silver in response');
@@ -440,9 +502,10 @@ async function scrapeSource(cfg, env, log) {
   if (cfg.htmlOnly) throw new Error(`${cfg.name}${cfg.via ? ' via ' + cfg.via : ''}: page had no rate`);
 
   // 3. hunt for the API the bundle talks to
-  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 18);
+  const candidates = (await discoverEndpoints(cfg, log)).slice(0, 20);
   const strikes = new Map();          // per host: how many times it has refused
   const dead = new Set();
+  const postLater = [];               // known-host paths that 404'd on GET
 
   for (const url of candidates) {
     let base = '';
@@ -461,6 +524,9 @@ async function scrapeSource(cfg, env, log) {
          means it refuses us whatever the path, and an SPA echo means it answers
          every unknown path with the app shell. Those are host-level, so stop
          after two rather than working through the whole list. */
+      if (/HTTP (404|405)/.test(e.message) && (cfg.extraBases || []).some((b) => url.startsWith(b))) {
+        postLater.push(url);
+      }
       const hostLevel = /HTTP (5\d\d|401|403)|SPA html echo/.test(e.message);
       if (hostLevel && base) {
         const n = (strikes.get(base) || 0) + 1;
@@ -473,6 +539,21 @@ async function scrapeSource(cfg, env, log) {
       if (/budget spent/.test(e.message)) break;
     }
   }
+  /* Some rate APIs answer only to POST. Now that every GET has been tried,
+     spend whatever budget is left asking the most likely paths again. */
+  for (const url of postLater.slice(0, 5)) {
+    try {
+      const quote = await tryUrl(url, false, 'POST');
+      log.push(`${cfg.name} ok via POST ${url}`);
+      memEndpoint[cfg.name] = url;
+      if (env.RATE_CACHE) { try { await env.RATE_CACHE.put(cfg.kvKey, url); } catch { /* ignore */ } }
+      return { quote, endpoint: url };
+    } catch (e) {
+      log.push(`${cfg.name} miss POST ${url}: ${e.message}`);
+      if (/budget spent/.test(e.message)) break;
+    }
+  }
+
   throw new Error(`${cfg.name}: no working endpoint found`);
 }
 
@@ -506,13 +587,13 @@ const near = (a, b, tol) => a > 0 && b > 0 && Math.abs(a - b) / b <= tol;
 
 /** Ask the sources in order and publish only a figure we can stand behind. */
 async function scrape(env, log, prev) {
-  budget = 44;   // two sources share this, under the per-invocation cap
+  budget = 48;   // shared across the sources, under the per-invocation cap
   floor = 0;
   const seen = [];
   for (const cfg of SOURCES) {
     // a page-only source needs a couple of requests; one that must hunt for an
     // API gets more, but never enough to starve the sources behind it
-    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : 21));
+    floor = Math.max(0, budget - (cfg.htmlOnly ? 3 : cfg.extraBases ? 26 : 16));
     try {
       const { quote } = await scrapeSource(cfg, env, log);
       if (!sane(quote.sale) || (quote.purchase && !sane(quote.purchase))) {
@@ -521,6 +602,12 @@ async function scrape(env, log, prev) {
       }
       const hit = { quote, source: cfg.name, via: cfg.via || null };
       const tola = quote.sale.tola;
+
+      if (quote.trusted) {
+        log.push(`${cfg.via} published ${tola} as structured data — taken as authoritative`);
+        floor = 0;
+        return hit;
+      }
 
       // A figure in line with the last confirmed rate is published as-is.
       if (prev && near(tola, prev, MAX_DAILY_MOVE)) {
@@ -588,15 +675,27 @@ function buildPayload(quote, source, day, minutes, updatedToday) {
      4,765 ÷ 11.6638 = 4,085.44 → 4,085.50. Rate sites that round to a whole
      rupee would otherwise report 4,086. */
   const tola = r2(quote.sale.tola);
-  const sale = { tola, g10: toHalf(tola / TOLA_PER_10G) };
+  const sale = { tola, g10: toHalf(tola / TOLA_PER_10G) };   // refined below if the source states one
 
   /* KAGOSIDA publishes its own buy-back rate, so that is what gets quoted.
      FENEGOSIDA publishes only the official sale rate, so there the buy-back
      is worked out at the house margin. */
   const published = !!quote.purchase && Number.isFinite(quote.purchase.tola)
     && quote.purchase.tola > 0 && quote.purchase.tola < sale.tola;
+
+  /* Prefer a ten-gram figure the source states itself, provided it agrees with
+     the tola rate — the association's own rounding beats our arithmetic. */
+  const agrees = (g10, t) => Number.isFinite(g10) && g10 > 0
+    && Math.abs(g10 - t / TOLA_PER_10G) / (t / TOLA_PER_10G) < 0.01;
+  if (quote.sale.g10Given && agrees(quote.sale.g10, sale.tola)) sale.g10 = r2(quote.sale.g10);
+
   const purchase = published
-    ? { tola: r2(quote.purchase.tola), g10: toHalf(quote.purchase.tola / TOLA_PER_10G) }
+    ? {
+        tola: r2(quote.purchase.tola),
+        g10: quote.purchase.g10Given && agrees(quote.purchase.g10, quote.purchase.tola)
+          ? r2(quote.purchase.g10)
+          : toHalf(quote.purchase.tola / TOLA_PER_10G),
+      }
     : { tola: toHalf(sale.tola * (1 - DEALER_SPREAD)), g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)) };
   return {
     tolaSale: sale.tola,
@@ -691,6 +790,38 @@ export async function onRequestGet(context) {
   const { day, minutes } = nptNow();
   let cached = await readCache(env);
   const log = [];
+
+  /* A rate entered by hand at the counter. Set the KV key `manual-rate` to
+     {"dateAD":"2026-09-03","tolaSale":4725,"tolaPurchase":4536,
+      "g10Sale":4051,"g10Purchase":3888,"source":"KAGOSIDA"}
+     and it is published for that day, ahead of anything scraped. It is ignored
+     the moment its date is not today, so it can never go stale. */
+  if (env.RATE_CACHE) {
+    try {
+      const manual = await env.RATE_CACHE.get(MANUAL_KEY, 'json');
+      if (manual && manual.dateAD === day && Number.isFinite(manual.tolaSale)) {
+        const payload = {
+          tolaSale: manual.tolaSale,
+          tolaPurchase: Number.isFinite(manual.tolaPurchase) ? manual.tolaPurchase : toHalf(manual.tolaSale * (1 - DEALER_SPREAD)),
+          g10Sale: Number.isFinite(manual.g10Sale) ? manual.g10Sale : toHalf(manual.tolaSale / TOLA_PER_10G),
+          g10Purchase: Number.isFinite(manual.g10Purchase) ? manual.g10Purchase : toHalf(manual.tolaSale * (1 - DEALER_SPREAD) / TOLA_PER_10G),
+          reference: { tola: manual.tolaSale, g10: manual.g10Sale || null },
+          dateAD: day,
+          fetchedAt: new Date().toISOString(),
+          fetchedMinutes: minutes,
+          updatedToday: true,
+          source: manual.source === 'FENEGOSIDA' ? 'FENEGOSIDA' : 'KAGOSIDA',
+          via: 'set at the counter',
+          manual: true,
+          stale: false,
+          ...(debug ? { trace: ['manual rate in KV for today; nothing scraped'] } : {}),
+        };
+        const out = json(payload);
+        if (!debug && !force) context.waitUntil(caches.default.put(cacheKey, out.clone()));
+        return out;
+      }
+    } catch { /* fall through to scraping */ }
+  }
 
   if (shouldScrape(cached, day, minutes, force)) {
     try {
