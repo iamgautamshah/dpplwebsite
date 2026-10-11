@@ -113,7 +113,7 @@ page(
     '@type': 'Blog',
     name: 'The DPPL Journal',
     url: 'https://dppl.com.np/articles',
-    publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo.webp' } },
+    publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
     blogPost: articles.map((a) => ({
       '@type': 'BlogPosting',
       headline: a.title,
@@ -137,13 +137,13 @@ for (const a of articles) {
       '@type': 'BlogPosting',
       headline: a.title,
       description: a.description,
-      image: 'https://dppl.com.np/images/logo.webp',
+      image: 'https://dppl.com.np/images/logo-gold-square.webp',
       datePublished: a.date,
       dateModified: a.date,
       articleSection: a.category,
       inLanguage: 'en',
       author: { '@type': 'Organization', name: 'DPPL', url: 'https://dppl.com.np/' },
-      publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo.webp' } },
+      publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
       mainEntityOfPage: { '@type': 'WebPage', '@id': `https://dppl.com.np/articles/${a.slug}` },
     }
   );

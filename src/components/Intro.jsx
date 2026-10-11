@@ -147,7 +147,7 @@ export default function Intro({ onEnter }) {
           Hello, <span className="text-gold">Investors.</span>
         </h1>
         <p className="mt-5 max-w-xl px-6 text-steel tracking-wide text-[clamp(0.95rem,2vw,1.15rem)]">
-          Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine silver is being weighed, sealed, and priced for today. Let us take you there.
+          Somewhere on the planet below — in the oldest bazaar of Kathmandu — fine gold and silver are being weighed, sealed, and priced for today. Let us take you there.
         </p>
       </section>
 
@@ -165,7 +165,7 @@ export default function Intro({ onEnter }) {
       </section>
 
       <section className={`ov ${on('arrive')} absolute inset-x-0 z-[5] flex flex-col items-center justify-center text-center px-6 pointer-events-none`} style={{ top: `${OVERSCAN}px`, bottom: `${OVERSCAN}px` }}>
-        <img src="/images/logo.webp" alt="" width="64" height="64" className="w-16 h-16 rounded-full mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
+        <img src="/images/logo-gold.webp" alt="" width="420" height="279" className="w-44 h-auto mb-5 shadow-[0_10px_30px_-8px_rgba(0,0,0,0.8)]" />
         <p className="text-[0.62rem] tracking-[0.44em] uppercase text-gold mb-3">You have arrived</p>
         <h2 className="font-display text-silverhi leading-[1.12] text-[clamp(1.5rem,4.6vw,2.9rem)] drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)]">Diamond Palace Pvt. Ltd.</h2>
         <p className="mt-4 max-w-md text-silverhi/90 tracking-wide text-[clamp(0.9rem,2vw,1.05rem)] drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">

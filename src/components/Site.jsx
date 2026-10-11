@@ -12,12 +12,14 @@ const PhoneIcon = () => (
 );
 
 const FAQS = [
-  { q: 'Where can I buy the best silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal only in 999 fine silver: bars of 100 g, 500 g and 1 kg, and loose silver grain sold by weight. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
-  { q: 'What is today\u2019s silver price in Nepal?', a: 'The current silver rate for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
-  { q: 'Is Diamond Palace Pvt. Ltd. a silver importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
+  { q: 'Where can I buy gold and silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal in 999 fine silver \u2014 bars of 100 g, 500 g and 1 kg, and loose grain sold by weight \u2014 and, since October 2026, in 24-carat gold. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
+  { q: 'What is today\u2019s gold and silver price in Nepal?', a: 'The current gold and silver rates for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
+  { q: 'Is Diamond Palace Pvt. Ltd. a precious-metal importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
+  { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published at the top of this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
+  { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 24-carat gold. Ask at the counter for jewellery-grade pricing.' },
   { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
-  { q: 'How much do making charges add to a silver bar?', a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.' },
-  { q: 'Does Diamond Palace Pvt. Ltd. buy silver back?', a: 'Yes. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
+  { q: 'How much do making charges add to a bar?', a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.' },
+  { q: 'Does Diamond Palace Pvt. Ltd. buy gold and silver back?', a: 'Yes, both metals. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
   { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
 ];
 
@@ -138,7 +140,7 @@ function Nav() {
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
         <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
-          <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
+          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-10 w-auto" width="420" height="279" />
           <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
             DP<span className="text-gold">PL</span>
             <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
@@ -219,7 +221,7 @@ export default function Site() {
             <Ledger>Rates · New Road ledger</Ledger>
             <p className="eyebrow mb-6">Silver bullion · <b className="text-gold font-medium">999 fine</b> · Weighed before your eyes</p>
             <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(2.1rem,5.4vw,3.8rem)]">
-              <span className="mask-line"><span className="mask-inner">Today's silver price,</span></span>
+              <span className="mask-line"><span className="mask-inner">Today's gold &amp; silver price,</span></span>
               <span className="mask-line"><span className="mask-inner mask-delay-1 text-gold">straight from New Road.</span></span>
             </h1>
             <div className="mt-8 flex flex-wrap gap-3.5">
@@ -237,12 +239,31 @@ export default function Site() {
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The collection</Ledger>
-            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3.2rem)]">Fine silver, four ways.</h2>
+            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3.2rem)]">Fine metal, by weight.</h2>
           </div>
           <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
             <span className="hallmark mt-1" aria-hidden="true" />
-            <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published silver rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
+            <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
           </p>
+          <div data-rv className="mt-8 rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] to-transparent p-5 sm:p-7">
+            <p className="flex items-center gap-3 text-[0.7rem] tracking-[0.26em] uppercase text-gold">
+              <span className="hallmark scale-[0.7]" aria-hidden="true" />
+              New — October 2026
+            </p>
+            <h3 className="mt-3 font-display text-silverhi text-[clamp(1.15rem,2.6vw,1.6rem)]">24-carat gold, now at the counter</h3>
+            <p className="prose-justify mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-silver/80">
+              After three years dealing in fine silver, Diamond Palace Pvt. Ltd. opened its gold counter in October 2026.
+              We quote 24-carat gold — 99.9% pure, the investment standard — per tola and per 10 grams, against the same
+              Kathmandu market reference shown at the top of this page. Gold is sold by weight, weighed in front of you,
+              invoiced to the gram, and bought back at the published purchase rate. Quantities and jewellery-grade
+              22-carat pricing are quoted at the counter.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold.')} target="_blank" rel="noopener noreferrer" className="btn-gold">Enquire about gold</a>
+              <a href="tel:+97715915052" className="btn-line">Call the counter</a>
+            </div>
+          </div>
+
           <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
@@ -266,7 +287,7 @@ export default function Site() {
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>The DPPL Journal</Ledger>
-            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Understand silver before you buy it.</h2>
+            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Understand the metal before you buy it.</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mt-10">
             {ARTICLES.slice(0, 4).map((a, i) => (
@@ -288,13 +309,12 @@ export default function Site() {
 
             <section id="about" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto grid md:grid-cols-[auto_1fr] gap-8 md:gap-12 items-start p-5 sm:p-8 md:p-12">
-          <img data-rv src="/images/logo.webp" alt="Diamond Palace Pvt. Ltd. official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="320" height="320" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
+          <img data-rv src="/images/logo-gold-square.webp" alt="Diamond Palace Pvt. Ltd. official seal — est. 2080 B.S., Kathmandu" loading="lazy" decoding="async" width="512" height="512" data-parallax="0.08" className="parallax w-52 md:w-64 rounded-3xl mx-auto transition-transform duration-500 hover:rotate-3" />
           <div data-rv>
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(1.5rem,3.6vw,2.4rem)]">Diamond Palace Pvt. Ltd.</h2>
             <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
-              Diamond Palace Pvt. Ltd. was established in 2080 B.S. with a simple conviction: that buying silver in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in one thing only: fine silver, 999 purity, in bars of 100 g, 500 g, and 1 kg, and in loose grains for jewellers and manufacturers.
-            </p>
+              Diamond Palace Pvt. Ltd. was established in 2080 B.S. with a simple conviction: that buying precious metal in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in fine metal by weight: 999 silver in bars of 100 g, 500 g and 1 kg and in loose grains for jewellers and manufacturers, and, since October 2026, 24-carat gold.</p>
             <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
               Every bar we sell carries the DPPL diamond stamp, is weighed on calibrated scales in front of the customer, and leaves the counter with a full VAT invoice. Every bar we sold, we also buy back — at the purchase rate published on this page, the same day. That is the whole business model: honest metal, honest weight, honest paper.
             </p>
@@ -314,7 +334,7 @@ export default function Site() {
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
           <div data-rv>
             <Ledger>Common questions</Ledger>
-            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Buying silver in Kathmandu</h2>
+            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3rem)]">Buying gold &amp; silver in Kathmandu</h2>
           </div>
           <div className="mt-8 divide-y divide-silver/10">
             {FAQS.map((f, i) => (
@@ -372,7 +392,7 @@ export default function Site() {
       <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="flex items-center gap-3.5">
-          <img src="/images/logo.webp" alt="DPPL seal" className="w-10 h-10 rounded-full" />
+          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-9 w-auto" width="420" height="279" />
           <p className="text-xs text-steel leading-relaxed tracking-wide">
             <span className="font-display text-silver tracking-[0.14em] text-sm">Diamond Palace Pvt. Ltd.</span><br />Est. 2080 B.S.
           </p>

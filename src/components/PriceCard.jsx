@@ -9,7 +9,8 @@ const fmtNum = (n) =>
 
 const I18N = {
   en: {
-    head: "Today's Silver Price",
+    head: "Today's Gold & Silver Price",
+    gold: 'Gold 24K', silver: 'Silver 999',
     thSale: 'SALE', thBuy: 'PURCHASE',
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
     live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',
@@ -20,7 +21,8 @@ const I18N = {
     cur: (n) => 'Rs ' + fmtNum(n),
   },
   np: {
-    head: 'आजको चाँदीको मूल्य',
+    head: 'आजको सुन र चाँदीको मूल्य',
+    gold: 'सुन २४ क्यारेट', silver: 'चाँदी ९९९',
     thSale: 'बिक्री', thBuy: 'खरिद',
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
     live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
@@ -95,6 +97,30 @@ export default function PriceCard() {
 
   const COLS = 'grid grid-cols-[0.72fr_1.24fr_1.24fr] items-center gap-2 sm:gap-3';
 
+  /* One metal's two rows, under its own heading. Gold is only rendered when
+     the board carries it, so a silver-only source still looks deliberate. */
+  const Metal = ({ label, tolaSale, tolaBuy, g10Sale, g10Buy }) => {
+    if (prices && !Number.isFinite(tolaSale)) return null;
+    return (
+      <div className="mt-3 first:mt-0">
+        <p className={`flex items-center gap-2.5 text-[0.7rem] tracking-[0.26em] uppercase text-silver/70 ${np ? 'font-np tracking-[0.1em]' : ''}`}>
+          <span className="hallmark scale-[0.62] opacity-80" aria-hidden="true" />
+          {label}
+        </p>
+        <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10 mt-1.5`}>
+          <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowTola}</span>
+          <Pill v={tolaSale} />
+          <Pill v={tolaBuy} buy />
+        </div>
+        <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10`}>
+          <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowG10}</span>
+          <Pill v={g10Sale} />
+          <Pill v={g10Buy} buy />
+        </div>
+      </div>
+    );
+  };
+
   const Pill = ({ v, buy }) => (
     <span
       className={`block w-full text-center rounded-xl border px-1 sm:px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
@@ -144,16 +170,10 @@ export default function PriceCard() {
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-[#9FD8B4] font-medium">{t.thBuy}</span>
             </div>
-            <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(0.82rem,2.4vw,1.15rem)] tracking-wide">{t.rowTola}</span>
-              <Pill v={prices?.tolaSale} />
-              <Pill v={prices?.tolaPurchase} buy />
-            </div>
-            <div className={`${COLS} py-2.5 border-t border-silver/10`}>
-              <span className="text-silverhi text-[clamp(0.82rem,2.4vw,1.15rem)] tracking-wide">{t.rowG10}</span>
-              <Pill v={prices?.g10Sale} />
-              <Pill v={prices?.g10Purchase} buy />
-            </div>
+            <Metal label={t.gold} tolaSale={prices?.gold?.tolaSale} tolaBuy={prices?.gold?.tolaPurchase}
+                   g10Sale={prices?.gold?.g10Sale} g10Buy={prices?.gold?.g10Purchase} />
+            <Metal label={t.silver} tolaSale={prices?.tolaSale} tolaBuy={prices?.tolaPurchase}
+                   g10Sale={prices?.g10Sale} g10Buy={prices?.g10Purchase} />
           </div>
           <p className={`mt-4 text-[0.72rem] leading-relaxed ${failed ? 'text-[#E0A0A0]' : 'text-steel'} ${np ? 'font-np' : ''}`} aria-live="polite">
             {failed ? t.unavailable : !prices ? t.fetching : prices.source === 'KAGOSIDA' ? t.srcKago : t.srcFene}

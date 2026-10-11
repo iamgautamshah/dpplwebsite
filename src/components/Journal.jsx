@@ -9,7 +9,7 @@ function Chrome({ children }) {
       <nav className="sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line">
         <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
           <a href="/home" className="flex items-center gap-3">
-            <img src="/images/logo.webp" alt="DPPL seal logo" className="w-11 h-11 rounded-full" width="44" height="44" />
+            <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-10 w-auto" width="420" height="279" />
             <span className="font-display text-xl tracking-[0.14em] text-text leading-none">
               DP<span className="text-signal">PL</span>
               <small className="block font-body text-[0.5rem] tracking-[0.3em] text-mute mt-1">NEW ROAD · KATHMANDU</small>

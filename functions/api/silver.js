@@ -186,8 +186,25 @@ function fromKagosidaJson(raw) {
   if (!sale) return null;
   let purchase = pick(n(row.buyingPerTola), n(row.buyingPer10g));
   if (purchase && purchase.tola >= sale.tola) purchase = null;   // never quote a buy above the sell
+
+  /* The same response carries the gold board. Only 24 carat is published on
+     the site; the 22-carat row is deliberately ignored so the two can never be
+     confused. Gold is optional — a bad gold row must not cost us the silver. */
+  let gold = null;
+  const goldRow = Array.isArray(d?.goldRates)
+    ? d.goldRates.find((g) => /24/.test(String(g?.caretType ?? '')))
+    : null;
+  if (goldRow) {
+    const gSale = pick(n(goldRow.sellingPerTola), n(goldRow.sellingPer10g));
+    let gBuy = pick(n(goldRow.buyingPerTola), n(goldRow.buyingPer10g));
+    if (gBuy && gSale && gBuy.tola >= gSale.tola) gBuy = null;
+    if (gSale && gSale.tola >= GOLD_TOLA_MIN && gSale.tola <= GOLD_TOLA_MAX) {
+      gold = { sale: gSale, purchase: gBuy };
+    }
+  }
+
   // structured figures from the association itself need no second opinion
-  return { sale, purchase, trusted: true };
+  return { sale, purchase, gold, trusted: true };
 }
 
 function extractQuote(raw) {
@@ -563,6 +580,10 @@ async function scrapeSource(cfg, env, log) {
    genuinely moves beyond it. */
 const TOLA_MIN = 2500;
 const TOLA_MAX = 25000;
+// 24-carat gold per tola; wide enough for real movement, tight enough to catch
+// a mis-read figure or a 22-carat row pasted into the wrong field
+const GOLD_TOLA_MIN = 80000;
+const GOLD_TOLA_MAX = 900000;
 
 /* One tola is exactly 11.6638 g, so a genuine pair must sit within rounding
    distance of that ratio. A loose band let a mis-read tola pass alongside a
@@ -697,11 +718,34 @@ function buildPayload(quote, source, day, minutes, updatedToday) {
           : toHalf(quote.purchase.tola / TOLA_PER_10G),
       }
     : { tola: toHalf(sale.tola * (1 - DEALER_SPREAD)), g10: toHalf(sale.g10 * (1 - DEALER_SPREAD)) };
+  /* Gold is quoted exactly as the association publishes it. Where it gives no
+     buy-back figure the house margin applies, the same as for silver. */
+  let gold = null;
+  if (quote.gold?.sale) {
+    const gs = {
+      tola: r2(quote.gold.sale.tola),
+      g10: quote.gold.sale.g10Given ? r2(quote.gold.sale.g10) : toHalf(quote.gold.sale.tola / TOLA_PER_10G),
+    };
+    const gp = quote.gold.purchase?.tola
+      ? {
+          tola: r2(quote.gold.purchase.tola),
+          g10: quote.gold.purchase.g10Given ? r2(quote.gold.purchase.g10) : toHalf(quote.gold.purchase.tola / TOLA_PER_10G),
+        }
+      : { tola: toHalf(gs.tola * (1 - DEALER_SPREAD)), g10: toHalf(gs.g10 * (1 - DEALER_SPREAD)) };
+    gold = {
+      tolaSale: gs.tola, tolaPurchase: gp.tola,
+      g10Sale: gs.g10, g10Purchase: gp.g10,
+      purchaseDerived: !quote.gold.purchase?.tola,
+      carat: 24,
+    };
+  }
+
   return {
     tolaSale: sale.tola,
     tolaPurchase: purchase.tola,
     g10Sale: sale.g10,
     g10Purchase: purchase.g10,
+    gold,
     purchaseDerived: !published,
     spread: published ? null : DEALER_SPREAD,
     reference: { tola: sale.tola, g10: sale.g10 },
