@@ -764,6 +764,11 @@ function usablePayload(v) {
     && !isYear(v.tolaSale);
 }
 
+/* A rate stored before the gold board was added has no `gold` key at all —
+   distinct from `gold: null`, which means the source genuinely had none. The
+   older shape is refreshed at once rather than served until it expires. */
+const predatesGold = (v) => !!v && !('gold' in v);
+
 async function readCache(env) {
   let v = null;
   if (env.RATE_CACHE) {
@@ -803,6 +808,7 @@ function shouldScrape(cached, day, minutes, force) {
   if (cached.fetchedMinutes < PUBLISH_MINUTES) return true;
   if (!cached.updatedToday && minutes <= RETRY_WINDOW_END &&
       since(cached.lastAttempt) > RETRY_GAP_MS) return true;
+  if (predatesGold(cached)) return true;
   return since(cached.lastAttempt) > REFRESH_MS;
 }
 
@@ -849,6 +855,16 @@ export async function onRequestGet(context) {
           tolaPurchase: Number.isFinite(manual.tolaPurchase) ? manual.tolaPurchase : toHalf(manual.tolaSale * (1 - DEALER_SPREAD)),
           g10Sale: Number.isFinite(manual.g10Sale) ? manual.g10Sale : toHalf(manual.tolaSale / TOLA_PER_10G),
           g10Purchase: Number.isFinite(manual.g10Purchase) ? manual.g10Purchase : toHalf(manual.tolaSale * (1 - DEALER_SPREAD) / TOLA_PER_10G),
+          gold: Number.isFinite(manual.goldTolaSale)
+            ? {
+                tolaSale: manual.goldTolaSale,
+                tolaPurchase: Number.isFinite(manual.goldTolaPurchase) ? manual.goldTolaPurchase : toHalf(manual.goldTolaSale * (1 - DEALER_SPREAD)),
+                g10Sale: Number.isFinite(manual.goldG10Sale) ? manual.goldG10Sale : toHalf(manual.goldTolaSale / TOLA_PER_10G),
+                g10Purchase: Number.isFinite(manual.goldG10Purchase) ? manual.goldG10Purchase : toHalf(manual.goldTolaSale * (1 - DEALER_SPREAD) / TOLA_PER_10G),
+                purchaseDerived: !Number.isFinite(manual.goldTolaPurchase),
+                carat: 24,
+              }
+            : null,
           reference: { tola: manual.tolaSale, g10: manual.g10Sale || null },
           dateAD: day,
           fetchedAt: new Date().toISOString(),
