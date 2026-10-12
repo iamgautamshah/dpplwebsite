@@ -35,12 +35,84 @@ const I18N = {
 };
 
 // shown until /api/silver responds
+const COLS = 'grid grid-cols-[0.72fr_1.24fr_1.24fr] items-center gap-2 sm:gap-3';
+
+// The rows rise in once, when the page first arrives — never again on a data
+// refresh or a remount, which would read as the figures blinking out.
+let introPlayed = false;
+
+/* Tab, Pill and Metal live at module scope on purpose. Declared inside the
+   component they would be a new function — and so a new component type — on
+   every render, which makes React throw the DOM away and build it again. The
+   figures would blink out and re-animate each time the rate refreshed or the
+   tab regained focus. */
+const Tab = ({ id, label, ne, lang, setLang }) => (
+  <button
+    role="tab"
+    aria-selected={lang === id}
+    onClick={() => setLang(id)}
+    lang={ne ? 'ne' : undefined}
+    className={`rounded-2xl px-2.5 py-3.5 text-center transition-all duration-300 border ${
+      lang === id
+        ? 'bg-gold/15 border-gold shadow-[0_0_20px_rgba(216,179,106,0.12)]'
+        : 'bg-silver/5 border-silver/20 hover:border-silver/40'
+    }`}
+  >
+    <span className={`block font-medium text-silverhi leading-snug text-[clamp(0.88rem,2vw,1.02rem)] ${ne ? 'font-np' : ''}`}>{label}</span>
+  </button>
+);
+
+const Pill = ({ v, buy, np, cur }) => (
+  <span
+    className={`block w-full text-center rounded-xl border px-1 sm:px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
+      text-[clamp(0.74rem,3.5vw,1.5rem)] transition-colors duration-500
+      ${!Number.isFinite(v)
+        ? 'bg-silver/[0.04] border-silver/15 text-steel'
+        : buy
+          ? 'bg-[#9FD8B4]/[0.08] border-[#9FD8B4]/40 text-[#9FD8B4]'
+          : 'bg-gold/[0.12] border-gold/50 text-gold shadow-[inset_0_0_18px_rgba(216,179,106,0.08)]'}
+      ${np ? 'font-np' : ''}`}
+  >
+    <span className="whitespace-nowrap">{Number.isFinite(v) ? cur(v) : <span className="opacity-40">—</span>}</span>
+  </span>
+);
+
+/* One metal's two rows, under its own heading. Gold is only rendered when the
+   board carries it, so a silver-only source still looks deliberate. */
+const Metal = ({ label, tolaSale, tolaBuy, g10Sale, g10Buy, loaded, np, t }) => {
+  if (loaded && !Number.isFinite(tolaSale)) return null;
+  return (
+    <div className="mt-3 first:mt-0">
+      <p className={`flex items-center gap-2.5 text-[0.7rem] tracking-[0.26em] uppercase text-silver/70 ${np ? 'font-np tracking-[0.1em]' : ''}`}>
+        <span className="hallmark scale-[0.62] opacity-80" aria-hidden="true" />
+        {label}
+      </p>
+      <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10 mt-1.5`}>
+        <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowTola}</span>
+        <Pill v={tolaSale} np={np} cur={t.cur} />
+        <Pill v={tolaBuy} buy np={np} cur={t.cur} />
+      </div>
+      <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10`}>
+        <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowG10}</span>
+        <Pill v={g10Sale} np={np} cur={t.cur} />
+        <Pill v={g10Buy} buy np={np} cur={t.cur} />
+      </div>
+    </div>
+  );
+};
+
 export default function PriceCard() {
   const [lang, setLang] = useState('en');
   const [prices, setPrices] = useState(null);
   const [live, setLive] = useState(false);
   const [failed, setFailed] = useState(false);
   const [now, setNow] = useState(new Date());
+  // read once on mount, so a later render cannot re-trigger the entry animation
+  const [animate] = useState(() => {
+    if (introPlayed) return false;
+    introPlayed = true;
+    return true;
+  });
   const t = I18N[lang];
   const np = lang === 'np';
 
@@ -79,63 +151,6 @@ export default function PriceCard() {
     };
   }, []);
 
-  const Tab = ({ id, label, ne }) => (
-    <button
-      role="tab"
-      aria-selected={lang === id}
-      onClick={() => setLang(id)}
-      lang={ne ? 'ne' : undefined}
-      className={`rounded-2xl px-2.5 py-3.5 text-center transition-all duration-300 border ${
-        lang === id
-          ? 'bg-gold/15 border-gold shadow-[0_0_20px_rgba(216,179,106,0.12)]'
-          : 'bg-silver/5 border-silver/20 hover:border-silver/40'
-      }`}
-    >
-      <span className={`block font-medium text-silverhi leading-snug text-[clamp(0.88rem,2vw,1.02rem)] ${ne ? 'font-np' : ''}`}>{label}</span>
-    </button>
-  );
-
-  const COLS = 'grid grid-cols-[0.72fr_1.24fr_1.24fr] items-center gap-2 sm:gap-3';
-
-  /* One metal's two rows, under its own heading. Gold is only rendered when
-     the board carries it, so a silver-only source still looks deliberate. */
-  const Metal = ({ label, tolaSale, tolaBuy, g10Sale, g10Buy }) => {
-    if (prices && !Number.isFinite(tolaSale)) return null;
-    return (
-      <div className="mt-3 first:mt-0">
-        <p className={`flex items-center gap-2.5 text-[0.7rem] tracking-[0.26em] uppercase text-silver/70 ${np ? 'font-np tracking-[0.1em]' : ''}`}>
-          <span className="hallmark scale-[0.62] opacity-80" aria-hidden="true" />
-          {label}
-        </p>
-        <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10 mt-1.5`}>
-          <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowTola}</span>
-          <Pill v={tolaSale} />
-          <Pill v={tolaBuy} buy />
-        </div>
-        <div className={`${COLS} py-2 sm:py-2.5 border-t border-silver/10`}>
-          <span className="text-silverhi text-[clamp(0.78rem,2.3vw,1.08rem)] tracking-wide">{t.rowG10}</span>
-          <Pill v={g10Sale} />
-          <Pill v={g10Buy} buy />
-        </div>
-      </div>
-    );
-  };
-
-  const Pill = ({ v, buy }) => (
-    <span
-      className={`block w-full text-center rounded-xl border px-1 sm:px-2 py-2.5 sm:py-3 font-mono tnum font-medium leading-none
-        text-[clamp(0.74rem,3.5vw,1.5rem)] transition-colors duration-500
-        ${!Number.isFinite(v)
-          ? 'bg-silver/[0.04] border-silver/15 text-steel'
-          : buy
-            ? 'bg-[#9FD8B4]/[0.08] border-[#9FD8B4]/40 text-[#9FD8B4]'
-            : 'bg-gold/[0.12] border-gold/50 text-gold shadow-[inset_0_0_18px_rgba(216,179,106,0.08)]'}
-        ${np ? 'font-np' : ''}`}
-    >
-      <span className="whitespace-nowrap">{Number.isFinite(v) ? t.cur(v) : <span className="opacity-40">—</span>}</span>
-    </span>
-  );
-
   return (
     <div className="relative card-stage">
             <div className="absolute -inset-2 rounded-[2rem] bg-gold/[0.07] blur-2xl pointer-events-none" aria-hidden="true" />
@@ -164,16 +179,18 @@ export default function PriceCard() {
             <Tab id="np" label={formatBS(now)} ne />
           </div>
 
-                    <div className={`rows-in ${np ? 'font-np' : ''}`}>
+                    <div className={`${animate ? 'rows-in' : ''} ${np ? 'font-np' : ''}`}>
             <div className={`${COLS} mb-2`}>
               <span aria-hidden="true" />
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-gold font-medium">{t.thSale}</span>
               <span className="text-center text-[0.74rem] tracking-[0.3em] uppercase text-[#9FD8B4] font-medium">{t.thBuy}</span>
             </div>
             <Metal label={t.gold} tolaSale={prices?.gold?.tolaSale} tolaBuy={prices?.gold?.tolaPurchase}
-                   g10Sale={prices?.gold?.g10Sale} g10Buy={prices?.gold?.g10Purchase} />
+                   g10Sale={prices?.gold?.g10Sale} g10Buy={prices?.gold?.g10Purchase}
+                   loaded={!!prices} np={np} t={t} />
             <Metal label={t.silver} tolaSale={prices?.tolaSale} tolaBuy={prices?.tolaPurchase}
-                   g10Sale={prices?.g10Sale} g10Buy={prices?.g10Purchase} />
+                   g10Sale={prices?.g10Sale} g10Buy={prices?.g10Purchase}
+                   loaded={!!prices} np={np} t={t} />
           </div>
           <p className={`mt-4 text-[0.72rem] leading-relaxed ${failed ? 'text-[#E0A0A0]' : 'text-steel'} ${np ? 'font-np' : ''}`} aria-live="polite">
             {failed ? t.unavailable : !prices ? t.fetching : prices.source === 'KAGOSIDA' ? t.srcKago : t.srcFene}
