@@ -52,9 +52,8 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: '10 g Gold Bar', metal: 'gold', img: '/images/bar-gold-9999.webp', w: 438, h: 796, alt: 'Diamond Palace Pvt. Ltd. 10 gram fine gold bar 999.9', label: 'ENQUIRE \u00b7 10 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 10g Fine Gold Bar (999.9). Please share today\u2019s price and making charges.', desc: 'The usual first gold holding \u2014 a tola\u2019s weight within reach, stamped 999.9 and sealed, small enough to gift and liquid enough to sell back any working day.' },
-  { name: '1 Tola Gold Bar', metal: 'gold', img: '/images/bar-gold-9999.webp', w: 438, h: 796, alt: 'Diamond Palace Pvt. Ltd. 1 tola fine gold bar 999.9', label: 'ENQUIRE \u00b7 1 TOLA', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1 Tola Fine Gold Bar (999.9). Please share today\u2019s price and making charges.', desc: 'The unit Nepal actually trades in \u2014 11.6638 grams of 999.9 fine gold, priced directly against the tola rate published at the top of this page.' },
-  { name: '100 g Gold Bar', metal: 'gold', img: '/images/bar-gold-9999.webp', w: 438, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine gold bar 999.9', label: 'ENQUIRE \u00b7 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Gold Bar (999.9). Please share today\u2019s price and making charges.', desc: 'Serious weight at the keenest premium per gram. Held by investors and businesses accumulating in size; quoted to order at the counter.' },
+  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price, available weights and making charges.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced by weight against the day\u2019s published gold rate, weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
+  { name: 'Lakshmi Silver Coin', metal: 'silver', seasonal: true, img: '/images/coin-silver-lakshmi.webp', w: 502, h: 500, alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver, Dhanteras edition', label: 'ENQUIRE \u00b7 COIN', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about the Lakshmi Silver Coin for Dhanteras.', desc: 'A 999 fine silver coin struck with Goddess Lakshmi on the lotus \u2014 minted for Dhanteras, the day Nepali households have bought silver for generations. Available for a limited period around Deepawali only.' },
   { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
   { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
   { name: '1 kg Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
@@ -248,6 +247,11 @@ export default function Site() {
             <span className="hallmark mt-1" aria-hidden="true" />
             <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
           </p>
+          <p data-rv className="mt-5 max-w-3xl flex items-start gap-3 rounded-xl border border-silver/15 bg-silver/[0.04] px-4 py-3.5 text-sm leading-relaxed text-silver/75">
+            <span className="hallmark mt-1.5 shrink-0 scale-[0.7] opacity-70" aria-hidden="true" />
+            <span><b className="text-silverhi font-medium">Product images are illustrative.</b> Stamping, finish and packaging of the bars and coins we hold may differ from the designs shown here. Weight and fineness are exactly as stated, and both are verified on the scale in front of you before you pay.</span>
+          </p>
+
           <div data-rv className="mt-8 rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] to-transparent p-5 sm:p-7">
             <p className="flex items-center gap-3 text-[0.7rem] tracking-[0.26em] uppercase text-gold">
               <span className="hallmark scale-[0.7]" aria-hidden="true" />
@@ -258,7 +262,7 @@ export default function Site() {
               After three years dealing in fine silver, Diamond Palace Pvt. Ltd. opened its gold counter in October 2026.
               We quote 24-carat gold — 99.9% pure, the investment standard — per tola and per 10 grams, against the same
               Kathmandu market reference shown at the top of this page. Gold is sold by weight, weighed in front of you,
-              invoiced to the gram, and bought back at the published purchase rate. Quantities and jewellery-grade
+              invoiced to the gram, and bought back at the published purchase rate. Available weights, quantities and jewellery-grade
               22-carat pricing are quoted at the counter.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -271,16 +275,20 @@ export default function Site() {
             {PRODUCTS.map((p, i) => (
               <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
                 <span className={`absolute top-3 right-3 z-10 rounded-full border px-2.5 py-1 text-[0.56rem] tracking-[0.22em] uppercase ${
-                  p.metal === 'gold'
-                    ? 'border-gold/45 bg-gold/15 text-gold'
-                    : 'border-silver/25 bg-silver/10 text-silver/80'
-                }`}>{p.metal === 'gold' ? 'Gold' : 'Silver'}</span>
+                  p.seasonal
+                    ? 'border-[#E0A05A]/50 bg-[#E0A05A]/15 text-[#E7B97A]'
+                    : p.metal === 'gold'
+                      ? 'border-gold/45 bg-gold/15 text-gold'
+                      : 'border-silver/25 bg-silver/10 text-silver/80'
+                }`}>{p.seasonal ? 'Dhanteras' : p.metal === 'gold' ? 'Gold' : 'Silver'}</span>
                 <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
                   <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} data-parallax="0.05" className="parallax h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
                   <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
-                  <p className="text-[0.62rem] tracking-[0.3em] uppercase text-gold/80 my-2">{p.metal === 'gold' ? '999.9 fine · 24 carat' : '999 fine'} · sealed &amp; stamped</p>
+                  <p className="text-[0.62rem] tracking-[0.3em] uppercase text-gold/80 my-2">
+                    {p.seasonal ? '999 fine · limited release' : p.metal === 'gold' ? '999.9 fine · 24 carat' : '999 fine'} · sealed &amp; stamped
+                  </p>
                   <p className="text-sm text-silver/70 leading-relaxed flex-1">{p.desc}</p>
                   {p.name.includes('Bar') && <p className="mt-4 text-[0.7rem] tracking-wide text-steel">Rate by weight · making charges extra</p>}
                   <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-4">{p.label}</a>

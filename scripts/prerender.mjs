@@ -111,9 +111,9 @@ page(
   {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'The DPPL Journal',
+    name: 'The Diamond Palace Journal',
     url: 'https://dppl.com.np/articles',
-    publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
+    publisher: { '@type': 'Organization', name: 'Diamond Palace Pvt. Ltd.', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
     blogPost: articles.map((a) => ({
       '@type': 'BlogPosting',
       headline: a.title,
@@ -129,7 +129,7 @@ for (const a of articles) {
   page(
     `dist/articles/${a.slug}/index.html`,
     renderArticle(a.slug),
-    `${a.title} | DPPL`,
+    `${a.title} | Diamond Palace Pvt. Ltd.`,
     a.description,
     `https://dppl.com.np/articles/${a.slug}`,
     {
@@ -143,7 +143,7 @@ for (const a of articles) {
       articleSection: a.category,
       inLanguage: 'en',
       author: { '@type': 'Organization', name: 'DPPL', url: 'https://dppl.com.np/' },
-      publisher: { '@type': 'Organization', name: 'DPPL', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
+      publisher: { '@type': 'Organization', name: 'Diamond Palace Pvt. Ltd.', logo: { '@type': 'ImageObject', url: 'https://dppl.com.np/images/logo-gold-square.webp' } },
       mainEntityOfPage: { '@type': 'WebPage', '@id': `https://dppl.com.np/articles/${a.slug}` },
     }
   );

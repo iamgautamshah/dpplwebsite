@@ -175,8 +175,8 @@ export default function PriceCard() {
           </div>
 
                     <div className="grid grid-cols-2 gap-2.5 mb-5" role="tablist" aria-label="Choose date and language">
-            <Tab id="en" label={formatAD(now)} />
-            <Tab id="np" label={formatBS(now)} ne />
+            <Tab id="en" label={formatAD(now)} lang={lang} setLang={setLang} />
+            <Tab id="np" label={formatBS(now)} ne lang={lang} setLang={setLang} />
           </div>
 
                     <div className={`${animate ? 'rows-in' : ''} ${np ? 'font-np' : ''}`}>
