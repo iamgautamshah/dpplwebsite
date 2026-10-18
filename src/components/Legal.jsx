@@ -198,8 +198,8 @@ export function Terms() {
           counter at the time of that transaction.
         </p>
         <p>
-          <b className="text-text font-medium">Bar and grain prices follow the published rate by weight and are exclusive of making charges</b>,
-          which are added at the counter and itemised on your invoice. Rates may change during the day and can be
+          <b className="text-text font-medium">Gold bars are priced by weight at the published gold rate with no making charge; silver bars and coins follow the published silver rate by weight plus a minimal making charge</b>.
+          Any making charge is added at the counter and itemised on your invoice. Rates may change during the day and can be
           affected by market movement.
         </p>
       </Section>
@@ -270,10 +270,10 @@ export function NotFound() {
 
       <Section heading="Where to go next">
         <ul className="space-y-3">
-          <li><a href="/home" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
-          <li><a href="/products" className="text-signal border-b border-signal/50 hover:border-signal">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
+          <li><a href="/" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
+          <li><a href="/#products" className="text-signal border-b border-signal/50 hover:border-signal">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
           <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how silver is priced, verified and stored</li>
-          <li><a href="/contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
+          <li><a href="/#contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
         </ul>
       </Section>
 

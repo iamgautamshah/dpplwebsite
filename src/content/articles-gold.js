@@ -123,12 +123,12 @@ export const PART_GOLD = [
       { ul: [
         'It is not a growth asset. Over long periods, productive investments have generally outperformed it.',
         'It is not stable in the short term. Gold can fall substantially and stay down for years.',
-        'It is not a trading instrument for most buyers. Making charges and the dealer spread mean a rapid in-and-out trade usually loses money.',
+        'It is not a trading instrument for most buyers. The dealer spread — and, on jewellery, making charges — mean a rapid in-and-out trade usually loses money.',
         'It generates no income, so it cannot fund living expenses without being sold.',
       ] },
       { p: 'The sensible conclusion is that gold is a holding, not a bet — a portion of savings set aside against the possibility that the rest does not work out, and sized accordingly. Nobody who understands it well recommends holding only gold. Very few recommend holding none.' },
 
-      { note: 'Gold bought as savings should be bought to keep. If a purchase might need to be reversed within weeks, the making charge and the spread make it an expensive decision.' },
+      { note: 'Gold bought as savings should be bought to keep. If a purchase might need to be reversed within weeks, the spread between sale and purchase rate — plus any making charge — makes it an expensive decision.' },
 
       { h: 'Gold and silver together' },
       { p: 'The two metals are not interchangeable. Gold is the denser store of value — more money per gram, less affected by industrial demand, steadier. Silver is cheaper to enter, far more volatile, and genuinely consumed by industry, which gives it a different demand profile entirely. Many buyers hold both, starting in silver because the entry point is lower and adding gold as savings allow.' },
@@ -176,7 +176,7 @@ export const PART_GOLD = [
       { p: 'Dealers buy below the rate they sell at, and the gap between those two numbers is their margin. It is normal and it is not hidden — both figures are published at the top of this page.' },
       { p: 'What matters is knowing the spread before you buy, because it is the real cost of changing your mind. Also ask explicitly what happens to the making charge on a sale back. It is almost never recoverable: you are selling metal, not craftsmanship. This is the single biggest reason bullion bars suit savings better than ornaments do — you are not paying for work you cannot sell back.' },
 
-      { note: 'Diamond Palace Pvt. Ltd. publishes both the sale and purchase rate every day, weighs on calibrated scales in front of the customer, and buys back the metal it has sold against the original invoice.' },
+      { note: 'Diamond Palace Pvt. Ltd. charges no making charge on gold bars, publishes both the sale and purchase rate every day, weighs on calibrated scales in front of the customer, and buys back the metal it has sold against the original invoice.' },
 
       { h: 'What your invoice should show' },
       { ul: [
@@ -191,8 +191,8 @@ export const PART_GOLD = [
       { p: 'Keep it. The invoice is what makes a piece liquid: a documented bar from a known dealer sells back at the published rate without argument, while an undocumented one invites a discount, a delay, or a refusal.' },
 
       { h: 'A worked example' },
-      { p: 'Suppose the 10-gram sale rate for 24-carat gold is Rs 254,200. A 10-gram bar therefore contains Rs 254,200 of metal. Add the making charge for a bar of that size, plus any applicable tax, and that total is what you pay. If you sold the same bar back the same day, you would receive the purchase rate on the metal — the making charge does not come back, because you are selling metal, not fabrication.' },
-      { p: 'Run that arithmetic before buying, not afterwards. It takes a minute, and it is the difference between knowing what you paid for and guessing.' },
+      { p: 'Suppose the 10-gram sale rate for 24-carat gold is Rs 254,200. A 10-gram bar therefore contains Rs 254,200 of metal. Where a dealer adds a making charge, that is added on top, plus any applicable tax. At Diamond Palace Pvt. Ltd. there is no making charge on gold bars, so the same bar costs the Rs 254,200 metal value plus any applicable tax and nothing more. If you sold it back the same day, you would receive the purchase rate on the metal.' },
+      { p: 'Run that arithmetic before buying, not afterwards. It takes a minute, and it is the difference between knowing what you paid for and guessing. It also shows why a bar with no making charge is the most efficient way to hold gold: every rupee you pay is metal you can sell back.' },
     ],
   },
 ];

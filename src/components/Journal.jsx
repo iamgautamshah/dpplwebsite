@@ -8,7 +8,7 @@ function Chrome({ children }) {
     <main className="relative z-10 bg-base min-h-screen">
       <nav className="sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line">
         <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
-          <a href="/home" className="flex items-center gap-3">
+          <a href="/" className="flex items-center gap-3">
             <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-10 w-auto" width="420" height="279" />
             <span className="font-display text-xl tracking-[0.14em] text-text leading-none">
               DP<span className="text-signal">PL</span>
@@ -17,7 +17,7 @@ function Chrome({ children }) {
           </a>
           <div className="flex items-center gap-6">
             <a href="/articles" className="hidden sm:block text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">Journal</a>
-            <a href="/home" className="text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">← Back to site</a>
+            <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">← Back to site</a>
           </div>
         </div>
       </nav>
@@ -109,7 +109,7 @@ export function ArticlePage({ slug }) {
       <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <article className="panel-surface max-w-3xl mx-auto p-5 sm:p-8 md:p-12">
           <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-mute">
-            <a href="/home" className="transition-colors hover:text-signal">Diamond Palace Pvt. Ltd.</a>
+            <a href="/" className="transition-colors hover:text-signal">Diamond Palace Pvt. Ltd.</a>
             <span className="mx-2" aria-hidden="true">/</span>
             <a href="/articles" className="transition-colors hover:text-signal">Journal</a>
             <span className="mx-2" aria-hidden="true">/</span>
@@ -142,7 +142,7 @@ export function ArticlePage({ slug }) {
             </ul>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="/articles" className="btn-ghost">← All articles</a>
-              <a href="/home" className="btn-primary">Today's silver price</a>
+              <a href="/" className="btn-primary">Today's silver price</a>
             </div>
           </div>
         </article>

@@ -6,15 +6,21 @@ import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
 import Intro from './components/Intro.jsx';
 
 const isBot = /bot|crawl|spider|slurp|bingpreview|adsbot|mediapartners|lighthouse/i;
-const SECTIONS = ['home', 'products', 'about', 'contact'];
+const SECTIONS = ['home', 'products', 'articles', 'about', 'faq', 'contact'];
 
 const seenIntro = () => {
   try { return Boolean(sessionStorage.getItem('dppl-intro')); } catch { return false; }
 };
 
-// /contact, /contact/ and /Contact all resolve to the contact section
+// Sections are fragments on the home page (/#contact). The old path form
+// (/contact) is still understood for anyone holding an old link, though the
+// server now redirects those to "/".
 function sectionFromPath(path) {
   const seg = path.replace(/^\/+|\/+$/g, '').toLowerCase();
+  return seg !== 'articles' && SECTIONS.includes(seg) ? seg : null;
+}
+function sectionFromHash(hash) {
+  const seg = String(hash || '').replace(/^#/, '').toLowerCase();
   return SECTIONS.includes(seg) ? seg : null;
 }
 
@@ -42,7 +48,7 @@ export default function App() {
   const legal = path.startsWith('/privacy') ? 'privacy' : path.startsWith('/terms') ? 'terms' : null;
   const journal = path.replace(/^\/+|\/+$/g, '').toLowerCase().split('/');
   const isJournal = journal[0] === 'articles';
-  const section = sectionFromPath(path);
+  const section = sectionFromPath(path) || (path === '/' ? sectionFromHash(typeof location !== 'undefined' ? location.hash : '') : null);
 
   // arriving on a section URL means the visitor already knows where they are
   // going, so the intro is skipped

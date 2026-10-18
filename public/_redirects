@@ -1,10 +1,21 @@
-# Old and mistyped paths resolve instead of 404ing.
+# Retired section URLs. The sections are now fragments on the home page
+# (/#products), so these old paths go straight home in one hop.
+/home               /                   301
+/home/              /                   301
+/products           /                   301
+/products/          /                   301
+/about              /                   301
+/about/             /                   301
+/contact            /                   301
+/contact/           /                   301
+
+# Old and mistyped journal paths.
 /journal            /articles           301
 /journal/*          /articles/:splat    301
 /blog               /articles           301
 /blog/*             /articles/:splat    301
 /article/*          /articles/:splat    301
-/articles/index.html /articles          301
-/index.html         /                   301
-/privacy.html       /privacy            301
-/terms.html         /terms              301
+
+# Not listed on purpose: /index.html, /privacy.html, /privacy/ and the like.
+# Cloudflare Pages already redirects those to the bare path for flat .html
+# files, and a second rule for the same path invites a redirect chain.

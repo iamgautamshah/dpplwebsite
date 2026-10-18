@@ -1,5 +1,5 @@
 import { renderToString } from 'react-dom/server';
-import Site from '../src/components/Site.jsx';
+import Site, { FAQS } from '../src/components/Site.jsx';
 import { NotFound, Privacy, Terms } from '../src/components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from '../src/components/Journal.jsx';
 import { ARTICLES } from '../src/content/articles.js';
@@ -11,3 +11,4 @@ export const renderNotFound = () => renderToString(<NotFound />);
 export const renderJournal = () => renderToString(<ArticlesIndex />);
 export const renderArticle = (slug) => renderToString(<ArticlePage slug={slug} />);
 export const articles = ARTICLES;
+export const faqs = FAQS;

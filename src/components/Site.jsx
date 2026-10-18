@@ -11,14 +11,16 @@ const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 );
 
-const FAQS = [
+// exported so the FAQ structured data is built from exactly what the page shows
+export const FAQS = [
   { q: 'Where can I buy gold and silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal in 999 fine silver \u2014 bars of 100 g, 500 g and 1 kg, and loose grain sold by weight \u2014 and, since October 2026, in 24-carat gold. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
   { q: 'What is today\u2019s gold and silver price in Nepal?', a: 'The current gold and silver rates for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
   { q: 'Is Diamond Palace Pvt. Ltd. a precious-metal importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
   { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published at the top of this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
   { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 24-carat gold. Ask at the counter for jewellery-grade pricing.' },
   { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
-  { q: 'How much do making charges add to a bar?', a: 'The published rate is the price of the metal by weight. Bars also carry a making charge covering refining, casting, stamping and packaging, which is added at the counter and itemised separately on your invoice. Making charges are lower per gram on larger bars, which is why a 1 kg bar costs less per gram than ten 100 g bars.' },
+  { q: 'Is there a making charge on gold and silver bars?', a: 'Not on gold. Our gold bars carry no making charge at all \u2014 you pay the published 24-carat rate for the weight, plus any applicable tax. Silver bars and silver coins carry a minimal making charge covering casting, stamping and packaging; it is added at the counter and itemised as its own line on your invoice, and it is lower per gram on larger silver bars.' },
+  { q: 'Do you supply raw gold for businesses?', a: 'Yes. Alongside finished gold bars, Diamond Palace Pvt. Ltd. supplies raw gold for business use \u2014 for jewellers, goldsmiths and manufacturers who need metal to work. It is sold by weight against the day\u2019s published gold rate and invoiced in full. Quantities are arranged directly with the counter: call 01-5915052 or message us on WhatsApp.' },
   { q: 'Does Diamond Palace Pvt. Ltd. buy gold and silver back?', a: 'Yes, both metals. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
   { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
 ];
@@ -52,7 +54,7 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price, available weights and making charges.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced by weight against the day\u2019s published gold rate, weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
+  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price and available weights.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced purely by weight at the day\u2019s published gold rate with no making charge — weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
   { name: 'Lakshmi Silver Coin', metal: 'silver', seasonal: true, img: '/images/coin-silver-lakshmi.webp', w: 502, h: 500, alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver, Dhanteras edition', label: 'ENQUIRE \u00b7 COIN', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about the Lakshmi Silver Coin for Dhanteras.', desc: 'A 999 fine silver coin struck with Goddess Lakshmi on the lotus \u2014 minted for Dhanteras, the day Nepali households have bought silver for generations. Available for a limited period around Deepawali only.' },
   { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
   { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
@@ -84,7 +86,9 @@ const scrollToSection = (e, href) => {
     if (Math.abs(off) > 8) go();
   }, 450);
 
-  history.replaceState(null, '', '/' + id);
+  // a fragment, not a path: /#products is the same page to a search engine,
+  // whereas /products was a second URL that redirected
+  history.replaceState(null, '', id === 'home' ? '/' : '/#' + id);
 };
 
 const Ledger = ({ children, light = false }) => (
@@ -141,7 +145,7 @@ function Nav() {
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
-        <a href="/home" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
+        <a href="/" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
           <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-10 w-auto" width="420" height="279" />
           <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
             DP<span className="text-gold">PL</span>
@@ -152,7 +156,7 @@ function Nav() {
           {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
-                href={`/${href}`}
+                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : `/#${href}`}
                 onClick={(e) => { if (kind !== 'page') scrollToSection(e, href); }}
                 className="block py-1 text-[0.72rem] tracking-[0.22em] text-silver/90 transition-colors duration-300 hover:text-gold"
               >
@@ -180,7 +184,7 @@ function Nav() {
           {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
-                href={`/${href}`}
+                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : `/#${href}`}
                 onClick={(e) => { setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
@@ -213,7 +217,7 @@ export default function Site() {
   useParallax();
   return (
     <main className="relative z-10 bg-[#0B0F16]">
-      <a href="/home" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
+      <a href="/" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
       <Nav />
       <Ticker />
 
@@ -227,7 +231,7 @@ export default function Site() {
               <span className="mask-line"><span className="mask-inner mask-delay-1 text-gold">straight from New Road.</span></span>
             </h1>
             <div className="mt-8 flex flex-wrap gap-3.5">
-              <a href="/products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
+              <a href="/#products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
               <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
             </div>
           </div>
@@ -245,7 +249,7 @@ export default function Site() {
           </div>
           <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
             <span className="hallmark mt-1" aria-hidden="true" />
-            <span><b className="text-silverhi font-medium">Making charges apply on bars.</b> Prices are calculated from the day’s published rate by weight and are <b>exclusive of making charges</b>, which are added at the counter and shown on your invoice.</span>
+            <span><b className="text-silverhi font-medium">No making charge on gold bars.</b> Gold bars are priced purely by weight at the day’s published gold rate. Silver bars and coins carry only a <b>minimal making charge</b>, added at the counter and shown as its own line on your invoice.</span>
           </p>
           <p data-rv className="mt-5 max-w-3xl flex items-start gap-3 rounded-xl border border-silver/15 bg-silver/[0.04] px-4 py-3.5 text-sm leading-relaxed text-silver/75">
             <span className="hallmark mt-1.5 shrink-0 scale-[0.7] opacity-70" aria-hidden="true" />
@@ -262,11 +266,17 @@ export default function Site() {
               After three years dealing in fine silver, Diamond Palace Pvt. Ltd. opened its gold counter in October 2026.
               We quote 24-carat gold — 99.9% pure, the investment standard — per tola and per 10 grams, against the same
               Kathmandu market reference shown at the top of this page. Gold is sold by weight, weighed in front of you,
-              invoiced to the gram, and bought back at the published purchase rate. Available weights, quantities and jewellery-grade
-              22-carat pricing are quoted at the counter.
+              invoiced to the gram, and bought back at the published purchase rate. <b className="text-silverhi font-medium">There is no
+              making charge on gold bars</b> — you pay the gold rate for the weight, and nothing for fabrication. Available weights and
+              jewellery-grade 22-carat pricing are quoted at the counter.
+            </p>
+            <p className="prose-justify mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-silver/80">
+              <b className="text-silverhi font-medium">Raw gold for business.</b> We also supply raw gold to jewellers, goldsmiths and
+              manufacturers, sold by weight at the day’s gold rate. Quantities are arranged directly with the counter.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold.')} target="_blank" rel="noopener noreferrer" className="btn-gold">Enquire about gold</a>
+              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold bars.')} target="_blank" rel="noopener noreferrer" className="btn-gold">Enquire about gold</a>
+              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about raw gold for business use.')} target="_blank" rel="noopener noreferrer" className="btn-line">Raw gold for business</a>
               <a href="tel:+97715915052" className="btn-line">Call the counter</a>
             </div>
           </div>
@@ -290,7 +300,11 @@ export default function Site() {
                     {p.seasonal ? '999 fine · limited release' : p.metal === 'gold' ? '999.9 fine · 24 carat' : '999 fine'} · sealed &amp; stamped
                   </p>
                   <p className="text-sm text-silver/70 leading-relaxed flex-1">{p.desc}</p>
-                  {p.name.includes('Bar') && <p className="mt-4 text-[0.7rem] tracking-wide text-steel">Rate by weight · making charges extra</p>}
+                  <p className="mt-4 text-[0.7rem] tracking-wide text-steel">
+                    {p.metal === 'gold' ? 'Rate by weight · no making charge'
+                      : p.name.includes('Bar') || p.seasonal ? 'Rate by weight · minimal making charge'
+                      : 'Sold by weight at the day’s rate'}
+                  </p>
                   <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-4">{p.label}</a>
                 </div>
               </article>
