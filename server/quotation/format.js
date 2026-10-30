@@ -19,10 +19,17 @@ export const addressLine = (c) => `${c.street}, Ward ${c.ward}, ${c.localLevel},
 
 export const qtyText = (l) => (l.unit === 'gram' ? `${Number(l.quantity).toLocaleString('en-IN')} g` : `x ${l.quantity}`);
 
+// "Making charge - Gold 10 gram (Rs. 1,500.00 x 2)" or "Making charge - Silver 100 gram (2%)"
+export function makingLabel(m, sep = ' · ') {
+  const name = `${m.metalName ? `${m.metalName} ` : ''}${m.productName}`;
+  const how = m.flat != null ? `${money(m.flat)} x ${Number(m.quantity).toLocaleString('en-IN')}` : pct(m.percent);
+  return `Making charge${sep}${name} (${how})`;
+}
+
 export function totalRows(price) {
   const rows = [];
   if (price.making || price.skillFee) rows.push(['Subtotal', price.metalTotal]);
-  for (const m of price.making?.lines ?? []) rows.push([`Making charge - ${m.productName} (${pct(m.percent)})`, m.amount]);
+  for (const m of price.making?.lines ?? []) rows.push([makingLabel(m, ' - '), m.amount]);
   if (price.skillFee) rows.push([`${price.skillFee.label} (${pct(price.skillFee.percent)})`, price.skillFee.amount]);
   return rows;
 }

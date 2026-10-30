@@ -32,7 +32,11 @@ export function renderTotals(tfoot, data) {
   const out = [];
   const sub = (label, amount) => out.push(row([[label], [''], [''], [money(amount), 'num']], 'sub'));
   if (data.making || data.skillFee) sub('Subtotal', data.metalTotal);
-  for (const m of data.making?.lines ?? []) sub(`Making charge · ${m.productName} (${pct(m.percent)})`, m.amount);
+  for (const m of data.making?.lines ?? []) {
+    const name = `${m.metalName ? `${m.metalName} ` : ''}${m.productName}`;
+    const how = m.flat != null ? `${money(m.flat)} × ${Number(m.quantity).toLocaleString('en-IN')}` : pct(m.percent);
+    sub(`Making charge · ${name} (${how})`, m.amount);
+  }
   if (data.skillFee) sub(`${data.skillFee.label} (${pct(data.skillFee.percent)})`, data.skillFee.amount);
   const grand = row([['Total'], [''], [''], [data.total == null ? '—' : money(data.total), 'num']], 'grand');
   grand.lastElementChild.id = 'total';

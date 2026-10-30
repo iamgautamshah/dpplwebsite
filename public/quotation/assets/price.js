@@ -27,21 +27,26 @@ function alertBox(title, text) {
   box.hidden = false;
 }
 
+function makingRow(name, value) {
+  const div = document.createElement('div');
+  const dt = document.createElement('dt');
+  dt.textContent = name;
+  const dd = document.createElement('dd');
+  dd.textContent = value;
+  div.append(dt, dd);
+  return div;
+}
+
+// Only the making charges for products in this order are shown.
 function renderMaking(data) {
-  const ordered = new Set(data.lines.filter((l) => l.metal === 'silver').map((l) => l.product));
+  const ordered = new Set(data.lines.map((l) => l.product));
   const shown = data.makingRates.filter((m) => ordered.has(m.product));
-  $('making-group').hidden = shown.length === 0;
-  $('making-rates').replaceChildren(
-    ...shown.map((m) => {
-      const div = document.createElement('div');
-      const dt = document.createElement('dt');
-      dt.textContent = m.name;
-      const dd = document.createElement('dd');
-      dd.textContent = m.percent == null ? 'Not set' : pct(m.percent);
-      div.append(dt, dd);
-      return div;
-    }),
-  );
+  const silver = shown.filter((m) => m.metal !== 'gold');
+  const gold = shown.filter((m) => m.metal === 'gold');
+  $('making-group').hidden = silver.length === 0;
+  $('making-rates').replaceChildren(...silver.map((m) => makingRow(m.name, m.percent == null ? 'Not set' : pct(m.percent))));
+  $('gold-making-group').hidden = gold.length === 0;
+  $('gold-making-rates').replaceChildren(...gold.map((m) => makingRow(m.name, m.flat == null ? 'Not set' : `${money(m.flat)} per piece`)));
 }
 
 function forget() {

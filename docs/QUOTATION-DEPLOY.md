@@ -157,8 +157,10 @@ Dashboard → dppl.com.np zone → **Security → WAF → Rate limiting rules �
 1. Open `https://admin.dppl.com.np`, enter your staff email, then type the
    one-time code from your inbox.
 2. Enter the admin password.
-3. Fill in today's gold and silver rates and each silver product's making
-   charge %, then **Save rates**.
+3. Fill in today's gold and silver rates, each gold product's making charge
+   (a flat amount in rupees per piece, 0 for none) and each silver product's
+   making charge %, then **Save rates**. All boxes must be filled; a gold
+   product with no making charge saved can't be quoted.
 4. Quotation rates are separate from the live market rate on the homepage, and
    staff update them by hand. Until rates are saved, customers see "Price not
    available yet" at the Price step.
@@ -175,7 +177,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] `dppl.com.np/quotation` loads in the site's navy/gold style. `dppl.com.np/quotation/` redirects to it.
 - [ ] Step 1 refuses a PAN that isn't 9 digits, a phone number that isn't 10 digits, and a name in Nepali script.
 - [ ] Step 2: Personal customers don't see *Silver granules*; Business customers do.
-- [ ] Step 3 shows each line, the silver making charge, the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
+- [ ] Step 3 shows each line, the gold making charge (Rs. per piece × pieces), the silver making charge (%), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
 - [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYMMDD-XXXX.pdf` with the right details.
 - [ ] Step 4: **Send on WhatsApp** opens WhatsApp to +977 9805617932 with the quotation number and a PDF link, and the link opens the PDF.
 

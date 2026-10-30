@@ -72,7 +72,8 @@ Bindings and variables are read at deploy time — after changing them, redeploy
 - Quotation prices come from the rates staff save in the admin, not from the
   live homepage rate. Until rates are saved, customers are told the price
   isn't available yet.
-- Pricing rules (making charge per silver product, 0.5% skill promotion fee for
-  personal customers, rounding) live in `server/quotation/rates.js`; the
+- Pricing rules (gold making charge: flat rupees per piece for each gold product;
+  silver making charge: % per silver product; 0.5% skill promotion fee for
+  personal customers; rounding) live in `server/quotation/rates.js`; the
   catalogue lives in `public/quotation/data/products.json`.
 - The Nepal address list is MIT-licensed (`public/quotation/data/LICENSE-nepali-address`).

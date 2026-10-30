@@ -2,11 +2,14 @@ import { allowedFor, findProduct, json, validateItems } from '../../../server/qu
 import { RATE_FIELDS, getRates, priceItems } from '../../../server/quotation/rates.js';
 import { CLOSED_MESSAGE, getStock } from '../../../server/quotation/stock.js';
 
+// Making-charge rates shown on the Price page: silver as a %, gold as a flat amount per piece.
 function makingRates(rates, customerType) {
   return Object.entries(RATE_FIELDS)
-    .filter(([, f]) => f.group === 'making')
-    .filter(([, f]) => allowedFor(findProduct('silver', f.productId).product, customerType))
-    .map(([key, f]) => ({ product: f.productId, name: f.short, percent: rates[key] }));
+    .filter(([, f]) => f.group === 'making' || f.group === 'goldMaking')
+    .filter(([, f]) => allowedFor(findProduct(f.group === 'making' ? 'silver' : 'gold', f.productId).product, customerType))
+    .map(([key, f]) => (f.group === 'making'
+      ? { metal: 'silver', product: f.productId, name: f.short, percent: rates[key] }
+      : { metal: 'gold', product: f.productId, name: f.short, flat: rates[key] }));
 }
 
 export async function onRequestPost({ request, env }) {

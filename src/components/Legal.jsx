@@ -219,7 +219,7 @@ export function Terms() {
           counter at the time of that transaction.
         </p>
         <p>
-          <b className="text-text font-medium">Gold bars are priced by weight at the published gold rate with no making charge; silver bars and coins follow the published silver rate by weight plus a minimal making charge</b>.
+          <b className="text-text font-medium">Gold bars are priced by weight at the published gold rate plus a fixed making charge per bar; silver bars and coins follow the published silver rate by weight plus a minimal making charge</b>.
           Any making charge is added at the counter and itemised on your invoice. Rates may change during the day and can be
           affected by market movement.
         </p>
@@ -233,7 +233,7 @@ export function Terms() {
           purchase is the one confirmed at the counter at the time of sale.
         </p>
         <p>
-          Quotations list each product, any making charge on silver products, and, for personal customers, a skill
+          Quotations list each product, the making charge on gold products (a fixed amount per piece) and on silver products (a percentage), and, for personal customers, a skill
           promotion fee where it applies. Products shown as out of stock cannot be quoted.
         </p>
       </Section>

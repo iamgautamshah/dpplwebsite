@@ -19,7 +19,7 @@ export const FAQS = [
   { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published at the top of this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
   { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 24-carat gold. Ask at the counter for jewellery-grade pricing.' },
   { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
-  { q: 'Is there a making charge on gold and silver bars?', a: 'Not on gold. Our gold bars carry no making charge at all \u2014 you pay the published 24-carat rate for the weight, plus any applicable tax. Silver bars and silver coins carry a minimal making charge covering casting, stamping and packaging; it is added at the counter and itemised as its own line on your invoice, and it is lower per gram on larger silver bars.' },
+  { q: 'Is there a making charge on gold and silver bars?', a: 'Yes, on both, and it is always shown separately. Gold bars carry a fixed making charge per bar, added to the published 24-carat rate for the weight. Silver bars and silver coins carry a minimal making charge, a small percentage of the metal value that is lower on larger bars. Either way it covers casting, stamping and packaging, appears as its own line on your invoice and in every online quotation, and is added to any applicable tax.' },
   { q: 'Do you supply raw gold for businesses?', a: 'Yes. Alongside finished gold bars, Diamond Palace Pvt. Ltd. supplies raw gold for business use \u2014 for jewellers, goldsmiths and manufacturers who need metal to work. It is sold by weight against the day\u2019s published gold rate and invoiced in full. Quantities are arranged directly with the counter: call 01-5915052 or message us on WhatsApp.' },
   { q: 'Does Diamond Palace Pvt. Ltd. buy gold and silver back?', a: 'Yes, both metals. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
   { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
@@ -54,7 +54,7 @@ const WaIcon = () => (
 );
 
 const PRODUCTS = [
-  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price and available weights.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced purely by weight at the day\u2019s published gold rate with no making charge — weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
+  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price and available weights.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced by weight at the day\u2019s published gold rate plus a fixed making charge per bar — weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
   { name: 'Lakshmi Silver Coin', metal: 'silver', seasonal: true, img: '/images/coin-silver-lakshmi.webp', w: 502, h: 500, alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver, Dhanteras edition', label: 'ENQUIRE \u00b7 COIN', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about the Lakshmi Silver Coin for Dhanteras.', desc: 'A 999 fine silver coin struck with Goddess Lakshmi on the lotus \u2014 minted for Dhanteras, the day Nepali households have bought silver for generations. Available for a limited period around Deepawali only.' },
   { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
   { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
@@ -250,7 +250,7 @@ export default function Site() {
           </div>
           <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
             <span className="hallmark mt-1" aria-hidden="true" />
-            <span><b className="text-silverhi font-medium">No making charge on gold bars.</b> Gold bars are priced purely by weight at the day’s published gold rate. Silver bars and coins carry only a <b>minimal making charge</b>, added at the counter and shown as its own line on your invoice.</span>
+            <span><b className="text-silverhi font-medium">Making charges, stated up front.</b> Gold bars are priced by weight at the day’s published gold rate plus a <b>fixed making charge per bar</b>. Silver bars and coins carry only a <b>minimal making charge</b>. Both are shown as their own line on your invoice and in every online quotation.</span>
           </p>
           <p data-rv className="mt-5 max-w-3xl flex items-start gap-3 rounded-xl border border-silver/15 bg-silver/[0.04] px-4 py-3.5 text-sm leading-relaxed text-silver/75">
             <span className="hallmark mt-1.5 shrink-0 scale-[0.7] opacity-70" aria-hidden="true" />
@@ -273,8 +273,8 @@ export default function Site() {
               After three years dealing in fine silver, Diamond Palace Pvt. Ltd. opened its gold counter in October 2026.
               We quote 24-carat gold — 99.9% pure, the investment standard — per tola and per 10 grams, against the same
               Kathmandu market reference shown at the top of this page. Gold is sold by weight, weighed in front of you,
-              invoiced to the gram, and bought back at the published purchase rate. <b className="text-silverhi font-medium">There is no
-              making charge on gold bars</b> — you pay the gold rate for the weight, and nothing for fabrication. Available weights and
+              invoiced to the gram, and bought back at the published purchase rate. <b className="text-silverhi font-medium">Gold bars carry a
+              fixed making charge per bar</b>, shown as its own line on your invoice and in every quotation. Available weights and
               jewellery-grade 22-carat pricing are quoted at the counter.
             </p>
             <p className="prose-justify mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-silver/80">
@@ -308,7 +308,7 @@ export default function Site() {
                   </p>
                   <p className="text-sm text-silver/70 leading-relaxed flex-1">{p.desc}</p>
                   <p className="mt-4 text-[0.7rem] tracking-wide text-steel">
-                    {p.metal === 'gold' ? 'Rate by weight · no making charge'
+                    {p.metal === 'gold' ? 'Rate by weight · fixed making charge per bar'
                       : p.name.includes('Bar') || p.seasonal ? 'Rate by weight · minimal making charge'
                       : 'Sold by weight at the day’s rate'}
                   </p>

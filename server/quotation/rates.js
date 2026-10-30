@@ -1,5 +1,6 @@
 import catalog from '../../public/quotation/data/products.json';
 
+const goldProducts = catalog.metals.find((m) => m.id === 'gold').products;
 const silverProducts = catalog.metals.find((m) => m.id === 'silver').products;
 export const makingKey = (productId) => `making_${productId.replace(/-/g, '_')}`;
 const shortName = (p) => { const n = p.name.replace(/^silver /i, ''); return n[0].toUpperCase() + n.slice(1); };
@@ -8,6 +9,13 @@ const silverName = (p) => (p.name.toLowerCase().startsWith('silver') ? p.name : 
 export const RATE_FIELDS = {
   goldPerTola: { label: 'Gold price per tola', short: 'Price per tola', group: 'gold', min: 1000, max: 10_000_000 },
   goldPerGram: { label: 'Gold price per gram', short: 'Price per gram', group: 'gold', min: 100, max: 1_000_000 },
+  // Gold making charge: a flat amount in rupees per piece, set for each gold product.
+  ...Object.fromEntries(
+    goldProducts.map((p) => [
+      makingKey(p.id),
+      { label: `Gold ${p.name} making charge`, short: p.name, group: 'goldMaking', min: 0, max: 1_000_000, flat: true, productId: p.id, grams: p.grams ?? null, tola: p.tola ?? null },
+    ]),
+  ),
   silverPerTola: { label: 'Silver price per tola', short: 'Price per tola', group: 'silver', min: 10, max: 1_000_000 },
   silverPerGram: { label: 'Silver price per gram', short: 'Price per gram', group: 'silver', min: 1, max: 100_000 },
   ...Object.fromEntries(
@@ -50,7 +58,7 @@ export async function saveRates(env, values, by = null) {
   return current;
 }
 
-export const metalOfField = (field) => (field.group === 'gold' ? 'gold' : 'silver');
+export const metalOfField = (field) => (field.group === 'gold' || field.group === 'goldMaking' ? 'gold' : 'silver');
 
 // Rates for an out-of-stock metal are hidden on the admin page, so they are kept as they were.
 export function parseRates(body, current = {}, stock = { gold: true, silver: true }) {
@@ -89,12 +97,14 @@ export function priceItems(items, rates, customerType) {
     if (rate == null) missing.add(rateKey);
     const unitPrice = rate == null ? null : round2(product.tola ? rate * product.tola : rate * product.grams);
     const total = unitPrice == null ? null : round2(unitPrice * item.quantity);
+    // silver: a percentage of the line's value; gold: a flat amount per piece
     let makingPercent = null;
-    if (metal.id === 'silver') {
-      makingPercent = rates[makingKey(product.id)];
-      if (makingPercent == null) missing.add(makingKey(product.id));
-    }
-    return { ...item, rateKey, rate, unitPrice, total, makingPercent };
+    let makingFlat = null;
+    const mk = rates[makingKey(product.id)];
+    if (mk == null) missing.add(makingKey(product.id));
+    else if (metal.id === 'silver') makingPercent = mk;
+    else makingFlat = mk;
+    return { ...item, rateKey, rate, unitPrice, total, makingPercent, makingFlat };
   });
 
   if (missing.size) {
@@ -103,13 +113,17 @@ export function priceItems(items, rates, customerType) {
 
   const metalTotal = round2(lines.reduce((s, l) => s + l.total, 0));
   const byProduct = new Map();
-  for (const l of lines.filter((x) => x.makingPercent != null)) {
-    const g = byProduct.get(l.product) ?? { product: l.product, productName: l.productName, percent: l.makingPercent, base: 0 };
+  for (const l of lines.filter((x) => x.makingPercent != null || x.makingFlat != null)) {
+    const g = byProduct.get(l.product) ?? {
+      product: l.product, productName: l.productName, metal: l.metal, metalName: l.metalName,
+      percent: l.makingPercent, flat: l.makingFlat, base: 0, quantity: 0,
+    };
     g.base = round2(g.base + l.total);
+    g.quantity += l.quantity;
     byProduct.set(l.product, g);
   }
   const makingLines = [...byProduct.values()]
-    .map((g) => ({ ...g, amount: round2((g.base * g.percent) / 100) }))
+    .map((g) => ({ ...g, amount: g.flat != null ? round2(g.flat * g.quantity) : round2((g.base * g.percent) / 100) }))
     .filter((g) => g.amount > 0);
   const making = makingLines.length ? { lines: makingLines, amount: round2(makingLines.reduce((s, g) => s + g.amount, 0)) } : null;
   const beforeFee = round2(metalTotal + (making?.amount ?? 0));

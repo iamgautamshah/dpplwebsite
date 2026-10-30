@@ -88,7 +88,7 @@ console.log('prerendering:');
 const homeKeywords = (shell.match(/<meta name="keywords" content="([^"]*)"/) || [])[1];
 emit('dist/index.html', render(), {
   title: "Today's Gold & Silver Price in Nepal | Diamond Palace Pvt. Ltd. (DPPL), New Road, Kathmandu",
-  description: "Today's 24-carat gold and 999 fine silver price in Nepal — daily sale and purchase rates per tola and 10 gram from Diamond Palace Pvt. Ltd. (DPPL), a gold and silver bullion dealer on New Road, Kathmandu. Gold bars with no making charge. आजको सुन चाँदीको मूल्य।",
+  description: "Today's 24-carat gold and 999 fine silver price in Nepal — daily sale and purchase rates per tola and 10 gram from Diamond Palace Pvt. Ltd. (DPPL), a gold and silver bullion dealer on New Road, Kathmandu. Request an itemised quotation online. आजको सुन चाँदीको मूल्य।",
   canonical: `${SITE}/`,
   keywords: homeKeywords && homeKeywords.replace(/&amp;/g, '&'),
 }, { home: true });

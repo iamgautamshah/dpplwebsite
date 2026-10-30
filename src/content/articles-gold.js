@@ -176,7 +176,7 @@ export const PART_GOLD = [
       { p: 'Dealers buy below the rate they sell at, and the gap between those two numbers is their margin. It is normal and it is not hidden — both figures are published at the top of this page.' },
       { p: 'What matters is knowing the spread before you buy, because it is the real cost of changing your mind. Also ask explicitly what happens to the making charge on a sale back. It is almost never recoverable: you are selling metal, not craftsmanship. This is the single biggest reason bullion bars suit savings better than ornaments do — you are not paying for work you cannot sell back.' },
 
-      { note: 'Diamond Palace Pvt. Ltd. charges no making charge on gold bars, publishes both the sale and purchase rate every day, weighs on calibrated scales in front of the customer, and buys back the metal it has sold against the original invoice.' },
+      { note: 'Diamond Palace Pvt. Ltd. charges a fixed, published making charge per gold bar, shown as its own line on the invoice, publishes both the sale and purchase rate every day, weighs on calibrated scales in front of the customer, and buys back the metal it has sold against the original invoice.' },
 
       { h: 'What your invoice should show' },
       { ul: [
@@ -191,8 +191,8 @@ export const PART_GOLD = [
       { p: 'Keep it. The invoice is what makes a piece liquid: a documented bar from a known dealer sells back at the published rate without argument, while an undocumented one invites a discount, a delay, or a refusal.' },
 
       { h: 'A worked example' },
-      { p: 'Suppose the 10-gram sale rate for 24-carat gold is Rs 254,200. A 10-gram bar therefore contains Rs 254,200 of metal. Where a dealer adds a making charge, that is added on top, plus any applicable tax. At Diamond Palace Pvt. Ltd. there is no making charge on gold bars, so the same bar costs the Rs 254,200 metal value plus any applicable tax and nothing more. If you sold it back the same day, you would receive the purchase rate on the metal.' },
-      { p: 'Run that arithmetic before buying, not afterwards. It takes a minute, and it is the difference between knowing what you paid for and guessing. It also shows why a bar with no making charge is the most efficient way to hold gold: every rupee you pay is metal you can sell back.' },
+      { p: 'Suppose the 10-gram sale rate for 24-carat gold is Rs 254,200. A 10-gram bar therefore contains Rs 254,200 of metal. Where a dealer adds a making charge, that is added on top, plus any applicable tax. At Diamond Palace Pvt. Ltd. the making charge on a gold bar is a fixed amount per bar, so the same bar costs the Rs 254,200 metal value, plus that fixed charge, plus any applicable tax. The online quotation form shows all three before you commit. If you sold it back the same day, you would receive the purchase rate on the metal; the making charge is not refunded.' },
+      { p: 'Run that arithmetic before buying, not afterwards. It takes a minute, and it is the difference between knowing what you paid for and guessing. It also shows why a bullion bar with a small, fixed making charge is a more efficient way to hold gold than jewellery: almost every rupee you pay is metal you can sell back.' },
     ],
   },
 ];

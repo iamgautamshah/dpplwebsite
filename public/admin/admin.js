@@ -1,7 +1,7 @@
 import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js';
 
 const GRAMS_PER_TOLA = 11.6638;
-const GROUP_NAME = { gold: 'Gold', silver: 'Silver', making: 'Making charge' };
+const GROUP_NAME = { gold: 'Gold', goldMaking: 'Gold making charge', silver: 'Silver', making: 'Silver making charge' };
 
 const login = $('login');
 const panel = $('panel');
@@ -11,7 +11,8 @@ const tpl = $('rate-field');
 
 let FIELDS = [];
 let stockState = { gold: true, silver: true };
-const metalOf = (f) => (f.group === 'gold' ? 'gold' : 'silver');
+const metalOf = (f) => (f.group === 'gold' || f.group === 'goldMaking' ? 'gold' : 'silver');
+const isMaking = (f) => f.group === 'making' || f.group === 'goldMaking';
 const activeFields = () => FIELDS.filter((f) => stockState[metalOf(f)] !== false);
 let KEYS = [];
 const num = (v) => Number(String(v).replace(/,/g, ''));
@@ -32,6 +33,7 @@ function buildForm(fields) {
     prefix.className = 'sr-only';
     prefix.textContent = `${GROUP_NAME[f.group]} `;
     node.querySelector('.label-text').append(prefix, f.short);
+    if (f.flat) node.querySelector('.unit').textContent = '(Rs. per piece)';
     if (f.percent) {
       node.querySelector('.unit').textContent = '(%)';
       node.querySelector('.money-input').classList.add('pct');
@@ -74,6 +76,14 @@ function hints() {
     $(`${metal}PerTola-hint`).textContent = tola > 0 ? `Used for 1-tola products · ≈ ${money(tola / GRAMS_PER_TOLA)} per gram` : 'Used for tola products';
     $(`${metal}PerGram-hint`).textContent = gram > 0 ? `Used for gram products · ≈ ${money(gram * GRAMS_PER_TOLA)} per tola` : 'Used for gram products';
   }
+  // gold: show what the flat charge is as a share of one piece at today's price
+  for (const f of FIELDS.filter((x) => x.group === 'goldMaking')) {
+    const amount = $(f.key).value;
+    const piece = f.tola ? v.goldPerTola * f.tola : v.goldPerGram * f.grams;
+    $(`${f.key}-hint`).textContent = hasValue(amount) && piece > 0
+      ? `Per piece · ≈ ${pct((num(amount) / piece) * 100)} of a ${f.short} at today’s price`
+      : 'Per piece';
+  }
   for (const f of FIELDS.filter((x) => x.group === 'making')) {
     const p = $(f.key).value;
     const perPiece = f.grams > 1 && v.silverPerGram > 0 && hasValue(p);
@@ -107,8 +117,8 @@ function render({ current, history, fields }) {
     tr.append(td);
     return body.replaceChildren(tr);
   }
-  const priceFields = FIELDS.filter((f) => f.group !== 'making');
-  const makingFields = FIELDS.filter((f) => f.group === 'making');
+  const priceFields = FIELDS.filter((f) => !isMaking(f));
+  const makingFields = FIELDS.filter(isMaking);
   body.replaceChildren(
     ...history.map((h) => {
       const tr = document.createElement('tr');
@@ -123,7 +133,7 @@ function render({ current, history, fields }) {
       td.className = 'making-cell';
       td.textContent = makingFields.every((f) => h[f.key] == null)
         ? '—'
-        : makingFields.map((f) => `${f.short.replace(/^Silver /, '')} ${historyCell(h, f)}`).join('\n');
+        : makingFields.filter((f) => h[f.key] != null).map((f) => `${f.group === 'goldMaking' ? 'Gold' : 'Silver'} ${f.short.replace(/^Silver /, '')} ${historyCell(h, f)}`).join('\n');
       tr.append(td);
       return tr;
     }),
@@ -131,9 +141,9 @@ function render({ current, history, fields }) {
 }
 
 function syncRateSections() {
-  for (const group of ['gold', 'silver', 'making']) {
+  for (const group of ['gold', 'goldMaking', 'silver', 'making']) {
     const fieldset = document.querySelector(`[data-group="${group}"]`).closest('fieldset');
-    const off = stockState[group === 'gold' ? 'gold' : 'silver'] === false;
+    const off = stockState[group === 'gold' || group === 'goldMaking' ? 'gold' : 'silver'] === false;
     fieldset.hidden = off;
     if (off) FIELDS.filter((f) => f.group === group).forEach((f) => setError(f.key));
   }
@@ -209,8 +219,8 @@ ratesForm.addEventListener('submit', async (e) => {
   const errors = {};
   for (const f of activeFields()) {
     const v = $(f.key).value;
-    const ok = f.percent ? hasValue(v) && num(v) >= f.min && num(v) <= f.max : num(v) > 0;
-    if (!ok) errors[f.key] = f.percent ? `Enter a percentage between ${f.min}% and ${f.max}%.` : 'Enter a price.';
+    const ok = f.percent || f.flat ? hasValue(v) && num(v) >= f.min && num(v) <= f.max : num(v) > 0;
+    if (!ok) errors[f.key] = f.percent ? `Enter a percentage between ${f.min}% and ${f.max}%.` : f.flat ? 'Enter an amount in rupees (0 for none).' : 'Enter a price.';
   }
   showErrors(summary, errors, KEYS);
   if (Object.keys(errors).length) return;
