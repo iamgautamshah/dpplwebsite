@@ -154,13 +154,12 @@ export function Nav({ current = null }) {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  // `scroll` links jump to a section when already on the home page; every
-  // other link is an ordinary page.
+  // Every menu item opens its own page. HOME, clicked while already on the
+  // home page, scrolls back to the top instead of reloading.
   const links = [
     { key: 'home', label: 'HOME', url: '/', scroll: true },
-    { key: 'products', label: 'PRODUCTS', url: '/#products', scroll: true },
+    { key: 'products', label: 'PRODUCTS', url: '/products' },
     { key: 'rates', label: 'TODAY\u2019S RATE', url: '/rates' },
-    { key: 'calculator', label: 'CALCULATOR', url: '/calculator' },
     { key: 'articles', label: 'JOURNAL', url: '/articles' },
     { key: 'about', label: 'ABOUT US', url: '/about' },
     { key: 'contact', label: 'CONTACT', url: '/contact' },
@@ -175,7 +174,7 @@ export function Nav({ current = null }) {
         <a href="/" onClick={(e) => go(e, links[0])} className="flex items-center gap-3">
           <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd. — home" className="h-11 w-auto" width="420" height="279" />
         </a>
-        <ul className="hidden xl:flex gap-6 items-center">
+        <ul className="hidden lg:flex gap-7 items-center">
           {links.map((l) => (
             <li key={l.key}>
               <a
@@ -190,7 +189,7 @@ export function Nav({ current = null }) {
           ))}
         </ul>
         <button
-          className="xl:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
+          className="lg:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -203,7 +202,7 @@ export function Nav({ current = null }) {
         </button>
       </div>
 
-            <div className={`xl:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
+            <div className={`lg:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
           {links.map((l) => (
             <li key={l.key}>
@@ -297,7 +296,7 @@ function RateStrip() {
   );
 }
 
-function GoldShowcase() {
+export function GoldShowcase() {
   return (
     <div id="gold" className="grid lg:grid-cols-[1fr_1.05fr] gap-8 lg:gap-16 items-center">
       <div className="pedestal pedestal-gold">
@@ -332,7 +331,7 @@ function GoldShowcase() {
   );
 }
 
-function SilverShelf() {
+export function SilverShelf() {
   return (
     <div id="silver" className="mt-20 lg:mt-28">
       <div className="max-w-2xl">
@@ -392,8 +391,7 @@ function RatesSection() {
             <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today’s gold and silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
           </div>
           <p className="mt-6 text-sm text-silver/70">
-            See <a href="/rates#history" className="text-gold border-b border-gold/40 hover:border-gold">past days’ rates</a> or
-            work out a price with the <a href="/calculator" className="text-gold border-b border-gold/40 hover:border-gold">gold and silver calculator</a>.
+            Past days’ rates are on the <a href="/rates#history" className="text-gold border-b border-gold/40 hover:border-gold">rate page</a>.
           </p>
         </div>
         <div className="relative w-full max-w-[420px] mx-auto lg:mx-0 lg:w-[420px]">
@@ -419,8 +417,9 @@ export function Footer() {
               <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
               <a href="/about" className="transition-colors hover:text-gold">About us</a>
               <a href="/contact" className="transition-colors hover:text-gold">Contact</a>
+              <a href="/products" className="transition-colors hover:text-gold">Products</a>
               <a href="/rates" className="transition-colors hover:text-gold">Today’s rate</a>
-              <a href="/calculator" className="transition-colors hover:text-gold">Calculator</a>
+              <a href="/quotation" className="transition-colors hover:text-gold">Quotation</a>
               <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
               <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
               <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
@@ -460,7 +459,7 @@ export default function Site() {
   return (
     <main className="relative z-10 bg-[#0B0F16]">
       <a href="/" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
-      <Nav />
+      <Nav current="home" />
       <Hero />
       <RateStrip />
 

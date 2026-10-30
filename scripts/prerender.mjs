@@ -15,7 +15,7 @@ buildSync({
 });
 
 const require = createRequire(import.meta.url);
-const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, renderAbout, renderContact, renderCalculator, renderRates, articles, faqs } = require('./.prerender.cjs');
+const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, renderAbout, renderContact, renderProducts, renderRates, articles, faqs } = require('./.prerender.cjs');
 
 let shell = readFileSync('dist/index.html', 'utf8');
 
@@ -165,7 +165,7 @@ for (const a of articles) {
   });
 }
 
-// Standalone pages: about, contact, calculator, today's rate
+// Standalone pages: products, today's rate, about, contact
 const crumbs = (name, url) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -181,9 +181,9 @@ const PAGES = [
   ['contact', renderContact, 'ContactPage', 'Contact',
     'Contact & Directions | Diamond Palace Pvt. Ltd., Sasa Complex, New Road, Kathmandu',
     'Visit Diamond Palace Pvt. Ltd. at 5th Floor, Sasa Complex, New Road, Kathmandu. Open Sunday to Friday, 10:30 to 18:00. Call 01-5915052 or WhatsApp +977 9805617932.'],
-  ['calculator', renderCalculator, 'WebPage', 'Price calculator',
-    'Gold & Silver Price Calculator Nepal — Tola, Gram & Kilogram | Diamond Palace Pvt. Ltd.',
-    'Calculate the price of 24-carat gold or 999 fine silver in Nepal at today’s rate, in tola, grams or kilograms, with or without a making charge. Tola to gram conversion table.'],
+  ['products', renderProducts, 'CollectionPage', 'Products',
+    'Gold & Silver Bullion — 24K Gold Bars, 999 Silver Bars, Coins & Grains | Diamond Palace Pvt. Ltd.',
+    '24-carat gold bars of 5 g, 10 g and 1 tola, raw gold for business, and 999 fine silver bars of 100 g, 500 g and 1000 g, silver coins and grains, sold by weight at New Road, Kathmandu.'],
   ['rates', renderRates, 'WebPage', 'Today’s rate',
     'Today’s Gold & Silver Price in Nepal — Per Tola & 10 Gram | Diamond Palace Pvt. Ltd.',
     'Today’s 24-carat gold and 999 fine silver selling and buying rates in Nepal, per tola and per 10 grams, with a daily record of past rates. आजको सुन चाँदीको मूल्य।'],

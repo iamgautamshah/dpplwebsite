@@ -1,10 +1,7 @@
-# Retired section URLs. These sections are fragments on the home page
-# (/#products), so these old paths go straight home in one hop.
-# /about and /contact are real pages again (about.html, contact.html).
+# /home was never a separate page; it goes straight to the home page.
+# /products, /about and /contact are real pages (products.html and so on).
 /home               /                   301
 /home/              /                   301
-/products           /                   301
-/products/          /                   301
 
 # Old and mistyped journal paths.
 /journal            /articles           301
@@ -16,3 +13,7 @@
 # Not listed on purpose: /index.html, /privacy.html, /privacy/ and the like.
 # Cloudflare Pages already redirects those to the bare path for flat .html
 # files, and a second rule for the same path invites a redirect chain.
+
+# The price calculator was removed; its address goes to today's rate.
+/calculator         /rates              301
+/calculator/        /rates              301

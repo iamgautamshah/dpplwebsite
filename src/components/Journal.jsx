@@ -1,36 +1,8 @@
 import { ARTICLES, bySlug } from '../content/articles.js';
+import { Page } from './Pages.jsx';
 
 const fmtDate = (iso) =>
   new Date(iso + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-
-function Chrome({ children }) {
-  return (
-    <main className="relative z-10 bg-base min-h-screen">
-      <nav className="sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line">
-        <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
-          <a href="/" className="flex items-center gap-3">
-            <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd. — home" className="h-11 w-auto" width="420" height="279" />
-          </a>
-          <div className="flex items-center gap-6">
-            <a href="/articles" className="hidden sm:block text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">Journal</a>
-            <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">← Back to site</a>
-          </div>
-        </div>
-      </nav>
-      {children}
-      <footer className="border-t border-line px-4 sm:px-6 md:px-12 py-8">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs text-mute tracking-wide">
-          <p>Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu · © 2026</p>
-          <p className="flex flex-wrap gap-x-5 gap-y-2">
-            <a href="/articles" className="transition-colors hover:text-signal">Journal</a>
-            <a href="/privacy" className="transition-colors hover:text-signal">Privacy Policy</a>
-            <a href="/terms" className="transition-colors hover:text-signal">Terms of Use</a>
-          </p>
-        </div>
-      </footer>
-    </main>
-  );
-}
 
 function Blocks({ blocks }) {
   return blocks.map((b, i) => {
@@ -58,40 +30,27 @@ function Blocks({ blocks }) {
 
 export function ArticlesIndex() {
   return (
-    <Chrome>
-      <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <div className="panel-surface max-w-5xl mx-auto p-5 sm:p-8 md:p-12">
-          <p className="flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase text-mute">
-            <span className="hallmark" aria-hidden="true" />
-            <span>The DPPL Journal</span>
-            <span className="flex-1 h-px bg-line" aria-hidden="true" />
-          </p>
-          <h1 className="font-display font-semibold text-text text-[clamp(2rem,5vw,3.2rem)]">Understand silver before you buy it.</h1>
-          <p className="mt-4 max-w-2xl text-body/85 leading-relaxed">
-            Practical writing from a working bullion counter on New Road — how silver is priced in Nepal, how to check a bar
-            before you pay for it, how to store it, and why the metal has held value for five thousand years.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-6 mt-10">
-            {ARTICLES.map((a) => (
-              <article key={a.slug} className="flex flex-col rounded-2xl border border-line bg-panel p-6 transition-all duration-300 hover:border-signal/50 hover:bg-panel">
-                <p className="text-[0.6rem] tracking-[0.34em] uppercase text-signal mb-3">{a.category}</p>
-                <h2 className="font-display font-semibold text-text text-xl leading-snug">
-                  <a href={`/articles/${a.slug}`} className="transition-colors hover:text-signal">{a.title}</a>
-                </h2>
-                <p className="mt-3 text-sm text-body/85 leading-relaxed flex-1">{a.teaser}</p>
-                <p className="mt-4 flex items-center gap-3 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-mute">
-                  <span>{fmtDate(a.date)}</span><span aria-hidden="true">·</span><span>{a.minutes} min read</span>
-                </p>
-                <a href={`/articles/${a.slug}`} className="mt-4 self-start text-[0.72rem] tracking-[0.22em] uppercase text-signal border-b border-signal/50 pb-1 transition-colors hover:border-signal">
-                  Read the article →
-                </a>
-              </article>
-            ))}
-          </div>
-        </div>
+    <Page
+      current="articles"
+      title="The Diamond Palace Journal"
+      intro="Practical writing from a working bullion counter on New Road: how gold and silver are priced in Nepal, how to check a bar before you pay for it, how to store it, and why both metals have held their value for thousands of years."
+    >
+      <div className="grid md:grid-cols-2 gap-6">
+        {ARTICLES.map((a) => (
+          <article key={a.slug} className="flex flex-col rounded-2xl border border-line bg-panel p-6 transition-colors duration-300 hover:border-signal/50">
+            <p className="text-[0.62rem] tracking-[0.3em] uppercase text-signal mb-3">{a.category}</p>
+            <h2 className="font-display font-semibold text-text text-xl leading-snug">
+              <a href={`/articles/${a.slug}`} className="transition-colors hover:text-signal">{a.title}</a>
+            </h2>
+            <p className="mt-3 text-sm text-body/85 leading-relaxed flex-1">{a.teaser}</p>
+            <p className="mt-4 text-[0.8rem] text-mute">{fmtDate(a.date)}, {a.minutes} min read</p>
+            <a href={`/articles/${a.slug}`} className="mt-4 self-start text-sm text-signal border-b border-signal/50 pb-0.5 transition-colors hover:border-signal">
+              Read the article
+            </a>
+          </article>
+        ))}
       </div>
-    </Chrome>
+    </Page>
   );
 }
 
@@ -101,48 +60,42 @@ export function ArticlePage({ slug }) {
   const others = ARTICLES.filter((x) => x.slug !== a.slug).slice(0, 3);
 
   return (
-    <Chrome>
-      <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <article className="panel-surface max-w-3xl mx-auto p-5 sm:p-8 md:p-12">
-          <nav aria-label="Breadcrumb" className="mb-6 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-mute">
-            <a href="/" className="transition-colors hover:text-signal">Diamond Palace Pvt. Ltd.</a>
-            <span className="mx-2" aria-hidden="true">/</span>
-            <a href="/articles" className="transition-colors hover:text-signal">Journal</a>
-            <span className="mx-2" aria-hidden="true">/</span>
-            <span className="text-body/85">{a.category}</span>
-          </nav>
+    <Page
+      current="articles"
+      narrow
+      title={a.title}
+      before={(
+        <nav aria-label="Breadcrumb" className="mb-5 text-[0.8rem] text-silver/60">
+          <a href="/" className="transition-colors hover:text-gold">Home</a>
+          <span className="mx-2" aria-hidden="true">/</span>
+          <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
+          <span className="mx-2" aria-hidden="true">/</span>
+          <span className="text-silver/80">{a.category}</span>
+        </nav>
+      )}
+      meta={<p className="mt-5 text-[0.85rem] text-silver/60">By Diamond Palace Pvt. Ltd. on {fmtDate(a.date)}, {a.minutes} min read</p>}
+    >
+      <article>
+        <Blocks blocks={a.blocks} />
+      </article>
 
-          <h1 className="font-display font-semibold text-text text-[clamp(1.9rem,4.8vw,2.9rem)] leading-tight">{a.title}</h1>
-          <p className="mt-4 flex flex-wrap items-center gap-3 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-mute">
-            <span className="text-signal">{a.category}</span><span aria-hidden="true">·</span>
-            <span>{fmtDate(a.date)}</span><span aria-hidden="true">·</span>
-            <span>{a.minutes} min read</span><span aria-hidden="true">·</span>
-            <span>Diamond Palace Pvt. Ltd.</span>
-          </p>
-
-          <div className="mt-8 border-t border-line pt-6">
-            <Blocks blocks={a.blocks} />
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-line">
-            <p className="text-[0.64rem] tracking-[0.34em] uppercase text-mute mb-5">Continue reading</p>
-            <ul className="space-y-4">
-              {others.map((o) => (
-                <li key={o.slug}>
-                  <a href={`/articles/${o.slug}`} className="group block">
-                    <span className="font-display font-semibold text-text text-lg transition-colors group-hover:text-signal">{o.title}</span>
-                    <span className="block mt-1 text-sm text-mute leading-relaxed">{o.teaser.slice(0, 110)}…</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="/articles" className="btn-ghost">← All articles</a>
-              <a href="/" className="btn-primary">Today's silver price</a>
-            </div>
-          </div>
-        </article>
+      <div className="mt-12 pt-8 border-t border-line">
+        <h2 className="font-display text-silverhi text-lg mb-5">Continue reading</h2>
+        <ul className="space-y-4">
+          {others.map((o) => (
+            <li key={o.slug}>
+              <a href={`/articles/${o.slug}`} className="group block">
+                <span className="font-display font-semibold text-text text-lg transition-colors group-hover:text-signal">{o.title}</span>
+                <span className="block mt-1 text-sm text-mute leading-relaxed">{o.teaser.slice(0, 110)}…</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a href="/articles" className="btn-line">All articles</a>
+          <a href="/rates" className="btn-gold">Today’s gold and silver price</a>
+        </div>
       </div>
-    </Chrome>
+    </Page>
   );
 }

@@ -445,26 +445,47 @@ input, select { border-color: #2A3447; }
 td.num, th.num, .rate-group dd { font-variant-numeric: tabular-nums; }
 :focus-visible { outline: 2px solid #D8B36A; outline-offset: 3px; }
 
+/* site menu — the same items, type and behaviour as the main site's menu */
 .site-head {
   position: sticky; top: 0; z-index: 10;
   background: rgba(10, 14, 22, 0.95);
   border-bottom: 1px solid rgba(201, 209, 222, 0.10);
   backdrop-filter: blur(6px);
 }
-.site-head .bar { max-width: 1120px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.site-head .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; }
+@media (min-width: 768px) { .site-head .bar { padding: 12px 48px; } }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-.brand img { height: 44px; width: auto; }
+.brand img { height: 44px; width: auto; display: block; }
 .brand-note { color: #9AA5B8; font-size: 13px; padding-left: 12px; border-left: 1px solid rgba(201, 209, 222, 0.2); }
-.brand b { font: 500 19px/1 Cinzel, Georgia, serif; letter-spacing: 0.14em; }
-.brand b span { color: var(--gold); }
-.brand small { display: block; margin-top: 5px; font-size: 8px; letter-spacing: 0.3em; color: #6B7890; }
-.site-nav { display: flex; gap: 22px; }
-.site-nav a { color: #C9D1DE; text-decoration: none; font-size: 11.5px; letter-spacing: 0.22em; text-transform: uppercase; }
-.site-nav a:hover { color: var(--gold); }
-@media (max-width: 560px) { .site-nav a.optional { display: none; } .site-nav { gap: 16px; } }
+.site-nav { display: none; gap: 28px; align-items: center; }
+.site-nav a, .nav-drop a { color: #C9D1DE; text-decoration: none; text-transform: uppercase; transition: color .3s; }
+.site-nav a { font-size: 11.2px; letter-spacing: 0.2em; padding: 4px 0; }
+.site-nav a:hover, .nav-drop a:hover, .site-nav a[aria-current="page"], .nav-drop a[aria-current="page"] { color: var(--gold); }
+.nav-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px; border: 1px solid rgba(201, 209, 222, 0.25); border-radius: 8px;
+  background: transparent; color: #C9D1DE; cursor: pointer; transition: border-color .2s, color .2s;
+}
+.nav-toggle:hover { border-color: var(--gold); color: var(--gold); }
+.nav-toggle svg[hidden] { display: none; }
+.nav-drop { position: absolute; left: 0; right: 0; top: 100%; background: #05080F; border-bottom: 1px solid rgba(216, 179, 106, 0.3); box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.8); padding: 8px 0; }
+.nav-drop[hidden] { display: none; }
+.nav-drop a { display: block; padding: 16px 24px; text-align: center; font-size: 12.8px; letter-spacing: 0.24em; }
+.nav-drop a:hover { background: rgba(201, 209, 222, 0.04); }
+@media (min-width: 1024px) { .site-nav { display: flex; } .nav-toggle, .nav-drop { display: none !important; } }
 
-.site-foot { max-width: 720px; margin: 0 auto; padding: 8px 16px 48px; color: #6B7890; font-size: 13px; line-height: 1.7; text-align: center; }
-.site-foot a { color: #9AA5B8; }
+/* site footer — matches the main site's footer */
+.site-foot { border-top: 1px solid rgba(201, 209, 222, 0.10); padding: 32px 16px; color: #6B7890; font-size: 12px; line-height: 1.7; letter-spacing: 0.02em; }
+@media (min-width: 768px) { .site-foot { padding: 32px 48px; } }
+.foot-inner { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+@media (min-width: 640px) { .foot-inner { flex-direction: row; align-items: center; justify-content: space-between; } .foot-info { text-align: right; } .foot-links { justify-content: flex-end; } }
+.foot-brand { display: flex; align-items: center; gap: 14px; }
+.foot-brand img { height: 36px; width: auto; }
+.foot-brand p { margin: 0; }
+.foot-brand span { font-family: Cinzel, Georgia, serif; color: #C9D1DE; letter-spacing: 0.14em; font-size: 14px; text-transform: uppercase; }
+.foot-info p { margin: 0; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px !important; }
+.site-foot a { color: #6B7890; text-decoration: none; transition: color .2s; }
 .site-foot a:hover { color: var(--gold); }
 
 .btn-logout { min-height: 38px; padding: 0 14px; font-size: 11.5px; gap: 8px; white-space: nowrap; flex-shrink: 0; }

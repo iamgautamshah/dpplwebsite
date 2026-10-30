@@ -15,6 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/quotation/assets/styles.css">
   <script type="module" src="/quotation/assets/price.js"></script>
+  <script src="/quotation/assets/site-nav.js" defer></script>
 </head>
 <body>
   <header class="site-head">
@@ -24,10 +25,27 @@
       </a>
       <nav class="site-nav" aria-label="Main">
         <a href="/">Home</a>
-        <a class="optional" href="/#products">Products</a>
-        <a href="/#contact">Contact</a>
+        <a href="/products">Products</a>
+        <a href="/rates">Today’s rate</a>
+        <a href="/articles">Journal</a>
+        <a href="/about">About us</a>
+        <a href="/contact">Contact</a>
+        <a href="/quotation" aria-current="page">Quotation</a>
       </nav>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+        <svg class="icon-open" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
     </div>
+    <nav id="site-menu" class="nav-drop" aria-label="Main" hidden>
+      <a href="/">Home</a>
+      <a href="/products">Products</a>
+      <a href="/rates">Today’s rate</a>
+      <a href="/articles">Journal</a>
+      <a href="/about">About us</a>
+      <a href="/contact">Contact</a>
+      <a href="/quotation" aria-current="page">Quotation</a>
+    </nav>
   </header>
   <main class="shell">
     <header class="intro">
@@ -93,8 +111,26 @@
     </section>
   </main>
   <footer class="site-foot">
-    <p>Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu<br>
-    Counter 01-5915052 · WhatsApp +977 9805617932 · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." width="420" height="279">
+        <p><span>Diamond Palace Pvt. Ltd.</span><br>Est. 2080 B.S.</p>
+      </div>
+      <div class="foot-info">
+        <p>5th Floor, Sasa Complex, New Road, Kathmandu<br>Counter 01-5915052 · WhatsApp +977 9805617932<br>© 2026 Diamond Palace Pvt. Ltd. All rights reserved.</p>
+        <p class="foot-links">
+          <a href="/about">About us</a>
+          <a href="/contact">Contact</a>
+          <a href="/products">Products</a>
+          <a href="/rates">Today’s rate</a>
+          <a href="/quotation">Quotation</a>
+          <a href="/articles">Journal</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Use</a>
+          <a href="mailto:dppl2080@gmail.com">dppl2080@gmail.com</a>
+        </p>
+      </div>
+    </div>
   </footer>
 </body>
 </html>

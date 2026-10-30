@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import Site from './components/Site.jsx';
 import { NotFound, Privacy, Terms } from './components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
-import { AboutPage, CalculatorPage, ContactPage, RatesPage } from './components/Pages.jsx';
+import { AboutPage, ContactPage, ProductsPage, RatesPage } from './components/Pages.jsx';
 
-const PAGES = { about: AboutPage, contact: ContactPage, calculator: CalculatorPage, rates: RatesPage };
+const PAGES = { products: ProductsPage, rates: RatesPage, about: AboutPage, contact: ContactPage };
 
 const SECTIONS = ['home', 'products', 'gold', 'silver', 'rates', 'articles', 'about', 'faq', 'contact'];
 

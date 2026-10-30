@@ -1,45 +1,16 @@
+import { Page } from './Pages.jsx';
+
 const UPDATED = '30 October 2026';
 
 function Shell({ title, updated, children }) {
   return (
-    <main className="relative z-10 bg-graphite min-h-screen">
-      <nav className="sticky top-0 z-40 bg-base/90 backdrop-blur-md border-b border-line">
-        <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3 max-w-5xl mx-auto">
-          <a href="/" className="flex items-center gap-3">
-            <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd. — home" className="h-11 w-auto" width="420" height="279" />
-          </a>
-          <a href="/" className="text-[0.7rem] tracking-[0.22em] uppercase text-mute transition-colors hover:text-signal">← Back to site</a>
-        </div>
-      </nav>
-
-      <div className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <article className="panel-surface max-w-4xl mx-auto p-5 sm:p-8 md:p-12">
-          <p className="flex items-center gap-3.5 mb-4 text-[0.64rem] tracking-[0.42em] uppercase text-mute">
-            <span className="hallmark" aria-hidden="true" />
-            <span>Legal</span>
-            <span className="flex-1 h-px bg-line" aria-hidden="true" />
-          </p>
-          <h1 className="font-display font-semibold text-text text-[clamp(1.9rem,4.6vw,2.9rem)]">{title}</h1>
-          <p className="mt-3 font-mono text-[0.68rem] tracking-[0.24em] uppercase text-signal">Last updated · {updated}</p>
-          <div className="mt-8 space-y-8">{children}</div>
-
-          <div className="mt-12 pt-8 border-t border-line flex flex-wrap gap-3">
-            <a href="/" className="btn-ghost">← Back to Diamond Palace Pvt. Ltd.</a>
-            <a href="mailto:dppl2080@gmail.com" className="btn-ghost">dppl2080@gmail.com</a>
-          </div>
-        </article>
+    <Page title={title} intro={`Last updated ${updated}`} narrow>
+      <div className="space-y-8">{children}</div>
+      <div className="mt-12 pt-8 border-t border-line flex flex-wrap gap-3">
+        <a href="/contact" className="btn-line">Contact us</a>
+        <a href="mailto:dppl2080@gmail.com" className="btn-line">dppl2080@gmail.com</a>
       </div>
-
-      <footer className="bg-[#080C14] border-t border-silver/[0.07] px-5 md:px-16 py-8">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-mute tracking-wide">© 2026 Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu</p>
-          <p className="flex gap-5 text-xs text-mute tracking-wide">
-            <a href="/privacy" className="transition-colors hover:text-signal">Privacy Policy</a>
-            <a href="/terms" className="transition-colors hover:text-signal">Terms of Use</a>
-          </p>
-        </div>
-      </footer>
-    </main>
+    </Page>
   );
 }
 
@@ -300,9 +271,8 @@ export function NotFound() {
 
       <Section heading="Where to go next">
         <ul className="space-y-3">
-          <li><a href="/#products" className="text-signal border-b border-signal/50 hover:border-signal">Gold and silver bullion</a> — 24-carat gold bars, 999 silver bars, coins and grains</li>
+          <li><a href="/products" className="text-signal border-b border-signal/50 hover:border-signal">Gold and silver bullion</a> — 24-carat gold bars, 999 silver bars, coins and grains</li>
           <li><a href="/rates" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s gold and silver price</a> — the day&rsquo;s sale and purchase rates</li>
-          <li><a href="/calculator" className="text-signal border-b border-signal/50 hover:border-signal">Price calculator</a> — work out a price in tola or grams</li>
           <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how gold and silver are priced, verified and stored</li>
           <li><a href="/contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
         </ul>

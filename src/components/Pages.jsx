@@ -1,26 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Footer, IMG, MAPS_URL, Nav, PhoneIcon, WA, WaIcon } from './Site.jsx';
+import { useState } from 'react';
+import { Footer, GoldShowcase, IMG, MAPS_URL, Nav, PhoneIcon, SilverShelf, WA, WaIcon } from './Site.jsx';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
-import { getSilver } from '../lib/ui.jsx';
 
-/* Standalone pages: About, Contact, the price calculator and Today's rate.
-   Each carries the site menu and footer, so every page links to every other. */
-
-export const GRAMS_PER_TOLA = 11.6638;
-
-function Page({ current, title, intro, children }) {
+/* The frame every page except the home page shares: the site menu, a lit
+   title band, the content, and the site footer. Products, Today's rate, the
+   journal, About us, Contact and the legal pages all open in it, so moving
+   between them always looks and behaves the same. */
+export function Page({ current = null, title, intro, before = null, meta = null, narrow = false, children }) {
   return (
     <main className="relative z-10 bg-[#0B0F16] min-h-screen">
       <a href="#content" className="skip-link">Skip to content</a>
       <Nav current={current} />
       <header className="vault border-b border-gold/15">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8 md:px-12 pt-12 sm:pt-16 pb-10 sm:pb-12">
+        <div className={`${narrow ? 'max-w-3xl' : 'max-w-5xl'} mx-auto px-5 sm:px-8 md:px-12 pt-12 sm:pt-16 pb-10 sm:pb-12`}>
+          {before}
           <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(1.9rem,4.6vw,3.1rem)]">{title}</h1>
           {intro && <p className="mt-5 max-w-2xl text-[1.02rem] leading-relaxed text-silver/80">{intro}</p>}
+          {meta}
         </div>
       </header>
-      <div id="content" className="max-w-5xl mx-auto px-5 sm:px-8 md:px-12 py-10 sm:py-14">{children}</div>
+      <div id="content" className={`${narrow ? 'max-w-3xl' : 'max-w-5xl'} mx-auto px-5 sm:px-8 md:px-12 py-10 sm:py-14`}>{children}</div>
       <Footer />
     </main>
   );
@@ -78,7 +78,7 @@ export function AboutPage() {
       <H2>How buying from us works</H2>
       <ol className="mt-5 space-y-4 max-w-3xl">
         {[
-          ['Check the day’s rate.', <>The sale and purchase rates for gold and silver are published each morning. You can see them on our <A href="/rates">rate page</A>, or work out a price with the <A href="/calculator">calculator</A>.</>],
+          ['Check the day’s rate.', <>The sale and purchase rates for gold and silver are published each morning. You can see them on our <A href="/rates">rate page</A>, or ask the counter on WhatsApp.</>],
           ['Ask for a quotation if you want it in writing.', <>The <A href="/quotation">online quotation form</A> itemises the metal, the making charge and any fee, and sends it to us as a PDF on WhatsApp.</>],
           ['Your piece is weighed in front of you.', 'Every bar, coin and gram of grain is weighed on calibrated scales at the counter before you pay.'],
           ['You pay the rate by weight plus the making charge.', 'Gold bars carry a fixed making charge per bar; silver bars and coins a minimal one. It is shown as its own line.'],
@@ -110,7 +110,7 @@ export function AboutPage() {
 
       <div className="mt-12 flex flex-wrap gap-3">
         <a href="/contact" className="btn-gold">Visit the counter</a>
-        <a href="/#products" className="btn-line">See the bullion</a>
+        <a href="/products" className="btn-line">See the bullion</a>
       </div>
     </Page>
   );
@@ -171,177 +171,29 @@ export function ContactPage() {
   );
 }
 
-/* ── Calculator ────────────────────────────────────────────────────────── */
-const UNITS = { gram: 1, tola: GRAMS_PER_TOLA, kilogram: 1000 };
-const rs = (n) => 'Rs ' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const fmt = (n, d = 3) => Number(n).toLocaleString('en-IN', { maximumFractionDigits: d });
-
-function Calculator() {
-  const [rates, setRates] = useState(null);
-  const [failed, setFailed] = useState(false);
-  const [metal, setMetal] = useState('gold');
-  const [qty, setQty] = useState('10');
-  const [unit, setUnit] = useState('gram');
-  const [basis, setBasis] = useState('sale');
-  const [custom, setCustom] = useState('');
-  const [making, setMaking] = useState('none');
-  const [makingValue, setMakingValue] = useState('');
-
-  useEffect(() => {
-    let alive = true;
-    getSilver().then((d) => alive && setRates(d)).catch(() => alive && setFailed(true));
-    return () => { alive = false; };
-  }, []);
-
-  const published = useMemo(() => {
-    if (!rates) return null;
-    const m = metal === 'gold' ? rates.gold : rates;
-    if (!m || !Number.isFinite(m.tolaSale)) return null;
-    return basis === 'purchase' ? { tola: m.tolaPurchase, g10: m.g10Purchase } : { tola: m.tolaSale, g10: m.g10Sale };
-  }, [rates, metal, basis]);
-
-  const grams = Math.max(0, Number(String(qty).replace(/,/g, '')) || 0) * UNITS[unit];
-  // The associations publish a tola rate and a 10-gram rate. A weight in tolas
-  // is priced from the tola rate, anything else from the 10-gram rate — the
-  // way a counter does it.
-  let value = null;
-  let rateLabel = '';
-  if (basis === 'custom') {
-    const perTola = Number(String(custom).replace(/,/g, ''));
-    if (perTola > 0) { value = (grams / GRAMS_PER_TOLA) * perTola; rateLabel = `${rs(perTola)} per tola (your rate)`; }
-  } else if (published) {
-    if (unit === 'tola') { value = Number(qty) * published.tola; rateLabel = `${rs(published.tola)} per tola`; }
-    else { value = (grams / 10) * published.g10; rateLabel = `${rs(published.g10)} per 10 grams`; }
-  }
-  const mv = Math.max(0, Number(String(makingValue).replace(/,/g, '')) || 0);
-  const makingAmount = value == null ? null : making === 'amount' ? mv : making === 'percent' ? (value * mv) / 100 : 0;
-  const total = value == null ? null : value + makingAmount;
-
-  const field = 'w-full min-h-[46px] rounded-lg border border-silver/20 bg-[#070B14] px-3.5 text-silverhi focus:border-gold';
-  const label = 'block text-sm text-silver/70 mb-1.5';
-
-  return (
-    <div className="frame p-5 sm:p-8 grid lg:grid-cols-2 gap-8">
-      <form className="space-y-5" onSubmit={(e) => e.preventDefault()} aria-label="Price calculator">
-        <div>
-          <span className={label} id="metal-l">Metal</span>
-          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="metal-l">
-            {[['gold', 'Gold 24K (999.9)'], ['silver', 'Silver 999']].map(([v, t]) => (
-              <button key={v} type="button" role="radio" aria-checked={metal === v} onClick={() => setMetal(v)}
-                className={`min-h-[46px] rounded-lg border text-sm transition-colors ${metal === v ? 'border-gold bg-gold/15 text-gold' : 'border-silver/20 text-silver/80 hover:border-gold/50'}`}>{t}</button>
-            ))}
-          </div>
-        </div>
-        <div className="grid grid-cols-[1fr_auto] gap-2">
-          <div>
-            <label className={label} htmlFor="calc-qty">Weight</label>
-            <input id="calc-qty" className={`${field} tnum`} inputMode="decimal" value={qty} onChange={(e) => setQty(e.target.value.replace(/[^\d.,]/g, ''))} />
-          </div>
-          <div>
-            <label className={label} htmlFor="calc-unit">Unit</label>
-            <select id="calc-unit" className={field} value={unit} onChange={(e) => setUnit(e.target.value)}>
-              <option value="gram">grams</option>
-              <option value="tola">tola</option>
-              <option value="kilogram">kilograms</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label className={label} htmlFor="calc-basis">Rate</label>
-          <select id="calc-basis" className={field} value={basis} onChange={(e) => setBasis(e.target.value)}>
-            <option value="sale">Today’s selling rate (what you pay)</option>
-            <option value="purchase">Today’s buying rate (what you receive when selling)</option>
-            <option value="custom">My own rate per tola</option>
-          </select>
-          {basis === 'custom' && (
-            <input aria-label="Your rate per tola in rupees" className={`${field} tnum mt-2`} inputMode="decimal" placeholder="Rate per tola, e.g. 276000" value={custom} onChange={(e) => setCustom(e.target.value.replace(/[^\d.,]/g, ''))} />
-          )}
-        </div>
-        <div>
-          <label className={label} htmlFor="calc-making">Making charge (optional)</label>
-          <div className="grid grid-cols-[1fr_auto] gap-2">
-            <select id="calc-making" className={field} value={making} onChange={(e) => setMaking(e.target.value)}>
-              <option value="none">None</option>
-              <option value="amount">A fixed amount in rupees</option>
-              <option value="percent">A percentage of the metal value</option>
-            </select>
-            {making !== 'none' && (
-              <input aria-label={making === 'amount' ? 'Making charge in rupees' : 'Making charge in percent'} className={`${field} tnum w-28`} inputMode="decimal" placeholder={making === 'amount' ? 'Rs' : '%'} value={makingValue} onChange={(e) => setMakingValue(e.target.value.replace(/[^\d.,]/g, ''))} />
-            )}
-          </div>
-        </div>
-      </form>
-
-      <div className="rounded-xl border border-gold/30 bg-[#070B14] p-5 sm:p-6" aria-live="polite">
-        <p className="text-sm text-silver/60">Estimated price</p>
-        <p className="mt-1 font-display text-gold text-[clamp(1.8rem,4vw,2.4rem)] tnum leading-tight">{total == null ? '—' : rs(total)}</p>
-        <dl className="mt-5 space-y-2.5 text-[0.95rem]">
-          <div className="flex justify-between gap-4"><dt className="text-silver/60">Weight</dt><dd className="tnum text-silverhi text-right">{fmt(grams)} g · {fmt(grams / GRAMS_PER_TOLA, 4)} tola</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-silver/60">Rate used</dt><dd className="text-silverhi text-right">{rateLabel || (failed && basis !== 'custom' ? 'Not available yet today' : basis === 'custom' ? 'Enter a rate' : 'Loading…')}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-silver/60">Metal value</dt><dd className="tnum text-silverhi">{value == null ? '—' : rs(value)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-silver/60">Making charge</dt><dd className="tnum text-silverhi">{makingAmount == null ? '—' : rs(makingAmount)}</dd></div>
-        </dl>
-        <p className="mt-5 text-xs leading-relaxed text-silver/55">
-          An estimate only. Applicable tax is added on the invoice, and the rate that applies is the one confirmed at the counter at the time of sale.
-          {failed && basis !== 'custom' && ' Today’s rate has not been published yet; choose “My own rate per tola” to calculate with a rate you know.'}
-        </p>
-        <a href="/quotation" className="btn-gold mt-5 inline-block">Get an itemised quotation</a>
-      </div>
-    </div>
-  );
-}
-
-export function CalculatorPage() {
+/* ── Products ──────────────────────────────────────────────────────────── */
+export function ProductsPage() {
   return (
     <Page
-      current="calculator"
-      title="Gold and silver price calculator"
-      intro="Work out what a weight of 24-carat gold or 999 fine silver costs at today’s published rate, in grams, tola or kilograms, with or without a making charge."
+      current="products"
+      title="Gold and silver bullion"
+      intro="24-carat gold bars and 999 fine silver bars, coins and grains, sold by weight at the day’s published rate from our counter on New Road, Kathmandu."
     >
-      <Calculator />
-
-      <H2>Tola and grams</H2>
-      <P>
-        Gold and silver in Nepal are priced per tola and per 10 grams. One tola is 11.6638 grams, so the two rates describe
-        the same price in different units. The table converts common weights.
-      </P>
-      <div className="mt-5 overflow-x-auto">
-        <table className="min-w-[420px] text-[0.95rem]">
-          <thead><tr className="text-left text-silver/60 border-b border-silver/15"><th className="py-2 pr-8 font-normal">Weight</th><th className="py-2 pr-8 font-normal">In grams</th><th className="py-2 font-normal">In tola</th></tr></thead>
-          <tbody className="tnum text-silver/85">
-            {[['1 tola', GRAMS_PER_TOLA], ['5 grams', 5], ['10 grams', 10], ['100 grams', 100], ['500 grams', 500], ['1 kilogram', 1000], ['1 troy ounce', 31.1035]].map(([n, g]) => (
-              <tr key={n} className="border-b border-silver/10"><th scope="row" className="py-2 pr-8 text-left font-normal text-silverhi">{n}</th><td className="py-2 pr-8">{fmt(g, 4)} g</td><td className="py-2">{fmt(g / GRAMS_PER_TOLA, 4)} tola</td></tr>
-            ))}
-          </tbody>
-        </table>
+      <GoldShowcase />
+      <SilverShelf />
+      <div className="mt-14 frame p-6 sm:p-8 flex flex-col md:flex-row md:items-center gap-6">
+        <div className="flex-1">
+          <h2 className="font-display text-silverhi text-[clamp(1.2rem,2.6vw,1.5rem)]">Need a written price?</h2>
+          <p className="mt-2 text-[0.98rem] leading-relaxed text-silver/80 max-w-2xl">
+            Choose your bars or coins online and see the itemised price at today’s rate, with the making charge on its own
+            line. The quotation is sent to us as a PDF on WhatsApp.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <a href="/quotation" className="btn-gold">Request a quotation</a>
+          <a href="/rates" className="btn-line">Today’s rate</a>
+        </div>
       </div>
-
-      <H2>How the price is worked out</H2>
-      <P>
-        The published rate is the price of the metal alone. The price of a bar or coin is its weight multiplied by that rate,
-        plus a making charge for turning the metal into a stamped, sealed piece, plus any applicable tax. A weight given in
-        tola is priced from the tola rate; a weight in grams from the 10-gram rate. The two can differ by a rupee or two
-        because each is rounded when it is published.
-      </P>
-      <P>
-        For example, if the 10-gram selling rate for 24-carat gold were Rs 2,36,631, a 10-gram bar would contain Rs 2,36,631 of
-        metal. A fixed making charge for that bar would be added on top. These figures are only an illustration; the calculator
-        uses the rate published today.
-      </P>
-
-      <H2>Selling rate and buying rate</H2>
-      <P>
-        Two rates are published each day. The selling rate is what you pay when you buy. The buying rate, which is lower, is
-        what a dealer pays when you sell metal back. The difference between them is the dealer’s margin, so metal bought and
-        sold again within a few days usually returns less than it cost. Making charges are not refunded on a sale back.
-      </P>
-
-      <H2>Making charges</H2>
-      <P>
-        At Diamond Palace Pvt. Ltd., gold bars carry a fixed making charge per bar and silver bars and coins a minimal making
-        charge, a small percentage of the metal value that is lower per gram on larger bars. Choose the matching option above
-        to include one. For the exact charge on a particular piece, request a <A href="/quotation">quotation</A>.
-      </P>
     </Page>
   );
 }
@@ -415,8 +267,8 @@ export function RatesPage() {
             are for the metal by weight; a making charge is added per bar or coin.
           </P>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href="/calculator" className="btn-gold">Calculate a price</a>
-            <a href="/quotation" className="btn-line">Request a quotation</a>
+            <a href="/quotation" className="btn-gold">Request a quotation</a>
+            <a href="/products" className="btn-line">See the bullion</a>
           </div>
         </div>
       </div>
