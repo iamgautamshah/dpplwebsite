@@ -1,4 +1,4 @@
-const UPDATED = '1 August 2026';
+const UPDATED = '30 October 2026';
 
 function Shell({ title, updated, children }) {
   return (
@@ -61,14 +61,15 @@ export function Privacy() {
     <Shell title="Privacy Policy" updated={UPDATED}>
       <p className="text-[0.95rem] leading-relaxed text-body/85">
         This policy explains what information is collected when you visit dppl.com.np, why it is collected, and what
-        choices you have. Diamond Palace Pvt. Ltd. operates a silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
-        an information and enquiry channel — it does not sell online, take payments, or hold accounts.
+        choices you have. Diamond Palace Pvt. Ltd. operates a gold and silver bullion counter at Sasa Complex, New Road, Kathmandu. This website is
+        an information, enquiry and quotation channel — it does not sell online, take payments, or hold customer accounts.
       </p>
 
       <Section heading="Information we collect">
         <p>
-          <b className="text-text font-medium">We do not ask you to create an account, and there is no checkout, payment form, or login on this site.</b>{' '}
-          The website itself collects no name, address, or payment information from you.
+          <b className="text-text font-medium">We do not ask you to create an account, and there is no checkout or payment form on this site.</b>{' '}
+          The only page that asks for personal details is the optional quotation form, described below. We never collect
+          card or bank details.
         </p>
         <p>
           Like almost all websites, our hosting provider (Cloudflare) records standard technical data for every visit —
@@ -136,9 +137,29 @@ export function Privacy() {
         </p>
       </Section>
 
+      <Section heading="Quotation requests">
+        <p>
+          If you use the quotation form at <a className="text-gold underline underline-offset-4" href="/quotation">dppl.com.np/quotation</a>, we ask for your
+          customer type, PAN number, name (or registered business name and contact person), contact number and address,
+          together with the products you choose. We need these details to prepare a quotation in your name, as a PAN-based
+          invoice would later require.
+        </p>
+        <p>
+          While you fill in the form, your answers are kept in your own browser for that tab only. When you send or download
+          the quotation, the details and the calculated price are stored on our hosting provider (Cloudflare) so that the
+          PDF can be produced. The PDF is reached through a long random link; anyone who has that link can open it, so
+          share it only with us. Stored quotations are deleted automatically after 180 days.
+        </p>
+        <p>
+          We use quotation details only to respond to your request and, if you go on to buy, to prepare your invoice. They
+          are never used for marketing or shared with anyone else. To have a quotation deleted sooner, contact us with its
+          quotation number.
+        </p>
+      </Section>
+
       <Section heading="How long we keep enquiry information">
         <p>
-          Messages you send us are kept only as long as needed to serve you. Invoices and transaction records are
+          Messages you send us are kept only as long as needed to serve you, and quotation requests for 180 days. Invoices and transaction records are
           retained as required by Nepali tax and accounting law. We do not build marketing profiles, and we do not sell,
           rent, or trade your information to anyone.
         </p>
@@ -193,7 +214,7 @@ export function Terms() {
 
       <Section heading="Prices shown">
         <p>
-          Silver rates published here are drawn from the official Kathmandu bullion market reference and are provided
+          Gold and silver rates published here are drawn from the Kathmandu bullion market reference and are provided
           for information only. They are indicative — the rate applied to any transaction is the rate confirmed at the
           counter at the time of that transaction.
         </p>
@@ -201,6 +222,19 @@ export function Terms() {
           <b className="text-text font-medium">Gold bars are priced by weight at the published gold rate with no making charge; silver bars and coins follow the published silver rate by weight plus a minimal making charge</b>.
           Any making charge is added at the counter and itemised on your invoice. Rates may change during the day and can be
           affected by market movement.
+        </p>
+      </Section>
+
+      <Section heading="Online quotations">
+        <p>
+          A quotation from the online form is an estimate only. <b className="text-text font-medium">It is not a booking, an order confirmation or an invoice</b>,
+          and it does not reserve stock. It is calculated from the quotation rates our staff set for the day, which can differ
+          from the indicative market rate shown on the homepage and can change during the day. The price that applies to a
+          purchase is the one confirmed at the counter at the time of sale.
+        </p>
+        <p>
+          Quotations list each product, any making charge on silver products, and, for personal customers, a skill
+          promotion fee where it applies. Products shown as out of stock cannot be quoted.
         </p>
       </Section>
 
@@ -214,7 +248,7 @@ export function Terms() {
 
       <Section heading="Products and purchases">
         <p>
-          All bullion sold by Diamond Palace Pvt. Ltd. is 999 fine silver, weighed on calibrated scales in the presence of the customer and
+          Bullion sold by Diamond Palace Pvt. Ltd. is 24-carat (999.9) gold or 999 fine silver, weighed on calibrated scales in the presence of the customer and
           supplied with a full VAT invoice. Availability of any weight or format is subject to stock at the time of
           purchase. We buy back documented bullion we have sold at the purchase rate published on the day of the
           buy-back.

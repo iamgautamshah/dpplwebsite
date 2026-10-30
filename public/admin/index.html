@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Quotation Admin | Diamond Palace Pvt. Ltd.</title>
+  <meta name="theme-color" content="#050810">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="referrer" content="no-referrer">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/quotation/assets/styles.css">
+  <script type="module" src="/admin/admin.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <div class="bar">
+      <a class="brand" href="/" aria-label="Quotation admin — home">
+        <img src="/images/logo-gold.webp" alt="" width="420" height="279">
+        <span><b>DP<span>PL</span></b><small>QUOTATION ADMIN · STAFF ONLY</small></span>
+      </a>
+    </div>
+  </header>
+  <main class="shell">
+    <header class="intro">
+      <p class="eyebrow">Staff only</p>
+      <h1>Today’s rates</h1>
+      <p class="lede">Rates entered here are used for every new price calculation on the public quotation form at dppl.com.np/quotation. They do not change the live rate shown on the homepage.</p>
+    </header>
+
+    <form id="login" class="card" novalidate hidden>
+      <div class="field">
+        <label for="password">Admin password</label>
+        <input id="password" type="password" autocomplete="current-password" required aria-describedby="password-error">
+        <p class="error" id="password-error" role="alert"></p>
+      </div>
+      <div class="actions">
+        <span></span>
+        <button type="submit" class="btn btn-primary" id="login-btn"><span>Sign in</span></button>
+      </div>
+    </form>
+
+    <div id="panel" hidden>
+      <section class="card availability" aria-labelledby="stock-h">
+        <h2 id="stock-h">Availability</h2>
+        <p class="hint">Switch a metal off when it’s out of stock. With both off, the quotation form closes and customers see an out-of-stock message.</p>
+        <div class="switches">
+          <label class="switch">
+            <input type="checkbox" id="stock-gold" role="switch">
+            <span class="track" aria-hidden="true"></span>
+            <span>Gold in stock</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="stock-silver" role="switch">
+            <span class="track" aria-hidden="true"></span>
+            <span>Silver in stock</span>
+          </label>
+        </div>
+        <p class="stock-state" id="stock-status" aria-live="polite"></p>
+      </section>
+
+      <form id="rates" class="card" novalidate>
+        <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
+          <h2>Please fix the following</h2>
+          <ul></ul>
+        </div>
+
+        <p class="status-line" id="updated" aria-live="polite"></p>
+        <p class="notice-line" id="rates-closed" hidden>Gold and silver are both switched off, so there are no rates to set. Switch a metal back on in Availability to edit its prices.</p>
+
+        <fieldset>
+          <legend>Gold</legend>
+          <div class="grid grid-even" data-group="gold"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Silver</legend>
+          <div class="grid grid-even" data-group="silver"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Silver making charge</legend>
+          <p class="hint group-hint">Percentage of each product’s silver value. Enter 0 for none.</p>
+          <div class="grid grid-even" data-group="making"></div>
+        </fieldset>
+
+        <template id="rate-field">
+          <div class="field">
+            <label><span class="label-text"></span> <span class="unit">(Rs.)</span></label>
+            <div class="money-input"><span aria-hidden="true">Rs.</span>
+              <input type="text" inputmode="decimal" autocomplete="off" required>
+            </div>
+            <p class="hint"></p>
+            <p class="error"></p>
+          </div>
+        </template>
+
+        <div class="actions">
+          <button type="button" id="logout" class="btn btn-link">Sign out</button>
+          <button type="submit" id="save" class="btn btn-primary"><span>Save rates</span></button>
+        </div>
+      </form>
+
+      <section class="card history" aria-labelledby="history-h">
+        <h2 id="history-h">Recent changes</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th scope="col">Updated</th>
+              <th scope="col" class="num">Gold / tola</th>
+              <th scope="col" class="num">Gold / g</th>
+              <th scope="col" class="num">Silver / tola</th>
+              <th scope="col" class="num">Silver / g</th>
+              <th scope="col">Making charge</th>
+            </tr></thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

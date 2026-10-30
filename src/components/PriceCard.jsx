@@ -39,7 +39,7 @@ const COLS = 'grid grid-cols-[0.72fr_1.24fr_1.24fr] items-center gap-2 sm:gap-3'
 
 // The rows rise in once, when the page first arrives — never again on a data
 // refresh or a remount, which would read as the figures blinking out.
-let introPlayed = false;
+let rowsPlayed = false;
 
 /* Tab, Pill and Metal live at module scope on purpose. Declared inside the
    component they would be a new function — and so a new component type — on
@@ -109,8 +109,8 @@ export default function PriceCard() {
   const [now, setNow] = useState(new Date());
   // read once on mount, so a later render cannot re-trigger the entry animation
   const [animate] = useState(() => {
-    if (introPlayed) return false;
-    introPlayed = true;
+    if (rowsPlayed) return false;
+    rowsPlayed = true;
     return true;
   });
   const t = I18N[lang];

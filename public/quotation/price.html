@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Price — Quotation | Diamond Palace Pvt. Ltd.</title>
+  <meta name="description" content="Request a written quotation for 24-carat gold and 999 fine silver bars and coins from Diamond Palace Pvt. Ltd., New Road, Kathmandu — itemised at today’s rate and sent to us as a PDF on WhatsApp.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#050810">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/quotation/assets/styles.css">
+  <script type="module" src="/quotation/assets/price.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <div class="bar">
+      <a class="brand" href="/" aria-label="Diamond Palace Pvt. Ltd. — home">
+        <img src="/images/logo-gold.webp" alt="" width="420" height="279">
+        <span><b>DP<span>PL</span></b><small>NEW ROAD · KATHMANDU</small></span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a class="optional" href="/#home">Today’s price</a>
+        <a class="optional" href="/#products">Products</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+    <header class="intro">
+      <p class="eyebrow">Step 3 of 4 · Price</p>
+      <h1>Your price</h1>
+      <p class="lede" id="for-customer"></p>
+      <ol class="steps" aria-label="Quotation progress">
+        <li><a href="/quotation">Customer details</a></li>
+        <li><a href="/quotation/products">Product selection</a></li>
+        <li aria-current="step">Price</li>
+        <li>Review &amp; submit</li>
+      </ol>
+    </header>
+
+    <section class="card" aria-labelledby="price-h" aria-busy="true" id="price-card">
+      <h2 id="price-h" class="sr-only">Price breakdown</h2>
+      <div class="alert" id="alert" role="alert" hidden></div>
+
+      <div class="rate-groups">
+        <div class="rate-group" id="gold-group" hidden>
+          <h3>Gold</h3>
+          <dl>
+            <div><dt>Per tola</dt><dd id="goldPerTola">—</dd></div>
+            <div><dt>Per gram</dt><dd id="goldPerGram">—</dd></div>
+          </dl>
+        </div>
+        <div class="rate-group" id="silver-group" hidden>
+          <h3>Silver</h3>
+          <dl>
+            <div><dt>Per tola</dt><dd id="silverPerTola">—</dd></div>
+            <div><dt>Per gram</dt><dd id="silverPerGram">—</dd></div>
+          </dl>
+        </div>
+        <div class="rate-group" id="making-group" hidden>
+          <h3>Silver making charge</h3>
+          <dl id="making-rates"></dl>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="price-lines">
+          <thead>
+            <tr><th scope="col">Product</th><th scope="col" class="num">Unit price</th><th scope="col" class="num">Qty</th><th scope="col" class="num">Amount</th></tr>
+          </thead>
+          <tbody id="lines"><tr><td colspan="4" class="empty">Calculating…</td></tr></tbody>
+          <tfoot id="totals"><tr class="grand"><td>Total</td><td></td><td></td><td class="num" id="total">—</td></tr></tfoot>
+        </table>
+      </div>
+
+      <p class="quote-note"><svg aria-hidden="true" viewBox="0 0 20 20" width="18" height="18"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 9v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="6.2" r="1.1" fill="currentColor"/></svg><span><strong>Quotation only.</strong> This is not a booking, order confirmation or invoice.</span></p>
+
+      <div class="actions">
+        <a href="/quotation/products" class="btn btn-link">← Change products</a>
+        <a href="/quotation/review" id="next" class="btn btn-primary" aria-disabled="true">
+          <span>Continue to review</span>
+          <svg aria-hidden="true" viewBox="0 0 20 20" width="18" height="18"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-foot">
+    <p>Diamond Palace Pvt. Ltd. · 5th Floor, Sasa Complex, New Road, Kathmandu<br>
+    Counter 01-5915052 · WhatsApp +977 9805617932 · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+  </footer>
+</body>
+</html>

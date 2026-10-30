@@ -1,15 +1,17 @@
 {
   "name": "dppl-website",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs",
-    "preview": "npx wrangler pages dev dist"
+    "dev:full": "node scripts/ensure-dev-vars.mjs && npm run build && npx wrangler@4 pages dev dist --port 8788 --kv RATE_CACHE --kv QUOTE_RATES --kv QUOTES",
+    "preview": "npm run dev:full"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
+    "pdf-lib": "^1.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

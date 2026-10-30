@@ -139,6 +139,7 @@ function Nav() {
     ['articles', 'JOURNAL', 'scroll'],
     ['about', 'ABOUT US', 'scroll'],
     ['contact', 'CONTACT', 'scroll'],
+    ['quotation', 'QUOTATION', 'page'],
   ];
 
   return (
@@ -156,7 +157,7 @@ function Nav() {
           {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
-                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : `/#${href}`}
+                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : href === 'quotation' ? '/quotation' : `/#${href}`}
                 onClick={(e) => { if (kind !== 'page') scrollToSection(e, href); }}
                 className="block py-1 text-[0.72rem] tracking-[0.22em] text-silver/90 transition-colors duration-300 hover:text-gold"
               >
@@ -184,7 +185,7 @@ function Nav() {
           {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
-                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : `/#${href}`}
+                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : href === 'quotation' ? '/quotation' : `/#${href}`}
                 onClick={(e) => { setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
                 className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
               >
@@ -255,6 +256,12 @@ export default function Site() {
             <span className="hallmark mt-1.5 shrink-0 scale-[0.7] opacity-70" aria-hidden="true" />
             <span><b className="text-silverhi font-medium">Product images are illustrative.</b> Stamping, finish and packaging of the bars and coins we hold may differ from the designs shown here. Weight and fineness are exactly as stated, and both are verified on the scale in front of you before you pay.</span>
           </p>
+          <div data-rv className="mt-5 max-w-3xl flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-gold/30 bg-[#080D18]/70 px-4 py-4">
+            <p className="text-sm leading-relaxed text-silver/80 flex-1">
+              <b className="text-silverhi font-medium">Need a written price?</b> Request a quotation online — choose your bars or coins, see the itemised price at today’s rate, and send it to us as a PDF on WhatsApp.
+            </p>
+            <a href="/quotation" className="btn-gold shrink-0">Request a quotation</a>
+          </div>
 
           <div data-rv className="mt-8 rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] to-transparent p-5 sm:p-7">
             <p className="flex items-center gap-3 text-[0.7rem] tracking-[0.26em] uppercase text-gold">

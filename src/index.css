@@ -73,13 +73,6 @@ html[data-js] [data-rv][data-rv-d='1'] { transition-delay: 0.08s; }
 html[data-js] [data-rv][data-rv-d='2'] { transition-delay: 0.16s; }
 html[data-js] [data-rv][data-rv-d='3'] { transition-delay: 0.24s; }
 
-/* intro entrance — one orchestrated moment */
-html[data-js] .stag > * { opacity: 0; transform: translateY(14px); animation: stag-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-html[data-js] .stag > *:nth-child(2) { animation-delay: 0.12s; }
-html[data-js] .stag > *:nth-child(3) { animation-delay: 0.24s; }
-html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
-@keyframes stag-rise { to { opacity: 1; transform: none; } }
-
 /* quality floor */
 :focus-visible { outline: 2px solid #d8b36a; outline-offset: 3px; border-radius: 4px; }
 .skip-link { position: fixed; top: -100px; left: 1rem; z-index: 100; background: #d8b36a; color: #141005; padding: 0.7rem 1.2rem; border-radius: 999px; font-size: 0.75rem; letter-spacing: 0.1em; transition: top 0.2s; }
@@ -92,7 +85,7 @@ html[data-js] .stag > *:nth-child(4) { animation-delay: 0.42s; }
 
 @media (prefers-reduced-motion: reduce) {
   .ticker-run { animation: none; }
-  html[data-js] [data-rv], html[data-js] .stag > * { opacity: 1; transform: none; animation: none; transition: none; }
+  html[data-js] [data-rv] { opacity: 1; transform: none; animation: none; transition: none; }
 }
 
 .dppl-map { background: #0d1a29; z-index: 0; }

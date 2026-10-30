@@ -56,39 +56,13 @@
     <script type="application/ld+json">
       {"@context": "https://schema.org", "@type": "JewelryStore", "@id": "https://dppl.com.np/#business", "name": "Diamond Palace Pvt. Ltd.", "alternateName": "DPPL", "url": "https://dppl.com.np/", "logo": "https://dppl.com.np/icon-512.png", "image": ["https://dppl.com.np/images/logo-gold-square.webp", "https://dppl.com.np/images/bar-gold-9999-v2.webp", "https://dppl.com.np/images/bar-fine-999.webp", "https://dppl.com.np/images/coin-silver-lakshmi.webp", "https://dppl.com.np/images/grains.webp"], "description": "Gold and silver bullion dealer, importer and supplier on New Road, Kathmandu. Diamond Palace Pvt. Ltd. (DPPL) publishes the daily gold and silver sale and purchase rate for Nepal and supplies 24-carat (999.9) fine gold bars with no making charge, raw gold for jewellers and other businesses, 999 fine silver bars (100g, 500g, 1kg), seasonal Lakshmi silver coins and loose silver grains. Silver bars and coins carry only a minimal making charge. Every piece is weighed on calibrated scales and sold with a full VAT invoice.", "email": "dppl2080@gmail.com", "telephone": ["+97715915052", "+9779805617932"], "address": {"@type": "PostalAddress", "streetAddress": "5th Floor, Sasa Complex, New Road", "addressLocality": "Kathmandu", "postalCode": "44600", "addressRegion": "Bagmati", "addressCountry": "NP"}, "geo": {"@type": "GeoCoordinates", "latitude": 27.7032447, "longitude": 85.3111961}, "hasMap": "https://maps.app.goo.gl/5yAecqdMx1nu1hKc8", "sameAs": ["https://maps.app.goo.gl/5yAecqdMx1nu1hKc8", "https://www.facebook.com/dppl2080", "https://www.instagram.com/dppl2080", "https://www.tiktok.com/@dppl2080"], "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "10:30", "closes": "18:00"}], "currenciesAccepted": "NPR", "priceRange": "₨₨", "areaServed": {"@type": "City", "name": "Kathmandu"}, "knowsAbout": ["24-carat gold", "Gold bars with no making charge", "Raw gold for business", "Fine silver 999", "Gold bullion", "Silver bars", "Silver coins", "Silver grains", "Daily gold and silver rate in Nepal", "Gold and silver investment in Nepal", "Gold and silver buy-back", "Tola and ten gram gold and silver pricing"], "legalName": "Diamond Palace Pvt. Ltd.", "brand": {"@type": "Brand", "name": "Diamond Palace Pvt. Ltd.", "alternateName": "DPPL"}, "foundingDate": "2023"}
     </script>
-      <style>
-      html.intro-pending { background: #050810; }
-      html.intro-pending::before {
-        content: ''; position: fixed; left: 0; right: 0; top: -100px; bottom: -100px;
-        z-index: 40; pointer-events: none;
-        background: radial-gradient(1200px 700px at 50% 118%, rgba(216,179,106,0.16), transparent 60%),
-                    linear-gradient(180deg, #04060D 0%, #0A1322 70%, #0E1626 100%);
-      }
-    </style>
     <script>
       // start fetching today's rate immediately, before React exists, so the
-      // price is already in hand when the intro finishes
+      // price is usually in hand by the time the price card mounts
       try {
         window.__silver = fetch('/api/silver', { cache: 'no-store' })
           .then(function (r) { return r.ok ? r.json() : null; })
           .catch(function () { return null; });
-      } catch (e) {}
-    </script>
-    <script>
-      // decide before first paint whether the intro will run, so the page is
-      // never shown and then covered
-      try {
-        if (location.pathname === '/' && !location.hash && !sessionStorage.getItem('dppl-intro') &&
-            !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          var root = document.documentElement;
-          root.classList.add('intro-pending');
-          // failsafe: never let the cover strand a visitor on a blank screen if
-          // the app is slow to start or fails to load at all
-          var clear = function () { root.classList.remove('intro-pending'); };
-          setTimeout(clear, 4000);
-          addEventListener('error', clear);
-          addEventListener('unhandledrejection', clear);
-        }
       } catch (e) {}
     </script>
       <!--home-schema-->
@@ -105,9 +79,9 @@
     <div id="root"></div>
     <noscript>
       <div style="font-family:Georgia,serif;background:#101520;color:#EEF1F6;min-height:100vh;padding:3rem 1.5rem;text-align:center">
-        <h1>DPPL — Silver Bullion, New Road, Kathmandu</h1>
-        <p>Daily silver price in Nepal · 999 fine silver bars (100g, 500g, 1kg) and silver grains.</p>
-        <p>5th Floor, Sasa Complex, New Road, Kathmandu · WhatsApp +977 980-561-7932 · dppl2080@gmail.com</p>
+        <h1>Diamond Palace Pvt. Ltd. — Gold &amp; Silver Bullion, New Road, Kathmandu</h1>
+        <p>Today's gold and silver price in Nepal · 24-carat gold bars · 999 fine silver bars (100g, 500g, 1kg) and silver grains.</p>
+        <p>5th Floor, Sasa Complex, New Road, Kathmandu · WhatsApp +977 9805617932 · dppl2080@gmail.com</p>
         <p>Please enable JavaScript to view today's live silver price.</p>
       </div>
     </noscript>

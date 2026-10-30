@@ -1,0 +1,87 @@
+{
+  "metals": [
+    {
+      "id": "gold",
+      "name": "Gold",
+      "rateUnit": "tola",
+      "products": [
+        {
+          "id": "gold-5g",
+          "name": "5 gram",
+          "unit": "piece",
+          "grams": 5
+        },
+        {
+          "id": "gold-10g",
+          "name": "10 gram",
+          "unit": "piece",
+          "grams": 10
+        },
+        {
+          "id": "gold-1tola",
+          "name": "1 Tola",
+          "unit": "piece",
+          "tola": 1
+        }
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Silver",
+      "rateUnit": "gram",
+      "products": [
+        {
+          "id": "silver-100g",
+          "name": "100 gram",
+          "unit": "piece",
+          "grams": 100
+        },
+        {
+          "id": "silver-500g",
+          "name": "500 gram",
+          "unit": "piece",
+          "grams": 500
+        },
+        {
+          "id": "silver-1kg",
+          "name": "1 kg",
+          "unit": "piece",
+          "grams": 1000
+        },
+        {
+          "id": "silver-coin-5g",
+          "name": "5 gram coin",
+          "unit": "piece",
+          "grams": 5
+        },
+        {
+          "id": "silver-coin-10g",
+          "name": "10 gram coin",
+          "unit": "piece",
+          "grams": 10
+        },
+        {
+          "id": "silver-coin-20g",
+          "name": "20 gram coin",
+          "unit": "piece",
+          "grams": 20
+        },
+        {
+          "id": "silver-coin-50g",
+          "name": "50 gram coin",
+          "unit": "piece",
+          "grams": 50
+        },
+        {
+          "id": "silver-granules",
+          "name": "Silver granules",
+          "unit": "gram",
+          "grams": 1,
+          "customerTypes": [
+            "business"
+          ]
+        }
+      ]
+    }
+  ]
+}
