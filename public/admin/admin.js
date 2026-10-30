@@ -64,6 +64,7 @@ async function api(method, url, body) {
 
 function showLogin(message) {
   panel.hidden = true;
+  $('logout-top').hidden = true;
   login.hidden = false;
   setError('password', message);
   $('password').focus();
@@ -133,7 +134,7 @@ function render({ current, history, fields }) {
       td.className = 'making-cell';
       td.textContent = makingFields.every((f) => h[f.key] == null)
         ? '—'
-        : makingFields.filter((f) => h[f.key] != null).map((f) => `${f.group === 'goldMaking' ? 'Gold' : 'Silver'} ${f.short.replace(/^Silver /, '')} ${historyCell(h, f)}`).join('\n');
+        : makingFields.filter((f) => h[f.key] != null).map((f) => `${f.short} ${historyCell(h, f)}`).join('\n');
       tr.append(td);
       return tr;
     }),
@@ -191,6 +192,7 @@ async function load() {
   if (status !== 200) return showLogin(data.message || 'Couldn’t load rates.');
   login.hidden = true;
   panel.hidden = false;
+  $('logout-top').hidden = false;
   render(data);
   const stock = await api('GET', '/api/admin/stock');
   if (stock.status === 200) renderStock(stock.data);
@@ -243,9 +245,20 @@ ratesForm.addEventListener('submit', async (e) => {
   }
 });
 
-$('logout').addEventListener('click', async () => {
-  await api('POST', '/api/admin/logout', {});
+// Log out ends the admin session on the server, then the Cloudflare Access
+// session too, so the next person at this computer must verify their email
+// and enter the password again.
+async function logout(button) {
+  button.disabled = true;
+  try { await api('POST', '/api/admin/logout', {}); } catch { /* the cookie is cleared regardless */ }
+  if (!/(^|\.)localhost$/.test(location.hostname)) {
+    location.href = '/cdn-cgi/access/logout';
+    return;
+  }
+  button.disabled = false;
   showLogin();
-});
+}
+$('logout').addEventListener('click', (e) => logout(e.currentTarget));
+$('logout-top').addEventListener('click', (e) => logout(e.currentTarget));
 
 load().catch(() => showLogin('Couldn’t reach the server. Check your connection and refresh.'));

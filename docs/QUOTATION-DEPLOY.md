@@ -177,7 +177,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] `dppl.com.np/quotation` loads in the site's navy/gold style. `dppl.com.np/quotation/` redirects to it.
 - [ ] Step 1 refuses a PAN that isn't 9 digits, a phone number that isn't 10 digits, and a name in Nepali script.
 - [ ] Step 2: Personal customers don't see *Silver granules*; Business customers do.
-- [ ] Step 3 shows each line, the gold making charge (Rs. per piece × pieces), the silver making charge (%), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
+- [ ] Step 3 shows each line, one "Making charge" line (gold flat per piece plus silver %, added together; the rates are listed above the table), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
 - [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYMMDD-XXXX.pdf` with the right details.
 - [ ] Step 4: **Send on WhatsApp** opens WhatsApp to +977 9805617932 with the quotation number and a PDF link, and the link opens the PDF.
 
@@ -192,7 +192,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] `https://admin.dppl.com.np` in a private window shows the **Cloudflare Access** login first, not the admin page.
 - [ ] An email not on the policy gets no code and no access.
 - [ ] After Access, a wrong password shows "Incorrect password"; the right one opens the admin.
-- [ ] **Sign out**, then reload: you're asked for the password again.
+- [ ] **Log out** (top right, or bottom of the rates form): you're taken through Cloudflare's sign-out, and opening the admin again asks for the email code and the password.
 
 **Things that must fail**
 - [ ] `https://dppl.com.np/admin/` → 404 page.

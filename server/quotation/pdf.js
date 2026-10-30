@@ -113,7 +113,7 @@ export async function quotePdf(quote) {
     ensure(26);
     const unit = l.unit === 'gram' ? `${money(l.unitPrice)}/g` : money(l.unitPrice);
     text(String(i + 1), col.no, y - 17, { color: MUTED });
-    text(`${l.metalName} - ${l.productName}`, col.product, y - 17);
+    text(l.productName, col.product, y - 17);
     text(unit, col.unit, y - 17, { align: 'right' });
     text(qtyText(l), col.qty, y - 17, { align: 'right' });
     text(money(l.total), col.amount, y - 17, { align: 'right' });

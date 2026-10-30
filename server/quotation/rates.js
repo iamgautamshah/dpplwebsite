@@ -3,8 +3,6 @@ import catalog from '../../public/quotation/data/products.json';
 const goldProducts = catalog.metals.find((m) => m.id === 'gold').products;
 const silverProducts = catalog.metals.find((m) => m.id === 'silver').products;
 export const makingKey = (productId) => `making_${productId.replace(/-/g, '_')}`;
-const shortName = (p) => { const n = p.name.replace(/^silver /i, ''); return n[0].toUpperCase() + n.slice(1); };
-const silverName = (p) => (p.name.toLowerCase().startsWith('silver') ? p.name : `Silver ${p.name}`);
 
 export const RATE_FIELDS = {
   goldPerTola: { label: 'Gold price per tola', short: 'Price per tola', group: 'gold', min: 1000, max: 10_000_000 },
@@ -13,7 +11,7 @@ export const RATE_FIELDS = {
   ...Object.fromEntries(
     goldProducts.map((p) => [
       makingKey(p.id),
-      { label: `Gold ${p.name} making charge`, short: p.name, group: 'goldMaking', min: 0, max: 1_000_000, flat: true, productId: p.id, grams: p.grams ?? null, tola: p.tola ?? null },
+      { label: `${p.name} making charge`, short: p.name, group: 'goldMaking', min: 0, max: 1_000_000, flat: true, productId: p.id, grams: p.grams ?? null, tola: p.tola ?? null },
     ]),
   ),
   silverPerTola: { label: 'Silver price per tola', short: 'Price per tola', group: 'silver', min: 10, max: 1_000_000 },
@@ -21,7 +19,7 @@ export const RATE_FIELDS = {
   ...Object.fromEntries(
     silverProducts.map((p) => [
       makingKey(p.id),
-      { label: `${silverName(p)} making charge`, short: shortName(p), group: 'making', min: 0, max: 50, percent: true, productId: p.id, grams: p.grams },
+      { label: `${p.name} making charge`, short: p.name, group: 'making', min: 0, max: 50, percent: true, productId: p.id, grams: p.grams },
     ]),
   ),
 };
