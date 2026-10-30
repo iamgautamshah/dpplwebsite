@@ -170,11 +170,7 @@ function Nav() {
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
         <a href="/" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
-          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-10 w-auto" width="420" height="279" />
-          <span className="font-display text-xl tracking-[0.14em] text-silverhi leading-none">
-            DP<span className="text-gold">PL</span>
-            <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
-          </span>
+          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd. — home" className="h-11 w-auto" width="420" height="279" />
         </a>
         <ul className="hidden lg:flex gap-7 items-center">
           {links.map(([href, label, kind]) => (
@@ -379,9 +375,9 @@ function WhenVisible({ children, minHeight }) {
 function RatesSection() {
   return (
     <section id="rates" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-      <div className="frame grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-12 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
+      <div className="frame grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-14 items-center max-w-6xl mx-auto p-5 sm:p-8 md:p-10">
         <div>
-          <h2 className="engraved font-display text-silverhi text-[clamp(1.8rem,4vw,2.7rem)]">Today’s gold and silver rate</h2>
+          <h2 className="engraved font-display text-silverhi text-[clamp(1.6rem,3.4vw,2.3rem)]">Today’s gold and silver rate</h2>
           <p className="prose-justify mt-4 max-w-lg text-[0.98rem] leading-relaxed text-silver/80">
             The day’s sale and purchase rates per tola and per 10 grams, published each morning from the Kathmandu bullion
             market. The rate is for the metal by weight; making charges are added per bar or coin.
@@ -391,8 +387,8 @@ function RatesSection() {
             <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today’s gold and silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
           </div>
         </div>
-        <div className="relative w-full max-w-[560px] mx-auto lg:mx-0 lg:max-w-none">
-          <WhenVisible minHeight={520}><PriceCard /></WhenVisible>
+        <div className="relative w-full max-w-[420px] mx-auto lg:mx-0 lg:w-[420px]">
+          <WhenVisible minHeight={340}><PriceCard /></WhenVisible>
         </div>
       </div>
     </section>

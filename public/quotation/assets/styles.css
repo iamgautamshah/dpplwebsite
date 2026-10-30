@@ -453,7 +453,8 @@ td.num, th.num, .rate-group dd { font-variant-numeric: tabular-nums; }
 }
 .site-head .bar { max-width: 1120px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-.brand img { height: 40px; width: auto; }
+.brand img { height: 44px; width: auto; }
+.brand-note { color: #9AA5B8; font-size: 13px; padding-left: 12px; border-left: 1px solid rgba(201, 209, 222, 0.2); }
 .brand b { font: 500 19px/1 Cinzel, Georgia, serif; letter-spacing: 0.14em; }
 .brand b span { color: var(--gold); }
 .brand small { display: block; margin-top: 5px; font-size: 8px; letter-spacing: 0.3em; color: #6B7890; }
