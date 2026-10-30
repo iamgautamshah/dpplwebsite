@@ -312,3 +312,135 @@ html[data-js] [data-rv]:not(.in) img { transform: scale(1.05); }
 @media (min-width: 640px) {
   .prose-justify { text-align: justify; text-justify: inter-word; }
 }
+
+/* ── the display case (homepage hero) ─────────────────────────────────────
+   One warm light from above, a polished ledge, the metal standing on it with
+   its reflection below. */
+.vault {
+  background:
+    radial-gradient(760px 460px at 68% 26%, rgba(241, 217, 160, 0.17), transparent 62%),
+    radial-gradient(1100px 520px at 50% 118%, rgba(216, 179, 106, 0.09), transparent 60%),
+    linear-gradient(180deg, #04070E 0%, #070C18 58%, #0A1120 100%);
+}
+.display {
+  --floor: clamp(52px, 8vw, 104px);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: clamp(300px, 44vw, 540px);
+  padding-bottom: var(--floor);
+}
+/* the light pooling on the ledge */
+.display::before {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%;
+  bottom: calc(var(--floor) - 34px);
+  height: 68px;
+  background: radial-gradient(closest-side, rgba(241, 217, 160, 0.30), transparent);
+  pointer-events: none;
+}
+/* the polished edge of the ledge */
+.display::after {
+  content: '';
+  position: absolute;
+  left: 2%; right: 2%;
+  bottom: var(--floor);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(241, 217, 160, 0.6) 25%, rgba(241, 217, 160, 0.6) 75%, transparent);
+}
+.piece { position: relative; flex: none; height: 100%; }
+.piece img { display: block; height: 100%; width: auto; }
+.piece > img:first-child { filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55)); }
+.piece-silver { height: 80%; margin-right: -6%; z-index: 1; }
+.piece-silver > img:first-child { filter: brightness(0.9) drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55)); }
+.piece-gold { z-index: 2; }
+.piece-coin { height: 47%; margin-left: -8%; z-index: 3; }
+/* reflection: the piece mirrored in the ledge, fading with distance */
+.piece .mirror {
+  position: absolute;
+  top: 100%; left: 0;
+  transform: scaleY(-1);
+  opacity: 0.32;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 34%);
+          mask-image: linear-gradient(to top, #000 0%, transparent 34%);
+  pointer-events: none;
+}
+/* a single pass of light across the gold bar, clipped to the bar's own shape */
+.glint {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  background: linear-gradient(112deg, transparent 38%, rgba(255, 247, 224, 0.8) 50%, transparent 62%);
+  background-size: 320% 100%;
+  background-position: 115% 0;
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+html[data-js] .glint { animation: glint 1.9s 0.5s cubic-bezier(0.45, 0, 0.2, 1) both; }
+@keyframes glint {
+  0% { opacity: 0; background-position: 115% 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { opacity: 0; background-position: -15% 0; }
+}
+
+/* gold showcase: the bar on its own lit pedestal */
+.pedestal {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: clamp(300px, 42vw, 500px);
+  padding-bottom: 28px;
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(320px 280px at 50% 40%, rgba(241, 217, 160, 0.16), transparent 70%),
+    linear-gradient(180deg, #0B1222 0%, #080D19 100%);
+  border: 1px solid rgba(216, 179, 106, 0.22);
+}
+.pedestal::after {
+  content: '';
+  position: absolute; left: 14%; right: 14%; bottom: 28px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(241, 217, 160, 0.55), transparent);
+}
+.pedestal img { height: 86%; width: auto; filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.6)); }
+.weight-chip {
+  border: 1px solid rgba(216, 179, 106, 0.45);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  color: #F1D9A0;
+  font-size: 0.92rem;
+  background: rgba(216, 179, 106, 0.07);
+  font-variant-numeric: tabular-nums;
+}
+
+/* silver shelf: every piece stands on one continuous ledge */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 1.25rem;
+}
+@media (min-width: 640px) { .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2.5rem 1.75rem; } }
+.shelf-stage {
+  position: relative;
+  height: clamp(210px, 22vw, 250px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 14px;
+  background: radial-gradient(140px 110px at 50% 92%, rgba(217, 222, 231, 0.10), transparent 70%);
+}
+.shelf-stage::after {
+  content: '';
+  position: absolute; left: -0.7rem; right: -0.7rem; bottom: 14px; height: 1px;
+  background: linear-gradient(90deg, rgba(201, 209, 222, 0.08), rgba(201, 209, 222, 0.42), rgba(201, 209, 222, 0.08));
+}
+.shelf-stage img { width: auto; max-width: 92%; object-fit: contain; filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.55)); }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-js] .glint { animation: none; }
+}

@@ -3,7 +3,7 @@ import Site from './components/Site.jsx';
 import { NotFound, Privacy, Terms } from './components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
 
-const SECTIONS = ['home', 'products', 'articles', 'about', 'faq', 'contact'];
+const SECTIONS = ['home', 'products', 'gold', 'silver', 'rates', 'articles', 'about', 'faq', 'contact'];
 
 // Sections are fragments on the home page (/#contact). The old path form
 // (/contact) is still understood for anyone holding an old link, though the

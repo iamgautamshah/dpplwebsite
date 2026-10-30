@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Ticker, useParallax, useReveal } from '../lib/ui.jsx';
+import { getSilver, useParallax, useReveal } from '../lib/ui.jsx';
 import { ARTICLES } from '../content/articles.js';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
@@ -14,9 +14,9 @@ const PhoneIcon = () => (
 // exported so the FAQ structured data is built from exactly what the page shows
 export const FAQS = [
   { q: 'Where can I buy gold and silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal in 999 fine silver \u2014 bars of 100 g, 500 g and 1 kg, and loose grain sold by weight \u2014 and, since October 2026, in 24-carat gold. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
-  { q: 'What is today\u2019s gold and silver price in Nepal?', a: 'The current gold and silver rates for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published at the top of this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
+  { q: 'What is today\u2019s gold and silver price in Nepal?', a: 'The current gold and silver rates for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published on this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
   { q: 'Is Diamond Palace Pvt. Ltd. a precious-metal importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
-  { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published at the top of this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
+  { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published on this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
   { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 24-carat gold. Ask at the counter for jewellery-grade pricing.' },
   { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
   { q: 'Is there a making charge on gold and silver bars?', a: 'Yes, on both, and it is always shown separately. Gold bars carry a fixed making charge per bar, added to the published 24-carat rate for the weight. Silver bars and silver coins carry a minimal making charge, a small percentage of the metal value that is lower on larger bars. Either way it covers casting, stamping and packaging, appears as its own line on your invoice and in every online quotation, and is added to any applicable tax.' },
@@ -53,13 +53,35 @@ const WaIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.4-.7-3.9-3.4-4-3.6-.9-1.2-.9-2.3.6-1.6.8-1.8.4-.3.6-.3h.4c.2 0 .4-.1.6.4l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.4-.1.7s.8 1.3 1.7 2.1c1.2 1 2.1 1.3 2.4 1.5s.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.2.5.2.6.4s0 .9-.4 1.5z" /></svg>
 );
 
-const PRODUCTS = [
-  { name: 'Fine Gold Bar', metal: 'gold', img: '/images/bar-gold-9999-v2.webp', w: 530, h: 796, alt: 'Diamond Palace Pvt. Ltd. fine gold bar, 999.9 24 carat', label: 'ENQUIRE', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a Fine Gold Bar (999.9). Please share today\u2019s price and available weights.', desc: 'Stamped 999.9 and sealed, in a range of weights held at the counter. Priced by weight at the day\u2019s published gold rate plus a fixed making charge per bar — weighed in front of you, invoiced to the gram, and bought back whenever you choose to sell.' },
-  { name: 'Lakshmi Silver Coin', metal: 'silver', seasonal: true, img: '/images/coin-silver-lakshmi.webp', w: 502, h: 500, alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver, Dhanteras edition', label: 'ENQUIRE \u00b7 COIN', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about the Lakshmi Silver Coin for Dhanteras.', desc: 'A 999 fine silver coin struck with Goddess Lakshmi on the lotus \u2014 minted for Dhanteras, the day Nepali households have bought silver for generations. Available for a limited period around Deepawali only.' },
-  { name: '100 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 100 gram fine silver bar 999', label: 'ENQUIRE · 100 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The classic first holding — pocket-scale weight with the full DPPL diamond stamp. Ideal for gifting, savings, and starting a position.' },
-  { name: '500 g Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 500 gram fine silver bar 999', label: 'ENQUIRE · 500 G', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500g Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The investor\u2019s workhorse — meaningful weight at a tighter premium per gram, without the handling bulk of a kilo.' },
-  { name: '1 kg Silver Bar', img: '/images/bar-fine-999.webp', w: 423, h: 796, alt: 'Diamond Palace Pvt. Ltd. 1 kilogram fine silver bar 999', label: 'ENQUIRE · 1 KG', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1kg Fine Silver Bar (999). Please share today\u2019s price and making charges.', desc: 'The lowest premium per gram in the house. Preferred by serious investors and businesses accumulating in size.' },
-  { name: 'Silver Grains', img: '/images/grains.webp', w: 430, h: 573, alt: 'Diamond Palace Pvt. Ltd. silver grains, 999 fine silver, 1 kg pack', label: 'ENQUIRE · GRAINS', msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about Silver Grains (999 fine). Please share today\u2019s price.', desc: 'Loose fine-silver grain for jewellers, manufacturers, and ritual use — sold to the exact gram you need, no more.' },
+// The display case in the hero, and the shelves below it. Weights listed are
+// the ones the quotation form offers (public/quotation/data/products.json).
+const IMG = {
+  gold: { src: '/images/bar-gold-9999-v2.webp', w: 530, h: 796 },
+  silverBar: { src: '/images/bar-fine-999.webp', w: 423, h: 796 },
+  coin: { src: '/images/coin-silver-lakshmi.webp', w: 502, h: 500 },
+  grains: { src: '/images/grains.webp', w: 430, h: 573 },
+};
+
+const GOLD_WEIGHTS = ['5 gram', '10 gram', '1 tola'];
+
+// Bars stand at heights that grow with their weight, so the shelf itself shows
+// the difference between 100 g and a kilo.
+const SILVER_SHELF = [
+  { name: '100 gram silver bar', img: IMG.silverBar, h: '52%', alt: 'Diamond Palace Pvt. Ltd. 100 gram 999 fine silver bar',
+    note: 'The usual first bar: easy to keep, easy to gift.',
+    msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 100 gram Silver Bar (999). Please share today\u2019s price.' },
+  { name: '500 gram silver bar', img: IMG.silverBar, h: '74%', alt: 'Diamond Palace Pvt. Ltd. 500 gram 999 fine silver bar',
+    note: 'More metal for a smaller making charge per gram.',
+    msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 500 gram Silver Bar (999). Please share today\u2019s price.' },
+  { name: '1000 gram silver bar', img: IMG.silverBar, h: '96%', alt: 'Diamond Palace Pvt. Ltd. 1000 gram 999 fine silver bar',
+    note: 'The lowest making charge per gram we offer.',
+    msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1000 gram Silver Bar (999). Please share today\u2019s price.' },
+  { name: 'Silver coins', img: IMG.coin, h: '50%', alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver',
+    note: '5, 10, 20 and 50 gram, including the Lakshmi coin minted for Dhanteras.',
+    msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about Silver Coins (999). Please share today\u2019s price and available weights.' },
+  { name: 'Silver grains', img: IMG.grains, h: '66%', alt: 'Diamond Palace Pvt. Ltd. 999 fine silver grains',
+    note: 'Loose fine silver sold to the gram, for jewellers and businesses.',
+    msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about Silver Grains (999). Please share today\u2019s price.' },
 ];
 
 
@@ -136,6 +158,7 @@ function Nav() {
   const links = [
     ['home', 'HOME', 'scroll'],
     ['products', 'PRODUCTS', 'scroll'],
+    ['rates', 'TODAY\u2019S RATE', 'scroll'],
     ['articles', 'JOURNAL', 'scroll'],
     ['about', 'ABOUT US', 'scroll'],
     ['contact', 'CONTACT', 'scroll'],
@@ -153,7 +176,7 @@ function Nav() {
             <small className="block font-body text-[0.5rem] tracking-[0.3em] text-steel mt-1">NEW ROAD · KATHMANDU</small>
           </span>
         </a>
-        <ul className="hidden md:flex gap-8 items-center">
+        <ul className="hidden lg:flex gap-7 items-center">
           {links.map(([href, label, kind]) => (
             <li key={href}>
               <a
@@ -167,7 +190,7 @@ function Nav() {
           ))}
         </ul>
         <button
-          className="md:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
+          className="lg:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -180,7 +203,7 @@ function Nav() {
         </button>
       </div>
 
-            <div className={`md:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
+            <div className={`lg:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
           {links.map(([href, label, kind]) => (
             <li key={href}>
@@ -196,6 +219,183 @@ function Nav() {
         </ul>
       </div>
     </nav>
+  );
+}
+
+/* ── the display case ────────────────────────────────────────────────────
+   The bullion itself is the first thing on the page: a silver bar, a gold
+   bar and a Lakshmi coin standing on a lit ledge, with their reflections.
+   The one moment of motion is a light passing across the gold bar. It starts
+   and ends invisible, so it cannot flash when React replaces the
+   prerendered page. */
+const Piece = ({ cls, img, glint = false, priority = false }) => (
+  <div className={`piece ${cls}`}>
+    <img src={img.src} alt="" width={img.w} height={img.h} decoding="async" {...(priority ? { fetchpriority: 'high' } : { loading: 'lazy' })} />
+    {glint && <span className="glint" aria-hidden="true" style={{ WebkitMaskImage: `url(${img.src})`, maskImage: `url(${img.src})` }} />}
+    <img src={img.src} alt="" aria-hidden="true" className="mirror" width={img.w} height={img.h} decoding="async" loading="lazy" />
+  </div>
+);
+
+function Hero() {
+  return (
+    <section id="home" className="vault relative overflow-hidden">
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 md:px-12 pt-6 sm:pt-12 lg:pt-14 pb-6 lg:pb-12 grid lg:grid-cols-[0.95fr_1.15fr] gap-2 lg:gap-10 items-center">
+        <div className="order-2 lg:order-1 max-w-xl">
+          <h1 className="engraved font-display text-silverhi leading-[1.08] text-[clamp(2rem,4.5vw,3.45rem)]">
+            Fine gold and silver, sold by weight.
+          </h1>
+          <p className="mt-5 max-w-[34rem] text-[1.02rem] leading-relaxed text-silver/80">
+            24-carat gold bars and 999 fine silver bars, coins and grains, from our counter on New Road, Kathmandu.
+            Every piece is weighed in front of you and invoiced to the gram.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3.5">
+            <a href="/#products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">See the bullion</a>
+            <a href="/quotation" className="btn-line">Request a quotation</a>
+          </div>
+        </div>
+        <div className="order-1 lg:order-2">
+          <div className="display" role="img" aria-label="A 999 fine silver bar, a 24-carat gold bar and a Lakshmi silver coin from Diamond Palace Pvt. Ltd.">
+            <Piece cls="piece-silver" img={IMG.silverBar} priority />
+            <Piece cls="piece-gold" img={IMG.gold} glint priority />
+            <Piece cls="piece-coin" img={IMG.coin} priority />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* Today's selling rate in one line, under the display — the full board is
+   further down the page. */
+function RateStrip() {
+  const [p, setP] = useState(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    getSilver().then((d) => alive && setP(d)).catch(() => alive && setFailed(true));
+    return () => { alive = false; };
+  }, []);
+  const rs = (n) => 'Rs ' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  const gold = p?.gold?.g10Sale;
+  const silver = p?.g10Sale;
+  return (
+    <div className="border-y border-gold/20 bg-[#070B15]">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 py-3 flex flex-wrap items-baseline gap-x-7 gap-y-1.5 text-[0.9rem]">
+        <span className="text-silver/60">Today’s selling rate, per 10 grams</span>
+        {failed ? (
+          <span className="text-silver/80">is published each morning.</span>
+        ) : (
+          <>
+            <span className="text-silver/85">Gold 24K <b className="tnum font-semibold text-gold">{gold ? rs(gold) : '…'}</b></span>
+            <span className="text-silver/85">Silver 999 <b className="tnum font-semibold text-silverhi">{silver ? rs(silver) : '…'}</b></span>
+          </>
+        )}
+        <a href="/#rates" onClick={(e) => scrollToSection(e, '#rates')} className="sm:ml-auto text-gold border-b border-gold/40 pb-0.5 transition-colors hover:text-gold-light">See the full rate board</a>
+      </div>
+    </div>
+  );
+}
+
+function GoldShowcase() {
+  return (
+    <div id="gold" className="grid lg:grid-cols-[1fr_1.05fr] gap-8 lg:gap-16 items-center">
+      <div className="pedestal pedestal-gold">
+        <img src={IMG.gold.src} alt="Diamond Palace Pvt. Ltd. 24-carat 999.9 fine gold bar" width={IMG.gold.w} height={IMG.gold.h} loading="lazy" decoding="async" />
+      </div>
+      <div>
+        <h2 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.4vw,3rem)]">24-carat gold bars</h2>
+        <p className="mt-2 text-gold text-[1.02rem]">999.9 fine, stamped and sealed</p>
+        <p className="prose-justify mt-5 max-w-xl text-[0.98rem] leading-relaxed text-silver/80">
+          Our gold counter opened in October 2026. Bars are sold by weight at the day’s published gold rate, plus a fixed
+          making charge per bar that is shown as its own line on your invoice and in every quotation. We buy back the
+          gold we sell at the published purchase rate.
+        </p>
+        <div className="mt-6">
+          <p className="text-sm text-silver/60">Bar weights at the counter</p>
+          <ul className="mt-2.5 flex flex-wrap gap-2.5">
+            {GOLD_WEIGHTS.map((w) => (
+              <li key={w} className="weight-chip">{w}</li>
+            ))}
+          </ul>
+        </div>
+        <p className="mt-6 max-w-xl text-[0.95rem] leading-relaxed text-silver/75">
+          <b className="font-medium text-silverhi">Raw gold for business.</b> Jewellers, goldsmiths and manufacturers can buy raw
+          gold by weight at the day’s rate. Quantities are arranged with the counter.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <a href="/quotation" className="btn-gold">Get a gold quotation</a>
+          <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold bars.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SilverShelf() {
+  return (
+    <div id="silver" className="mt-20 lg:mt-28">
+      <div className="max-w-2xl">
+        <h2 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.4vw,3rem)]">999 fine silver</h2>
+        <p className="prose-justify mt-4 text-[0.98rem] leading-relaxed text-silver/80">
+          Bars from 100 grams to a kilo, coins and loose grains, all 99.9% pure. Silver is sold by weight at the day’s rate
+          with a minimal making charge, smaller per gram on larger bars.
+        </p>
+      </div>
+      <ul className="shelf mt-10">
+        {SILVER_SHELF.map((it) => (
+          <li key={it.name} className="shelf-item">
+            <div className="shelf-stage">
+              <img src={it.img.src} alt={it.alt} width={it.img.w} height={it.img.h} loading="lazy" decoding="async" style={{ height: it.h }} />
+            </div>
+            <h3 className="mt-4 font-display text-silverhi text-[1.05rem] leading-snug">{it.name}</h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-silver/65">{it.note}</p>
+            <a href={WA(it.msg)} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm text-gold border-b border-gold/40 pb-0.5 transition-colors hover:text-gold-light">Enquire on WhatsApp</a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-10 max-w-3xl text-sm leading-relaxed text-silver/55">
+        Pictures show the style of each piece; the stamping, finish and packaging of what is at the counter can differ.
+        Weight and fineness are exactly as stated and are checked on the scale in front of you before you pay.
+      </p>
+    </div>
+  );
+}
+
+// The full rate board mounts when it scrolls into view, so its set-down
+// animation plays where the visitor can see it rather than off-screen.
+function WhenVisible({ children, minHeight }) {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) { setOn(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setOn(true); io.disconnect(); } }, { rootMargin: '0px 0px -12% 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} style={on ? undefined : { minHeight }}>{on && children}</div>;
+}
+
+function RatesSection() {
+  return (
+    <section id="rates" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
+      <div className="frame grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-12 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
+        <div>
+          <h2 className="engraved font-display text-silverhi text-[clamp(1.8rem,4vw,2.7rem)]">Today’s gold and silver rate</h2>
+          <p className="prose-justify mt-4 max-w-lg text-[0.98rem] leading-relaxed text-silver/80">
+            The day’s sale and purchase rates per tola and per 10 grams, published each morning from the Kathmandu bullion
+            market. The rate is for the metal by weight; making charges are added per bar or coin.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <a href="/quotation" className="btn-gold">Request a quotation</a>
+            <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today’s gold and silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
+          </div>
+        </div>
+        <div className="relative w-full max-w-[560px] mx-auto lg:mx-0 lg:max-w-none">
+          <WhenVisible minHeight={520}><PriceCard /></WhenVisible>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -220,105 +420,17 @@ export default function Site() {
     <main className="relative z-10 bg-[#0B0F16]">
       <a href="/" onClick={(e) => scrollToSection(e, '#home')} className="skip-link">Skip to content</a>
       <Nav />
-      <Ticker />
+      <Hero />
+      <RateStrip />
 
-            <section id="home" className="px-3 sm:px-6 md:px-12 pt-5 sm:pt-10 pb-8 sm:pb-12">
-        <div className="frame grid lg:grid-cols-2 gap-10 lg:gap-12 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
-          <div data-rv className="order-2 lg:order-1">
-            <Ledger>Rates · New Road ledger</Ledger>
-            <p className="eyebrow mb-6">Gold &amp; silver bullion · <b className="text-gold font-medium">24K · 999 fine</b> · Weighed before your eyes</p>
-            <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(2.1rem,5.4vw,3.8rem)]">
-              <span className="mask-line"><span className="mask-inner">Today's gold &amp; silver price,</span></span>
-              <span className="mask-line"><span className="mask-inner mask-delay-1 text-gold">straight from New Road.</span></span>
-            </h1>
-            <div className="mt-8 flex flex-wrap gap-3.5">
-              <a href="/#products" onClick={(e) => scrollToSection(e, '#products')} className="btn-gold">BROWSE SILVER</a>
-              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today\u2019s silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> WHATSAPP US</a>
-            </div>
-          </div>
-          <div className="relative order-1 lg:order-2 w-full max-w-[560px] mx-auto lg:mx-0 lg:max-w-none" data-rv data-rv-d="1">
-            <PriceCard />
-          </div>
+      <section id="products" className="px-5 sm:px-8 md:px-12 pt-16 sm:pt-24 pb-10 sm:pb-16">
+        <div className="max-w-7xl mx-auto">
+          <GoldShowcase />
+          <SilverShelf />
         </div>
       </section>
 
-            <section id="products" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-        <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
-          <div data-rv>
-            <Ledger>The collection</Ledger>
-            <h2 className="engraved font-display text-silverhi text-[clamp(2rem,4.6vw,3.2rem)]">Fine metal, by weight.</h2>
-          </div>
-          <p className="mt-5 max-w-2xl flex items-start gap-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3.5 text-sm leading-relaxed text-silver/80">
-            <span className="hallmark mt-1" aria-hidden="true" />
-            <span><b className="text-silverhi font-medium">Making charges, stated up front.</b> Gold bars are priced by weight at the day’s published gold rate plus a <b>fixed making charge per bar</b>. Silver bars and coins carry only a <b>minimal making charge</b>. Both are shown as their own line on your invoice and in every online quotation.</span>
-          </p>
-          <p data-rv className="mt-5 max-w-3xl flex items-start gap-3 rounded-xl border border-silver/15 bg-silver/[0.04] px-4 py-3.5 text-sm leading-relaxed text-silver/75">
-            <span className="hallmark mt-1.5 shrink-0 scale-[0.7] opacity-70" aria-hidden="true" />
-            <span><b className="text-silverhi font-medium">Product images are illustrative.</b> Stamping, finish and packaging of the bars and coins we hold may differ from the designs shown here. Weight and fineness are exactly as stated, and both are verified on the scale in front of you before you pay.</span>
-          </p>
-          <div data-rv className="mt-5 max-w-3xl flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-gold/30 bg-[#080D18]/70 px-4 py-4">
-            <p className="text-sm leading-relaxed text-silver/80 flex-1">
-              <b className="text-silverhi font-medium">Need a written price?</b> Request a quotation online — choose your bars or coins, see the itemised price at today’s rate, and send it to us as a PDF on WhatsApp.
-            </p>
-            <a href="/quotation" className="btn-gold shrink-0">Request a quotation</a>
-          </div>
-
-          <div data-rv className="mt-8 rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.10] to-transparent p-5 sm:p-7">
-            <p className="flex items-center gap-3 text-[0.7rem] tracking-[0.26em] uppercase text-gold">
-              <span className="hallmark scale-[0.7]" aria-hidden="true" />
-              New — October 2026
-            </p>
-            <h3 className="mt-3 font-display text-silverhi text-[clamp(1.15rem,2.6vw,1.6rem)]">24-carat gold, now at the counter</h3>
-            <p className="prose-justify mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-silver/80">
-              After three years dealing in fine silver, Diamond Palace Pvt. Ltd. opened its gold counter in October 2026.
-              We quote 24-carat gold — 99.9% pure, the investment standard — per tola and per 10 grams, against the same
-              Kathmandu market reference shown at the top of this page. Gold is sold by weight, weighed in front of you,
-              invoiced to the gram, and bought back at the published purchase rate. <b className="text-silverhi font-medium">Gold bars carry a
-              fixed making charge per bar</b>, shown as its own line on your invoice and in every quotation. Available weights and
-              jewellery-grade 22-carat pricing are quoted at the counter.
-            </p>
-            <p className="prose-justify mt-3 max-w-3xl text-[0.95rem] leading-relaxed text-silver/80">
-              <b className="text-silverhi font-medium">Raw gold for business.</b> We also supply raw gold to jewellers, goldsmiths and
-              manufacturers, sold by weight at the day’s gold rate. Quantities are arranged directly with the counter.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold bars.')} target="_blank" rel="noopener noreferrer" className="btn-gold">Enquire about gold</a>
-              <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about raw gold for business use.')} target="_blank" rel="noopener noreferrer" className="btn-line">Raw gold for business</a>
-              <a href="tel:+97715915052" className="btn-line">Call the counter</a>
-            </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-            {PRODUCTS.map((p, i) => (
-              <article key={p.label} data-rv data-rv-d={String(i % 4)} className="group relative bg-white/[0.03] border border-silver/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-gold/35 hover:bg-white/[0.05]">
-                <span className={`absolute top-3 right-3 z-10 rounded-full border px-2.5 py-1 text-[0.56rem] tracking-[0.22em] uppercase ${
-                  p.seasonal
-                    ? 'border-[#E0A05A]/50 bg-[#E0A05A]/15 text-[#E7B97A]'
-                    : p.metal === 'gold'
-                      ? 'border-gold/45 bg-gold/15 text-gold'
-                      : 'border-silver/25 bg-silver/10 text-silver/80'
-                }`}>{p.seasonal ? 'Dhanteras' : p.metal === 'gold' ? 'Gold' : 'Silver'}</span>
-                <div className="bg-gradient-to-b from-white/[0.05] to-transparent px-6 pt-7 flex justify-center">
-                  <img src={p.img} alt={p.alt} loading="lazy" decoding="async" width={p.w} height={p.h} data-parallax="0.05" className="parallax h-48 w-auto object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-[1.04]" />
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="font-display text-xl text-silverhi">{p.name}</h3>
-                  <p className="text-[0.62rem] tracking-[0.3em] uppercase text-gold/80 my-2">
-                    {p.seasonal ? '999 fine · limited release' : p.metal === 'gold' ? '999.9 fine · 24 carat' : '999 fine'} · sealed &amp; stamped
-                  </p>
-                  <p className="text-sm text-silver/70 leading-relaxed flex-1">{p.desc}</p>
-                  <p className="mt-4 text-[0.7rem] tracking-wide text-steel">
-                    {p.metal === 'gold' ? 'Rate by weight · fixed making charge per bar'
-                      : p.name.includes('Bar') || p.seasonal ? 'Rate by weight · minimal making charge'
-                      : 'Sold by weight at the day’s rate'}
-                  </p>
-                  <a href={WA(p.msg)} target="_blank" rel="noopener noreferrer" className="btn-wa mt-4">{p.label}</a>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <RatesSection />
 
             <section id="articles" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
         <div className="frame max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
@@ -356,7 +468,7 @@ export default function Site() {
               Every bar we sell carries the DPPL diamond stamp, is weighed on calibrated scales in front of the customer, and leaves the counter with a full VAT invoice. Every bar we sold, we also buy back — at the purchase rate published on this page, the same day. That is the whole business model: honest metal, honest weight, honest paper.
             </p>
             <div className="flex flex-wrap gap-10 mt-8">
-              {[['999', 'Fineness'], ['2080', 'Established B.S.'], ['4', 'Product formats'], ['100%', 'Invoiced sales']].map(([v, l]) => (
+              {[['999.9', 'Gold fineness'], ['999', 'Silver fineness'], ['2080', 'Established B.S.'], ['100%', 'Invoiced sales']].map(([v, l]) => (
                 <div key={l}>
                   <b className="block font-display font-normal text-3xl text-gold">{v}</b>
                   <span className="text-[0.7rem] tracking-[0.26em] uppercase text-steel">{l}</span>
