@@ -53,17 +53,14 @@
 # ── Quotation form (dppl.com.np/quotation) ──
 # Only first-party scripts and styles; nothing can frame it from elsewhere.
 /quotation
-  Cache-Control: public, max-age=300
+  Cache-Control: no-cache
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
 
 # Step pages need the customer's earlier answers, so they are never indexed.
 /quotation/*
-  Cache-Control: public, max-age=300
+  Cache-Control: no-cache
   X-Robots-Tag: noindex
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'
-
-/quotation/data/*
-  Cache-Control: public, max-age=86400
 
 # ── Admin hostname ── nothing served on it may be indexed
 https://admin.dppl.com.np/*

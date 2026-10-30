@@ -343,7 +343,7 @@ export function SilverShelf() {
       </div>
       <ul className="shelf mt-10">
         {SILVER_SHELF.map((it) => (
-          <li key={it.name} className="shelf-item">
+          <li key={it.name} className="shelf-item text-center">
             <div className="shelf-stage">
               <img src={it.img.src} alt={it.alt} width={it.img.w} height={it.img.h} loading="lazy" decoding="async" style={{ height: it.h }} />
             </div>

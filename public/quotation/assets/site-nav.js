@@ -8,9 +8,8 @@
     menu.hidden = !open;
     button.setAttribute('aria-expanded', String(open));
     button.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    // SVG icons ignore the .hidden property, so set the attribute itself
-    button.querySelector('.icon-open').toggleAttribute('hidden', open);
-    button.querySelector('.icon-close').toggleAttribute('hidden', !open);
+    button.querySelector('.icon-open').hidden = open;
+    button.querySelector('.icon-close').hidden = !open;
   };
   button.addEventListener('click', () => set(menu.hidden));
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { set(false); button.focus(); } });
