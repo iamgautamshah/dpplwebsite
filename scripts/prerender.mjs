@@ -15,7 +15,7 @@ buildSync({
 });
 
 const require = createRequire(import.meta.url);
-const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, articles, faqs } = require('./.prerender.cjs');
+const { render, renderPrivacy, renderTerms, renderJournal, renderArticle, renderNotFound, renderAbout, renderContact, renderCalculator, renderRates, articles, faqs } = require('./.prerender.cjs');
 
 let shell = readFileSync('dist/index.html', 'utf8');
 
@@ -161,6 +161,39 @@ for (const a of articles) {
           { '@type': 'ListItem', position: 3, name: a.title, item: url },
         ],
       },
+    ],
+  });
+}
+
+// Standalone pages: about, contact, calculator, today's rate
+const crumbs = (name, url) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name, item: url },
+  ],
+});
+const PAGES = [
+  ['about', renderAbout, 'AboutPage', 'About us',
+    'About Diamond Palace Pvt. Ltd. | Gold & Silver Bullion Dealer, New Road, Kathmandu',
+    'Diamond Palace Pvt. Ltd., established 2080 B.S., sells 24-carat gold bars and 999 fine silver by weight from Sasa Complex, New Road, Kathmandu. How buying, invoicing and buy-back work.'],
+  ['contact', renderContact, 'ContactPage', 'Contact',
+    'Contact & Directions | Diamond Palace Pvt. Ltd., Sasa Complex, New Road, Kathmandu',
+    'Visit Diamond Palace Pvt. Ltd. at 5th Floor, Sasa Complex, New Road, Kathmandu. Open Sunday to Friday, 10:30 to 18:00. Call 01-5915052 or WhatsApp +977 9805617932.'],
+  ['calculator', renderCalculator, 'WebPage', 'Price calculator',
+    'Gold & Silver Price Calculator Nepal — Tola, Gram & Kilogram | Diamond Palace Pvt. Ltd.',
+    'Calculate the price of 24-carat gold or 999 fine silver in Nepal at today’s rate, in tola, grams or kilograms, with or without a making charge. Tola to gram conversion table.'],
+  ['rates', renderRates, 'WebPage', 'Today’s rate',
+    'Today’s Gold & Silver Price in Nepal — Per Tola & 10 Gram | Diamond Palace Pvt. Ltd.',
+    'Today’s 24-carat gold and 999 fine silver selling and buying rates in Nepal, per tola and per 10 grams, with a daily record of past rates. आजको सुन चाँदीको मूल्य।'],
+];
+for (const [slug, fn, type, crumb, title, description] of PAGES) {
+  const url = `${SITE}/${slug}`;
+  emit(`dist/${slug}.html`, fn(), { title, description, canonical: url }, {
+    schema: [
+      { '@context': 'https://schema.org', '@type': type, '@id': `${url}#page`, url, name: title, description, inLanguage: 'en', isPartOf: { '@type': 'WebSite', url: `${SITE}/`, name: 'Diamond Palace Pvt. Ltd.' }, about: { '@id': `${SITE}/#business` } },
+      crumbs(crumb, url),
     ],
   });
 }

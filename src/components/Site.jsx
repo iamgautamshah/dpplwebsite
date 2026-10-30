@@ -4,10 +4,10 @@ import { ARTICLES } from '../content/articles.js';
 import PriceCard from './PriceCard.jsx';
 import KathmanduMap from './KathmanduMap.jsx';
 
-const WA = (msg) => `https://wa.me/9779805617932?text=${encodeURIComponent(msg)}`;
-const MAPS_URL = 'https://maps.app.goo.gl/5yAecqdMx1nu1hKc8';
+export const WA = (msg) => `https://wa.me/9779805617932?text=${encodeURIComponent(msg)}`;
+export const MAPS_URL = 'https://maps.app.goo.gl/5yAecqdMx1nu1hKc8';
 
-const PhoneIcon = () => (
+export const PhoneIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
 );
 
@@ -25,7 +25,7 @@ export const FAQS = [
   { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
 ];
 
-const SOCIALS = [
+export const SOCIALS = [
   {
     name: 'Facebook',
     url: 'https://www.facebook.com/dppl2080',
@@ -49,13 +49,13 @@ const SOCIALS = [
   },
 ];
 
-const WaIcon = () => (
+export const WaIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.4-.7-3.9-3.4-4-3.6-.9-1.2-.9-2.3.6-1.6.8-1.8.4-.3.6-.3h.4c.2 0 .4-.1.6.4l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.4-.1.7s.8 1.3 1.7 2.1c1.2 1 2.1 1.3 2.4 1.5s.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.2.5.2.6.4s0 .9-.4 1.5z" /></svg>
 );
 
 // The display case in the hero, and the shelves below it. Weights listed are
 // the ones the quotation form offers (public/quotation/data/products.json).
-const IMG = {
+export const IMG = {
   gold: { src: '/images/bar-gold-9999-v2.webp', w: 530, h: 796 },
   silverBar: { src: '/images/bar-fine-999.webp', w: 423, h: 796 },
   coin: { src: '/images/coin-silver-lakshmi.webp', w: 502, h: 500 },
@@ -121,7 +121,7 @@ const Ledger = ({ children, light = false }) => (
   </p>
 );
 
-function Nav() {
+export function Nav({ current = null }) {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const bar = useRef(null);
@@ -154,39 +154,43 @@ function Nav() {
     return () => { removeEventListener('scroll', onScroll); removeEventListener('keydown', onKey); };
   }, []);
 
-  // 'page' navigates, 'scroll' jumps to a section of the home page
+  // `scroll` links jump to a section when already on the home page; every
+  // other link is an ordinary page.
   const links = [
-    ['home', 'HOME', 'scroll'],
-    ['products', 'PRODUCTS', 'scroll'],
-    ['rates', 'TODAY\u2019S RATE', 'scroll'],
-    ['articles', 'JOURNAL', 'scroll'],
-    ['about', 'ABOUT US', 'scroll'],
-    ['contact', 'CONTACT', 'scroll'],
-    ['quotation', 'QUOTATION', 'page'],
+    { key: 'home', label: 'HOME', url: '/', scroll: true },
+    { key: 'products', label: 'PRODUCTS', url: '/#products', scroll: true },
+    { key: 'rates', label: 'TODAY\u2019S RATE', url: '/rates' },
+    { key: 'calculator', label: 'CALCULATOR', url: '/calculator' },
+    { key: 'articles', label: 'JOURNAL', url: '/articles' },
+    { key: 'about', label: 'ABOUT US', url: '/about' },
+    { key: 'contact', label: 'CONTACT', url: '/contact' },
+    { key: 'quotation', label: 'QUOTATION', url: '/quotation' },
   ];
+  const go = (e, l) => { setOpen(false); if (l.scroll && location.pathname === '/') scrollToSection(e, '#' + l.key); };
 
   return (
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
-        <a href="/" onClick={(e) => { setOpen(false); scrollToSection(e, '#home'); }} className="flex items-center gap-3">
+        <a href="/" onClick={(e) => go(e, links[0])} className="flex items-center gap-3">
           <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd. — home" className="h-11 w-auto" width="420" height="279" />
         </a>
-        <ul className="hidden lg:flex gap-7 items-center">
-          {links.map(([href, label, kind]) => (
-            <li key={href}>
+        <ul className="hidden xl:flex gap-6 items-center">
+          {links.map((l) => (
+            <li key={l.key}>
               <a
-                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : href === 'quotation' ? '/quotation' : `/#${href}`}
-                onClick={(e) => { if (kind !== 'page') scrollToSection(e, href); }}
-                className="block py-1 text-[0.72rem] tracking-[0.22em] text-silver/90 transition-colors duration-300 hover:text-gold"
+                href={l.url}
+                onClick={(e) => go(e, l)}
+                aria-current={current === l.key ? 'page' : undefined}
+                className={`block py-1 text-[0.7rem] tracking-[0.2em] transition-colors duration-300 hover:text-gold ${current === l.key ? 'text-gold' : 'text-silver/90'}`}
               >
-                {label}
+                {l.label}
               </a>
             </li>
           ))}
         </ul>
         <button
-          className="lg:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
+          className="xl:hidden border border-silver/25 rounded-lg p-2.5 text-silver transition-colors hover:border-gold hover:text-gold"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -199,16 +203,17 @@ function Nav() {
         </button>
       </div>
 
-            <div className={`lg:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
+            <div className={`xl:hidden absolute top-full left-0 right-0 z-50 origin-top transition-all duration-300 ${open ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-95 pointer-events-none'}`}>
         <ul className="bg-[#05080F] border-b border-gold/30 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.8)] py-2">
-          {links.map(([href, label, kind]) => (
-            <li key={href}>
+          {links.map((l) => (
+            <li key={l.key}>
               <a
-                href={href === 'home' ? '/' : href === 'articles' ? '/articles' : href === 'quotation' ? '/quotation' : `/#${href}`}
-                onClick={(e) => { setOpen(false); if (kind !== 'page') scrollToSection(e, href); }}
-                className="block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] text-silver transition-colors hover:text-gold hover:bg-silver/[0.04]"
+                href={l.url}
+                onClick={(e) => go(e, l)}
+                aria-current={current === l.key ? 'page' : undefined}
+                className={`block px-6 py-4 text-center text-[0.8rem] tracking-[0.24em] transition-colors hover:text-gold hover:bg-silver/[0.04] ${current === l.key ? 'text-gold' : 'text-silver'}`}
               >
-                {label}
+                {l.label}
               </a>
             </li>
           ))}
@@ -386,12 +391,52 @@ function RatesSection() {
             <a href="/quotation" className="btn-gold">Request a quotation</a>
             <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to know today’s gold and silver price.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
           </div>
+          <p className="mt-6 text-sm text-silver/70">
+            See <a href="/rates#history" className="text-gold border-b border-gold/40 hover:border-gold">past days’ rates</a> or
+            work out a price with the <a href="/calculator" className="text-gold border-b border-gold/40 hover:border-gold">gold and silver calculator</a>.
+          </p>
         </div>
         <div className="relative w-full max-w-[420px] mx-auto lg:mx-0 lg:w-[420px]">
           <WhenVisible minHeight={340}><PriceCard /></WhenVisible>
         </div>
       </div>
     </section>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="flex items-center gap-3.5">
+          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-9 w-auto" width="420" height="279" />
+          <p className="text-xs text-steel leading-relaxed tracking-wide">
+            <span className="font-display text-silver tracking-[0.14em] text-sm">Diamond Palace Pvt. Ltd.</span><br />Est. 2080 B.S.
+          </p>
+        </div>
+          <div className="text-xs text-steel leading-relaxed tracking-wide sm:text-right">
+            <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 Diamond Palace Pvt. Ltd. All rights reserved.</p>
+              <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
+              <a href="/about" className="transition-colors hover:text-gold">About us</a>
+              <a href="/contact" className="transition-colors hover:text-gold">Contact</a>
+              <a href="/rates" className="transition-colors hover:text-gold">Today’s rate</a>
+              <a href="/calculator" className="transition-colors hover:text-gold">Calculator</a>
+              <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
+              <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
+              <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
+              <a href="mailto:dppl2080@gmail.com" className="transition-colors hover:text-gold">dppl2080@gmail.com</a>
+            </p>
+            <p className="mt-4 flex gap-3 sm:justify-end">
+              {SOCIALS.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name}
+                   className="w-9 h-9 rounded-full border border-silver/20 flex items-center justify-center text-silver/70 transition-all hover:border-gold hover:text-gold hover:-translate-y-0.5">
+                  {s.icon}
+                </a>
+              ))}
+            </p>
+          </div>
+        </div>
+      </footer>
   );
 }
 
@@ -534,33 +579,7 @@ export default function Site() {
         </div>
       </section>
 
-      <footer className="border-t border-silver/10 px-4 sm:px-6 md:px-12 py-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-        <div className="flex items-center gap-3.5">
-          <img src="/images/logo-gold.webp" alt="Diamond Palace Pvt. Ltd." className="h-9 w-auto" width="420" height="279" />
-          <p className="text-xs text-steel leading-relaxed tracking-wide">
-            <span className="font-display text-silver tracking-[0.14em] text-sm">Diamond Palace Pvt. Ltd.</span><br />Est. 2080 B.S.
-          </p>
-        </div>
-          <div className="text-xs text-steel leading-relaxed tracking-wide sm:text-right">
-            <p>5th Floor, Sasa Complex, New Road, Kathmandu<br />© 2026 Diamond Palace Pvt. Ltd. All rights reserved.</p>
-              <p className="mt-3 flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
-              <a href="/articles" className="transition-colors hover:text-gold">Journal</a>
-              <a href="/privacy" className="transition-colors hover:text-gold">Privacy Policy</a>
-              <a href="/terms" className="transition-colors hover:text-gold">Terms of Use</a>
-              <a href="mailto:dppl2080@gmail.com" className="transition-colors hover:text-gold">dppl2080@gmail.com</a>
-            </p>
-            <p className="mt-4 flex gap-3 sm:justify-end">
-              {SOCIALS.map((s) => (
-                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name}
-                   className="w-9 h-9 rounded-full border border-silver/20 flex items-center justify-center text-silver/70 transition-all hover:border-gold hover:text-gold hover:-translate-y-0.5">
-                  {s.icon}
-                </a>
-              ))}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

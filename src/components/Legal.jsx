@@ -300,10 +300,11 @@ export function NotFound() {
 
       <Section heading="Where to go next">
         <ul className="space-y-3">
-          <li><a href="/" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s silver price</a> — the day&rsquo;s sale and purchase rates</li>
-          <li><a href="/#products" className="text-signal border-b border-signal/50 hover:border-signal">Silver bars and grains</a> — 999 fine, 100 g to 1 kg</li>
-          <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how silver is priced, verified and stored</li>
-          <li><a href="/#contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
+          <li><a href="/#products" className="text-signal border-b border-signal/50 hover:border-signal">Gold and silver bullion</a> — 24-carat gold bars, 999 silver bars, coins and grains</li>
+          <li><a href="/rates" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s gold and silver price</a> — the day&rsquo;s sale and purchase rates</li>
+          <li><a href="/calculator" className="text-signal border-b border-signal/50 hover:border-signal">Price calculator</a> — work out a price in tola or grams</li>
+          <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how gold and silver are priced, verified and stored</li>
+          <li><a href="/contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>
         </ul>
       </Section>
 

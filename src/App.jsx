@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import Site from './components/Site.jsx';
 import { NotFound, Privacy, Terms } from './components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from './components/Journal.jsx';
+import { AboutPage, CalculatorPage, ContactPage, RatesPage } from './components/Pages.jsx';
+
+const PAGES = { about: AboutPage, contact: ContactPage, calculator: CalculatorPage, rates: RatesPage };
 
 const SECTIONS = ['home', 'products', 'gold', 'silver', 'rates', 'articles', 'about', 'faq', 'contact'];
 
@@ -10,7 +13,7 @@ const SECTIONS = ['home', 'products', 'gold', 'silver', 'rates', 'articles', 'ab
 // server now redirects those to "/".
 function sectionFromPath(path) {
   const seg = path.replace(/^\/+|\/+$/g, '').toLowerCase();
-  return seg !== 'articles' && SECTIONS.includes(seg) ? seg : null;
+  return seg !== 'articles' && !PAGES[seg] && SECTIONS.includes(seg) ? seg : null;
 }
 function sectionFromHash(hash) {
   const seg = String(hash || '').replace(/^#/, '').toLowerCase();
@@ -35,6 +38,8 @@ export default function App() {
     catch { scrollTo(0, el.offsetTop || 0); }
   }, [legal, isJournal, section]);
 
+  const pageKey = path.replace(/^\/+|\/+$/g, '').toLowerCase();
+  if (PAGES[pageKey]) { const P = PAGES[pageKey]; return <P />; }
   if (legal === 'privacy') return <Privacy />;
   if (legal === 'terms') return <Terms />;
   // anything that is not a known route renders the 404 page rather than a

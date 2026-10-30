@@ -1,13 +1,10 @@
-# Retired section URLs. The sections are now fragments on the home page
+# Retired section URLs. These sections are fragments on the home page
 # (/#products), so these old paths go straight home in one hop.
+# /about and /contact are real pages again (about.html, contact.html).
 /home               /                   301
 /home/              /                   301
 /products           /                   301
 /products/          /                   301
-/about              /                   301
-/about/             /                   301
-/contact            /                   301
-/contact/           /                   301
 
 # Old and mistyped journal paths.
 /journal            /articles           301

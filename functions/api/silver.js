@@ -1,3 +1,4 @@
+import { recordDay } from '../../server/rates/history.js';
 
 const KAGOSIDA = 'https://kagosida.org.np';
 const FENEGOSIDA_SOURCES = ['https://www.fenegosida.org/', 'https://fenegosida.org/'];
@@ -876,6 +877,7 @@ export async function onRequestGet(context) {
           stale: false,
           ...(debug ? { trace: ['manual rate in KV for today; nothing scraped'] } : {}),
         };
+        context.waitUntil(recordDay(env, payload));
         const out = json(payload);
         if (!debug && !force) context.waitUntil(caches.default.put(cacheKey, out.clone()));
         return out;
@@ -890,6 +892,7 @@ export async function onRequestGet(context) {
       const updatedToday = changed || (!!cached?.updatedToday && cached.dateAD === day);
       cached = { ...buildPayload(quote, source, day, minutes, updatedToday), via };
       await writeCache(env, cached);
+      context.waitUntil(recordDay(env, cached));
     } catch (err) {
       log.push(`FINAL: ${err.message}`);
       console.error('[silver]', log.join(' | '));

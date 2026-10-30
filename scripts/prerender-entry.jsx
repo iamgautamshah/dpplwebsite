@@ -3,6 +3,12 @@ import Site, { FAQS } from '../src/components/Site.jsx';
 import { NotFound, Privacy, Terms } from '../src/components/Legal.jsx';
 import { ArticlesIndex, ArticlePage } from '../src/components/Journal.jsx';
 import { ARTICLES } from '../src/content/articles.js';
+import { AboutPage, CalculatorPage, ContactPage, RatesPage } from '../src/components/Pages.jsx';
+
+export const renderAbout = () => renderToString(<AboutPage />);
+export const renderContact = () => renderToString(<ContactPage />);
+export const renderCalculator = () => renderToString(<CalculatorPage />);
+export const renderRates = () => renderToString(<RatesPage />);
 
 export const render = () => renderToString(<Site />);
 export const renderPrivacy = () => renderToString(<Privacy />);
