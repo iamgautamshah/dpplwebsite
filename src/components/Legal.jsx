@@ -215,7 +215,7 @@ export function Terms() {
 
       <Section heading="Products and purchases">
         <p>
-          Bullion sold by Diamond Palace Pvt. Ltd. is 24-carat (999.9) gold or 999 fine silver, weighed on calibrated scales in the presence of the customer and
+          Bullion sold by Diamond Palace Pvt. Ltd. is 999.9 gold or 999 fine silver, weighed on calibrated scales in the presence of the customer and
           supplied with a full VAT invoice. Availability of any weight or format is subject to stock at the time of
           purchase. We buy back documented bullion we have sold at the purchase rate published on the day of the
           buy-back.
@@ -271,7 +271,7 @@ export function NotFound() {
 
       <Section heading="Where to go next">
         <ul className="space-y-3">
-          <li><a href="/products" className="text-signal border-b border-signal/50 hover:border-signal">Gold and silver bullion</a> — 24-carat gold bars, 999 silver bars, coins and grains</li>
+          <li><a href="/products" className="text-signal border-b border-signal/50 hover:border-signal">Gold and silver bullion</a> — 999.9 gold bars, 999 silver bars, coins and grains</li>
           <li><a href="/rates" className="text-signal border-b border-signal/50 hover:border-signal">Today&rsquo;s gold and silver price</a> — the day&rsquo;s sale and purchase rates</li>
           <li><a href="/articles" className="text-signal border-b border-signal/50 hover:border-signal">The DPPL Journal</a> — how gold and silver are priced, verified and stored</li>
           <li><a href="/contact" className="text-signal border-b border-signal/50 hover:border-signal">Contact and directions</a> — Sasa Complex, New Road</li>

@@ -47,7 +47,7 @@ export function AboutPage() {
             Diamond Palace Pvt. Ltd. was established in 2080 B.S. and trades from the 5th floor of Sasa Complex on New Road,
             the street where Kathmandu has bought and sold precious metal for generations. We began with 999 fine silver:
             bars of 100 grams, 500 grams and a kilo, coins, and loose grains for jewellers and manufacturers. In October 2026
-            we opened a gold counter for 24-carat gold bars and raw gold for business.
+            we opened a gold counter for 999.9 gold bars and raw gold for business.
           </P>
           <P>
             We are a bullion dealer rather than a jeweller. What we sell is metal of a stated weight and fineness, priced from
@@ -60,10 +60,10 @@ export function AboutPage() {
       <H2>What we sell</H2>
       <div className="mt-6 grid sm:grid-cols-2 gap-6">
         <div className="frame p-6 flex gap-5 items-center">
-          <img src={IMG.gold.src} alt="24-carat gold bar" width={IMG.gold.w} height={IMG.gold.h} loading="lazy" className="h-28 w-auto drop-shadow-[0_12px_18px_rgba(0,0,0,0.5)]" />
+          <img src={IMG.gold.src} alt="999.9 gold bar" width={IMG.gold.w} height={IMG.gold.h} loading="lazy" className="h-28 w-auto drop-shadow-[0_12px_18px_rgba(0,0,0,0.5)]" />
           <div>
             <h3 className="font-display text-silverhi text-lg">Gold</h3>
-            <p className="mt-2 text-sm leading-relaxed text-silver/75">24-carat (999.9) bars of 5 grams, 10 grams and 1 tola, and raw gold by weight for jewellers, goldsmiths and manufacturers.</p>
+            <p className="mt-2 text-sm leading-relaxed text-silver/75">999.9 bars of 5 grams, 10 grams and 1 tola, and raw gold by weight for jewellers, goldsmiths and manufacturers.</p>
           </div>
         </div>
         <div className="frame p-6 flex gap-5 items-center">
@@ -177,7 +177,7 @@ export function ProductsPage() {
     <Page
       current="products"
       title="Gold and silver bullion"
-      intro="24-carat gold bars and 999 fine silver bars, coins and grains, sold by weight at the day’s published rate from our counter on New Road, Kathmandu."
+      intro="999.9 gold bars and 999 fine silver bars, coins and grains, sold by weight at the day’s published rate from our counter on New Road, Kathmandu."
     >
       <GoldShowcase />
       <SilverShelf />
@@ -255,7 +255,7 @@ export function RatesPage() {
     <Page
       current="rates"
       title="Today’s gold and silver price in Nepal"
-      intro="The day’s selling and buying rates for 24-carat gold and 999 fine silver, per tola and per 10 grams, with a record of past days."
+      intro="The day’s selling and buying rates for 999.9 gold and 999 fine silver, per tola and per 10 grams, with a record of past days."
     >
       <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
         <div className="w-full max-w-[560px] mx-auto lg:mx-0"><PriceCard /></div>

@@ -13,13 +13,13 @@ export const PhoneIcon = () => (
 
 // exported so the FAQ structured data is built from exactly what the page shows
 export const FAQS = [
-  { q: 'Where can I buy gold and silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal in 999 fine silver \u2014 bars of 100 g, 500 g and 1 kg, and loose grain sold by weight \u2014 and, since October 2026, in 24-carat gold. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
+  { q: 'Where can I buy gold and silver in Kathmandu?', a: 'Diamond Palace Pvt. Ltd. trades from the 5th floor of Sasa Complex on New Road, Kathmandu \u2014 the street that has been Nepal\u2019s precious-metal market for generations. We deal in 999 fine silver \u2014 bars of 100 g, 500 g and 1 kg, and loose grain sold by weight \u2014 and, since October 2026, in 999.9 gold. Every piece is weighed on calibrated scales in front of you and leaves with a full invoice, and we buy back documented metal at the purchase rate published here.' },
   { q: 'What is today\u2019s gold and silver price in Nepal?', a: 'The current gold and silver rates for Kathmandu \u2014 both the sale price and the purchase price, per tola and per 10 grams \u2014 is published on this page and updated each morning from the official Kathmandu bullion market reference. One tola is 11.6638 grams. Rates are confirmed at the counter at the time of your transaction.' },
   { q: 'Is Diamond Palace Pvt. Ltd. a precious-metal importer or a retail dealer?', a: 'Both sides of the trade run through the counter. Diamond Palace Pvt. Ltd. supplies investment-grade 999 fine silver bars and industrial silver grain to households, jewellers and businesses in Kathmandu, in quantities from 100 grams upward. For larger or repeat commercial orders, call the counter on 01-5915052 to discuss supply and pricing.' },
-  { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 24-carat gold \u2014 the investment standard, 99.9% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published on this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
-  { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 24-carat gold. Ask at the counter for jewellery-grade pricing.' },
+  { q: 'Do you sell gold as well as silver?', a: 'Yes. Diamond Palace Pvt. Ltd. opened its gold counter in October 2026, after three years dealing in silver. We quote 999.9 fine gold \u2014 the investment standard, 99.99% pure \u2014 per tola and per 10 grams, from the same Kathmandu market reference published on this page. Gold is weighed, invoiced and bought back on exactly the terms silver always has been.' },
+  { q: 'What is the difference between 24-carat and 22-carat gold?', a: '24-carat gold is very nearly pure \u2014 999.9 fine \u2014 and is what bullion buyers hold, because its value is simply weight multiplied by the day\u2019s rate. 22-carat gold is 91.6% pure, alloyed for hardness so it can be worn as jewellery; it costs less per gram and carries higher making charges. The rate published on this page is for 999.9 gold. Ask at the counter for jewellery-grade pricing.' },
   { q: 'What does 999 fine silver mean?', a: '999 fine means the metal is 99.9% pure silver \u2014 the standard for investment bullion, and higher than sterling silver, which is 92.5%. Every Diamond Palace Pvt. Ltd. bar is stamped with its fineness, its weight, and the DPPL diamond mark, so its purity can be verified by anyone at any time.' },
-  { q: 'Is there a making charge on gold and silver bars?', a: 'Yes, on both, and it is always shown separately. Gold bars carry a fixed making charge per bar, added to the published 24-carat rate for the weight. Silver bars and silver coins carry a minimal making charge, a small percentage of the metal value that is lower on larger bars. Either way it covers casting, stamping and packaging, appears as its own line on your invoice and in every online quotation, and is added to any applicable tax.' },
+  { q: 'Is there a making charge on gold and silver bars?', a: 'Yes, on both, and it is always shown separately. Gold bars carry a fixed making charge per bar, added to the published 999.9 gold rate for the weight. Silver bars and silver coins carry a minimal making charge, a small percentage of the metal value that is lower on larger bars. Either way it covers casting, stamping and packaging, appears as its own line on your invoice and in every online quotation, and is added to any applicable tax.' },
   { q: 'Do you supply raw gold for businesses?', a: 'Yes. Alongside finished gold bars, Diamond Palace Pvt. Ltd. supplies raw gold for business use \u2014 for jewellers, goldsmiths and manufacturers who need metal to work. It is sold by weight against the day\u2019s published gold rate and invoiced in full. Quantities are arranged directly with the counter: call 01-5915052 or message us on WhatsApp.' },
   { q: 'Does Diamond Palace Pvt. Ltd. buy gold and silver back?', a: 'Yes, both metals. We buy back bullion we have sold at the purchase rate published on this site on the day of the buy-back. Bring the metal and the original invoice; the bar is weighed and checked against the paperwork, and payment is made at the counter. Documentation is what keeps a bar liquid, so keep your invoices safe.' },
   { q: 'What are your opening hours and where exactly are you?', a: 'Diamond Palace Pvt. Ltd. is open Sunday to Friday, 10:30 to 18:00 NPT, closed Saturdays and public holidays. The counter is on the 5th floor of Sasa Complex, New Road, Kathmandu 44600. Call 01-5915052, or message +977 9805617932 on WhatsApp before visiting for large orders.' },
@@ -58,7 +58,7 @@ export const WaIcon = () => (
 export const IMG = {
   gold: { src: '/images/bar-gold-9999-v2.webp', w: 530, h: 796 },
   silverBar: { src: '/images/bar-fine-999.webp', w: 423, h: 796 },
-  coin: { src: '/images/coin-silver-lakshmi.webp', w: 502, h: 500 },
+  coin: { src: '/images/coin-silver-lakshmi-ganesh.webp', w: 640, h: 640 },
   grains: { src: '/images/grains.webp', w: 430, h: 573 },
 };
 
@@ -76,8 +76,8 @@ const SILVER_SHELF = [
   { name: '1000 gram silver bar', img: IMG.silverBar, h: '96%', alt: 'Diamond Palace Pvt. Ltd. 1000 gram 999 fine silver bar',
     note: 'The lowest making charge per gram we offer.',
     msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about a 1000 gram Silver Bar (999). Please share today\u2019s price.' },
-  { name: 'Silver coins', img: IMG.coin, h: '50%', alt: 'Diamond Palace Pvt. Ltd. Lakshmi silver coin, 999 fine silver',
-    note: '5, 10, 20 and 50 gram, including the Lakshmi coin minted for Dhanteras.',
+  { name: 'Silver coins', img: IMG.coin, h: '50%', alt: 'Diamond Palace Pvt. Ltd. Lakshmi Ganesh silver coin, 999 fine silver',
+    note: '5, 10, 20 and 50 gram, including the Lakshmi Ganesh coin minted for Dhanteras.',
     msg: 'Hello Diamond Palace Pvt. Ltd., I would like to enquire about Silver Coins (999). Please share today\u2019s price and available weights.' },
   { name: 'Silver grains', img: IMG.grains, h: '66%', alt: 'Diamond Palace Pvt. Ltd. 999 fine silver grains',
     note: 'Loose fine silver sold to the gram, for jewellers and businesses.',
@@ -120,6 +120,114 @@ const Ledger = ({ children, light = false }) => (
     <span className={`flex-1 h-px ${light ? 'bg-[#1C222E]/15' : 'bg-silver/15'}`} aria-hidden="true" />
   </p>
 );
+
+/* Fireworks for 7 seconds when someone arrives on the site: once per visit
+   (browser session), skipped for visitors who ask for reduced motion. A
+   canvas over the page that never takes clicks and removes itself after. */
+const FW_COLOURS = ['#E9C46A', '#F6DFA0', '#D4A63A', '#EEF1F6', '#C9D1DD', '#FFB35C', '#FF6F7D', '#7FE0C2'];
+export function Fireworks({ duration = 7000 }) {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+  const [fading, setFading] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('dppl-fireworks')) return;
+      sessionStorage.setItem('dppl-fireworks', '1');
+    } catch { /* storage blocked: show them anyway */ }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setOn(true);
+  }, []);
+  useEffect(() => {
+    if (!on) return undefined;
+    const canvas = ref.current;
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let W = 0;
+    let H = 0;
+    const size = () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    size();
+    window.addEventListener('resize', size);
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const rockets = [];
+    const sparks = [];
+    const start = performance.now();
+    let nextLaunch = start + 150;
+    let raf = 0;
+    const launch = () => {
+      const x = rnd(W * 0.12, W * 0.88);
+      rockets.push({ x, y: H + 10, vx: rnd(-0.6, 0.6), vy: -rnd(H * 0.0105, H * 0.0135) - 6, targetY: rnd(H * 0.12, H * 0.45), colour: FW_COLOURS[(Math.random() * FW_COLOURS.length) | 0] });
+    };
+    const burst = (r) => {
+      const n = W < 640 ? 46 : 70;
+      const second = Math.random() < 0.35 ? FW_COLOURS[(Math.random() * FW_COLOURS.length) | 0] : r.colour;
+      for (let i = 0; i < n; i++) {
+        const a = (Math.PI * 2 * i) / n + rnd(-0.05, 0.05);
+        const speed = rnd(1.6, W < 640 ? 4.2 : 5.4);
+        sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, life: 1, decay: rnd(0.011, 0.02), colour: i % 2 ? r.colour : second });
+      }
+    };
+    const frame = (now) => {
+      const t = now - start;
+      // fade what is already drawn, leaving short trails, without darkening the page
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,0.22)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      if (t < duration - 1600 && now >= nextLaunch) {
+        launch();
+        if (Math.random() < 0.3) launch();
+        nextLaunch = now + rnd(260, 520);
+      }
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.x += r.vx;
+        r.y += r.vy;
+        r.vy *= 0.985;
+        ctx.fillStyle = r.colour;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        if (r.y <= r.targetY || r.vy > -1.5) {
+          burst(r);
+          rockets.splice(i, 1);
+        }
+      }
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vx *= 0.975;
+        s.vy = s.vy * 0.975 + 0.045;
+        s.life -= s.decay;
+        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+        ctx.globalAlpha = s.life;
+        ctx.fillStyle = s.colour;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      if (t < duration) raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    const fadeTimer = setTimeout(() => setFading(true), duration - 900);
+    const endTimer = setTimeout(() => setOn(false), duration);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(fadeTimer);
+      clearTimeout(endTimer);
+      window.removeEventListener('resize', size);
+    };
+  }, [on, duration]);
+  if (!on) return null;
+  return <canvas ref={ref} className={`fireworks${fading ? ' is-fading' : ''}`} aria-hidden="true" />;
+}
 
 export function Nav({ current = null }) {
   const [open, setOpen] = useState(false);
@@ -168,6 +276,8 @@ export function Nav({ current = null }) {
   const go = (e, l) => { setOpen(false); if (l.scroll && location.pathname === '/') scrollToSection(e, '#' + l.key); };
 
   return (
+    <>
+    <Fireworks />
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
@@ -219,12 +329,13 @@ export function Nav({ current = null }) {
         </ul>
       </div>
     </nav>
+    </>
   );
 }
 
 /* ── the display case ────────────────────────────────────────────────────
    The bullion itself is the first thing on the page: a silver bar, a gold
-   bar and a Lakshmi coin standing on a lit ledge, with their reflections.
+   bar and a Lakshmi Ganesh coin standing on a lit ledge, with their reflections.
    The one moment of motion is a light passing across the gold bar. It starts
    and ends invisible, so it cannot flash when React replaces the
    prerendered page. */
@@ -245,7 +356,7 @@ function Hero() {
             Fine gold and silver, sold by weight.
           </h1>
           <p className="mt-5 max-w-[34rem] text-[1.02rem] leading-relaxed text-silver/80">
-            24-carat gold bars and 999 fine silver bars, coins and grains, from our counter on New Road, Kathmandu.
+            999.9 gold bars and 999 fine silver bars, coins and grains, from our counter on New Road, Kathmandu.
             Every piece is weighed in front of you and invoiced to the gram.
           </p>
           <div className="mt-8 flex flex-wrap gap-3.5">
@@ -254,7 +365,7 @@ function Hero() {
           </div>
         </div>
         <div className="order-1 lg:order-2">
-          <div className="display" role="img" aria-label="A 999 fine silver bar, a 24-carat gold bar and a Lakshmi silver coin from Diamond Palace Pvt. Ltd.">
+          <div className="display" role="img" aria-label="A 999 fine silver bar, a 999.9 gold bar and a Lakshmi Ganesh silver coin from Diamond Palace Pvt. Ltd.">
             <Piece cls="piece-silver" img={IMG.silverBar} priority />
             <Piece cls="piece-gold" img={IMG.gold} glint priority />
             <Piece cls="piece-coin" img={IMG.coin} priority />
@@ -276,12 +387,12 @@ function RateStrip() {
     return () => { alive = false; };
   }, []);
   const rs = (n) => 'Rs ' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-  const gold = p?.gold?.g10Sale;
-  const silver = p?.g10Sale;
+  const gold = p?.gold?.tolaSale;
+  const silver = p?.tolaSale;
   return (
     <div className="border-y border-gold/20 bg-[#070B15]">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 py-3 flex flex-wrap items-baseline gap-x-7 gap-y-1.5 text-[0.9rem]">
-        <span className="text-silver/60">Today’s selling rate, per 10 grams</span>
+        <span className="text-silver/60">Today’s selling rate, per tola</span>
         {failed ? (
           <span className="text-silver/80">is published each morning.</span>
         ) : (
@@ -290,7 +401,7 @@ function RateStrip() {
             <span className="text-silver/85">Silver 999 <b className="tnum font-semibold text-silverhi">{silver ? rs(silver) : '…'}</b></span>
           </>
         )}
-        <a href="/#rates" onClick={(e) => scrollToSection(e, '#rates')} className="sm:ml-auto text-gold border-b border-gold/40 pb-0.5 transition-colors hover:text-gold-light">See the full rate board</a>
+        <a href="/rates" className="sm:ml-auto text-gold border-b border-gold/40 pb-0.5 transition-colors hover:text-gold-light">See the full rate board</a>
       </div>
     </div>
   );
@@ -300,10 +411,10 @@ export function GoldShowcase() {
   return (
     <div id="gold" className="grid lg:grid-cols-[1fr_1.05fr] gap-8 lg:gap-16 items-center">
       <div className="pedestal pedestal-gold">
-        <img src={IMG.gold.src} alt="Diamond Palace Pvt. Ltd. 24-carat 999.9 fine gold bar" width={IMG.gold.w} height={IMG.gold.h} loading="lazy" decoding="async" />
+        <img src={IMG.gold.src} alt="Diamond Palace Pvt. Ltd. 999.9 fine gold bar" width={IMG.gold.w} height={IMG.gold.h} loading="lazy" decoding="async" />
       </div>
       <div>
-        <h2 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.4vw,3rem)]">24-carat gold bars</h2>
+        <h2 className="engraved font-display text-silverhi text-[clamp(1.9rem,4.4vw,3rem)]">999.9 gold bars</h2>
         <p className="mt-2 text-gold text-[1.02rem]">999.9 fine, stamped and sealed</p>
         <p className="prose-justify mt-5 max-w-xl text-[0.98rem] leading-relaxed text-silver/80">
           Our gold counter opened in October 2026. Bars are sold by weight at the day’s published gold rate, plus a fixed
@@ -324,7 +435,7 @@ export function GoldShowcase() {
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <a href="/quotation" className="btn-gold">Get a gold quotation</a>
-          <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 24-carat gold bars.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
+          <a href={WA('Hello Diamond Palace Pvt. Ltd., I would like to enquire about 999.9 gold bars.')} target="_blank" rel="noopener noreferrer" className="btn-wa"><WaIcon /> Ask on WhatsApp</a>
         </div>
       </div>
     </div>
@@ -503,7 +614,7 @@ export default function Site() {
             <Ledger>Provenance</Ledger>
             <h2 className="engraved font-display text-silverhi text-[clamp(1.5rem,3.6vw,2.4rem)]">Diamond Palace Pvt. Ltd.</h2>
             <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
-              Diamond Palace Pvt. Ltd. was established in 2080 B.S. with a simple conviction: that buying precious metal in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in fine metal by weight: 999 silver in bars of 100 g, 500 g and 1 kg and in loose grains for jewellers and manufacturers, and, since October 2026, 24-carat gold.</p>
+              Diamond Palace Pvt. Ltd. was established in 2080 B.S. with a simple conviction: that buying precious metal in Nepal should be as transparent as buying rice. From the 5th floor of Sasa Complex on New Road — the street where Kathmandu has traded for over a century — we deal in fine metal by weight: 999 silver in bars of 100 g, 500 g and 1 kg and in loose grains for jewellers and manufacturers, and, since October 2026, 999.9 gold.</p>
             <p className="prose-justify mt-4 max-w-3xl text-silver/80 leading-loose text-[0.95rem]">
               Every bar we sell carries the DPPL diamond stamp, is weighed on calibrated scales in front of the customer, and leaves the counter with a full VAT invoice. Every bar we sold, we also buy back — at the purchase rate published on this page, the same day. That is the whole business model: honest metal, honest weight, honest paper.
             </p>

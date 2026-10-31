@@ -444,3 +444,7 @@ html[data-js] .glint { animation: glint 1.9s 0.5s cubic-bezier(0.45, 0, 0.2, 1) 
 @media (prefers-reduced-motion: reduce) {
   html[data-js] .glint { animation: none; }
 }
+
+/* Arrival fireworks (Site.jsx Fireworks): over everything, never in the way */
+.fireworks { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 70; opacity: 1; transition: opacity 0.9s ease; }
+.fireworks.is-fading { opacity: 0; }
