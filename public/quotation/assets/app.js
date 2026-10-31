@@ -1,10 +1,14 @@
-import { onStockChange, stock } from './gate.js?v=20261031e';
-import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261031e';
+import { onStockChange, stock } from './gate.js?v=20261031f';
+import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261031f';
 
 const form = $('quote-form');
 const el = {
   type: $('customerType'),
-  pan: $('pan'),
+  idType: $('idType'),
+  idTypeField: $('idType-field'),
+  idNumber: $('idNumber'),
+  idLabel: $('idNumber-label'),
+  idHint: $('idNumber-hint'),
   name: $('name'),
   nameLabel: $('name-label'),
   nameHint: $('name-hint'),
@@ -21,8 +25,16 @@ const el = {
 };
 
 const LATIN_RE = /^[A-Za-z0-9\u00C0-\u00FF .,'&()\-\/#:]+$/;
-const LATIN_MSG = 'Use English letters only, as on your PAN certificate.';
-const FIELDS = ['customerType', 'name', 'pan', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'];
+const LATIN_MSG = 'Use English letters only, as on your ID document.';
+// What each ID looks like. Personal customers pick one; businesses always give their PAN.
+const IDS = {
+  nid: { label: 'National ID number', hint: 'The 10-digit National Identity Number (NIN) on your National ID card.', placeholder: '10-digit NIN', numeric: true, digits: 10, empty: 'Enter your National ID number.', wrong: 'National ID number must be exactly 10 digits.' },
+  citizenship: { label: 'Citizenship number', hint: 'As printed on your citizenship certificate, e.g. 27-01-71-05432.', placeholder: 'e.g. 27-01-71-05432', empty: 'Enter your citizenship number.' },
+  pan: { label: 'PAN number', hint: 'The 9-digit number on your PAN certificate.', placeholder: '9-digit PAN', numeric: true, digits: 9, empty: 'Enter your PAN number.', wrong: 'PAN must be exactly 9 digits.' },
+  license: { label: 'License number', hint: 'As printed on your driving licence, e.g. 01-06-00012345.', placeholder: 'e.g. 01-06-00012345', empty: 'Enter your license number.' },
+};
+const DOC_RE = /^(?=.*\d)[A-Za-z0-9][A-Za-z0-9 \-\/]{1,29}$/;
+const FIELDS = ['customerType', 'name', 'idType', 'idNumber', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'];
 let geo = null;
 
 const isBusiness = () => el.type.value === 'business';
@@ -38,8 +50,34 @@ function syncCustomerType() {
   el.contact.required = business;
   if (!business) setError('contactPerson');
   el.nameLabel.textContent = business ? 'Registered business name' : 'Full name';
-  el.nameHint.textContent = business ? 'As registered with the Inland Revenue Department.' : 'As it appears on your PAN registration.';
+  el.nameHint.textContent = business ? 'As registered with the Inland Revenue Department.' : 'As it appears on your ID document.';
   el.name.autocomplete = business ? 'organization' : 'name';
+  el.idTypeField.hidden = business;
+  el.idType.disabled = business;
+  if (business) setError('idType');
+  syncIdType();
+}
+
+const currentIdType = () => (isBusiness() ? 'pan' : el.idType.value);
+
+function syncIdType() {
+  const id = IDS[currentIdType()];
+  el.idLabel.textContent = id ? id.label : 'ID number';
+  el.idHint.textContent = id ? id.hint : 'Choose an ID type first.';
+  el.idNumber.placeholder = id ? id.placeholder : '';
+  el.idNumber.inputMode = id?.numeric ? 'numeric' : 'text';
+  if (id?.numeric) digitsOnly(el.idNumber, id.digits);
+}
+
+function idError() {
+  const type = currentIdType();
+  const v = el.idNumber.value.trim();
+  const id = IDS[type];
+  if (!id) return null; // the ID type error covers it
+  if (!v) return id.empty;
+  if (id.digits && v.length !== id.digits) return id.wrong;
+  if (!id.digits && !DOC_RE.test(v)) return 'Use English digits, letters, hyphens or slashes, as printed.';
+  return null;
 }
 
 function onProvince() {
@@ -77,7 +115,9 @@ function restore() {
   if (!c) return;
   el.type.value = c.customerType;
   syncCustomerType();
-  el.pan.value = c.pan;
+  if (c.customerType !== 'business') el.idType.value = c.idType || (c.pan ? 'pan' : '');
+  syncIdType();
+  el.idNumber.value = c.idNumber ?? c.pan ?? '';
   el.name.value = c.name;
   el.contact.value = c.contactPerson || '';
   el.phone.value = c.phone;
@@ -97,8 +137,9 @@ function validate() {
   if (!el.type.value) errors.customerType = 'Choose Personal or Business.';
   if (el.name.value.trim().length < 2) errors.name = isBusiness() ? 'Enter the registered business name.' : 'Enter your full name.';
   else if (!LATIN_RE.test(el.name.value.trim())) errors.name = LATIN_MSG;
-  if (!el.pan.value) errors.pan = 'Enter your PAN number.';
-  else if (!/^\d{9}$/.test(el.pan.value)) errors.pan = 'PAN must be exactly 9 digits.';
+  if (el.type.value && !isBusiness() && !el.idType.value) errors.idType = 'Choose an ID type.';
+  const idErr = el.type.value ? idError() : null;
+  if (idErr) errors.idNumber = idErr;
   if (isBusiness() && el.contact.value.trim().length < 2) errors.contactPerson = 'Enter the name of the contact person.';
   else if (isBusiness() && !LATIN_RE.test(el.contact.value.trim())) errors.contactPerson = LATIN_MSG;
   if (!el.phone.value) errors.phone = 'Enter a contact number.';
@@ -122,13 +163,21 @@ el.type.addEventListener('change', () => {
   setError('customerType');
 });
 
-el.pan.addEventListener('input', () => digitsOnly(el.pan, 9));
+el.idType.addEventListener('change', () => {
+  syncIdType();
+  setError('idType');
+  if (el.idNumber.value) setError('idNumber', idError());
+});
+el.idNumber.addEventListener('input', () => {
+  const id = IDS[currentIdType()];
+  if (id?.numeric) digitsOnly(el.idNumber, id.digits);
+});
 el.phone.addEventListener('input', () => {
   const raw = el.phone.value.replace(/\D/g, '');
   el.phone.value = (raw.length > 10 && raw.startsWith('977') ? raw.slice(3) : raw).slice(0, 10);
 });
-el.pan.addEventListener('blur', () => {
-  if (el.pan.value && el.pan.value.length < 9) setError('pan', 'PAN must be exactly 9 digits.');
+el.idNumber.addEventListener('blur', () => {
+  if (el.idNumber.value) setError('idNumber', idError());
 });
 el.phone.addEventListener('blur', () => {
   if (el.phone.value && el.phone.value.length < 10) setError('phone', `Contact number must be exactly 10 digits (you entered ${el.phone.value.length}).`);
@@ -138,7 +187,7 @@ el.province.addEventListener('change', onProvince);
 el.district.addEventListener('change', onDistrict);
 el.localLevel.addEventListener('change', onLocalLevel);
 
-['pan', 'name', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'].forEach((id) => clearOnInput($(id)));
+['idNumber', 'name', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'].forEach((id) => clearOnInput($(id)));
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -150,7 +199,8 @@ form.addEventListener('submit', async (e) => {
   try {
     const data = await postJSON('/api/quotation/customer', {
       customerType: el.type.value,
-      pan: el.pan.value,
+      idType: currentIdType(),
+      idNumber: el.idNumber.value,
       name: el.name.value,
       contactPerson: isBusiness() ? el.contact.value : undefined,
       phone: el.phone.value,

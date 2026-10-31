@@ -2,6 +2,29 @@ import geo from '../../public/quotation/data/nepal-address.json';
 import catalog from '../../public/quotation/data/products.json';
 
 export const PAN_RE = /^\d{9}$/;
+export const ID_TYPES = ['nid', 'citizenship', 'pan', 'license'];
+// National ID (NIN): 10 digits. Citizenship and licence numbers come in several
+// district formats (e.g. 27-01-71-05432, 1234/567, 01-06-00012345): letters,
+// digits, hyphens, slashes and spaces, with at least one digit.
+const DOC_RE = /^(?=.*\d)[A-Za-z0-9][A-Za-z0-9 \-\/]{1,29}$/;
+
+/** Checks an ID number for its type. Returns [cleaned number, error or null]. */
+export function checkId(idType, raw) {
+  const v = String(raw ?? '').trim().replace(/\s+/g, ' ');
+  const digits = v.replace(/[\s-]/g, '');
+  switch (idType) {
+    case 'pan':
+      return /^\d{9}$/.test(digits) ? [digits, null] : [v, v ? 'PAN must be exactly 9 digits.' : 'Enter your PAN number.'];
+    case 'nid':
+      return /^\d{10}$/.test(digits) ? [digits, null] : [v, v ? 'National ID number must be exactly 10 digits.' : 'Enter your National ID number.'];
+    case 'citizenship':
+      return DOC_RE.test(v) ? [v.toUpperCase(), null] : [v, v ? 'Enter the citizenship number as printed (English digits, hyphens or slashes).' : 'Enter your citizenship number.'];
+    case 'license':
+      return DOC_RE.test(v) ? [v.toUpperCase(), null] : [v, v ? 'Enter the licence number as printed (English digits, hyphens or slashes).' : 'Enter your license number.'];
+    default:
+      return [v, 'Choose an ID type.'];
+  }
+}
 export const PHONE_RE = /^\d{10}$/;
 export const QTY_LIMITS = { piece: 999, gram: 100000 };
 
@@ -41,7 +64,7 @@ export function resolveAddress({ provinceId, districtId, localLevelId, ward }) {
 
 // Names and street go on the PDF, which uses a Latin font: accept English letters and common punctuation.
 export const LATIN_RE = /^[A-Za-z0-9\u00C0-\u00FF .,'&()\-\/#:]+$/;
-const latinOnly = 'Use English letters only, as on your PAN certificate.';
+const latinOnly = 'Use English letters only, as on your ID document.';
 
 export function validateCustomer(body) {
   const errors = {};
@@ -49,8 +72,13 @@ export function validateCustomer(body) {
   if (!CUSTOMER_TYPES.includes(customerType)) errors.customerType = 'Choose Personal or Business.';
   const business = customerType === 'business';
 
-  const pan = String(body?.pan ?? '').trim();
-  if (!PAN_RE.test(pan)) errors.pan = 'PAN must be exactly 9 digits.';
+  // Personal customers choose the ID they give; businesses always give their PAN.
+  // (Older pages sent only `pan`.)
+  const idType = business ? 'pan' : body?.idType ?? (body?.pan != null ? 'pan' : null);
+  if (!business && !ID_TYPES.includes(idType)) errors.idType = 'Choose an ID type.';
+  const [idNumber, idError] = checkId(ID_TYPES.includes(idType) ? idType : 'pan', body?.idNumber ?? body?.pan);
+  if (idError && !errors.idType && CUSTOMER_TYPES.includes(customerType)) errors.idNumber = idError;
+  const pan = idType === 'pan' ? idNumber : null;
 
   const name = text(body?.name, 120);
   if (name.length < 2) errors.name = business ? 'Enter the registered business name.' : 'Enter your full name.';
@@ -71,7 +99,7 @@ export function validateCustomer(body) {
   else if (!LATIN_RE.test(street)) errors.street = 'Use English letters only.';
 
   if (Object.keys(errors).length) return { errors };
-  return { errors, customer: { customerType, pan, name, contactPerson, phone, ...address, street } };
+  return { errors, customer: { customerType, idType, idNumber, pan, name, contactPerson, phone, ...address, street } };
 }
 
 // What customers see: the product and its fineness, e.g. "Gold Bar - 10g (999.9)".

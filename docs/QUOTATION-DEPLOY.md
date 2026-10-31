@@ -180,7 +180,9 @@ Tick each item after deploying. Use a private/incognito window for the
 **Public quotation flow**
 - [ ] `dppl.com.np` opens straight onto the page, with no intro screen. The menu shows QUOTATION, and Products has "Request a quotation".
 - [ ] `dppl.com.np/quotation` loads in the site's navy/gold style. `dppl.com.np/quotation/` redirects to it.
-- [ ] Step 1 asks for the name, then the PAN. It refuses a PAN that isn't 9 digits, a phone number that isn't 10 digits, and a name in Nepali script.
+- [ ] Step 1 asks for the name, then the ID. **Personal** customers choose the ID type (National ID, Citizenship, PAN Number, License Number) and enter its number; **Business** customers enter their PAN only.
+- [ ] Step 1 refuses a PAN that isn't 9 digits, a National ID that isn't 10 digits, a phone number that isn't 10 digits, and a name in Nepali script.
+- [ ] The Review step and the PDF show the chosen ID type and number (e.g. "Citizenship  27-01-71-05432").
 - [ ] Step 2: product names show the fineness, e.g. *Gold Bar - 10g (999.9)*, *Silver Bar - 100g (999)*. Personal customers don't see *Silver Grains*; Business customers do.
 - [ ] Step 3 shows each line, one "Making charge" line (the charge for each product is listed above the table as "Rs. … per bar (…%)"), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
 - [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYYYMMDD.pdf` with the right details.
@@ -228,7 +230,7 @@ Function logs: Pages project → **Deployments → (latest) → Functions → Re
 
 ## Data kept
 
-- **`QUOTES`:** each quotation (customer details, PAN, phone, address, products,
+- **`QUOTES`:** each quotation (customer details, ID type and number, phone, address, products,
   price), deleted automatically after 180 days. The PDF link uses a random
   32-character ID; anyone holding the link can open it.
 - **`QUOTE_RATES`:** current rates, the last 50 rate changes, stock switches,

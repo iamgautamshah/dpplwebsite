@@ -107,9 +107,9 @@ export function Privacy() {
       <Section heading="Quotation requests">
         <p>
           If you use the quotation form at <a className="text-gold underline underline-offset-4" href="/quotation">dppl.com.np/quotation</a>, we ask for your
-          customer type, PAN number, name (or registered business name and contact person), contact number and address,
-          together with the products you choose. We need these details to prepare a quotation in your name, as a PAN-based
-          invoice would later require.
+          customer type, ID type and number (National ID, citizenship, PAN or driving licence; PAN for businesses), name (or registered business name and contact person), contact number and address,
+          together with the products you choose. We need these details to prepare a quotation in your name and the
+          invoice that would follow.
         </p>
         <p>
           While you fill in the form, your answers are kept in your own browser for that tab only. When you send or download

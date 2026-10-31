@@ -1,7 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import company from '../../public/quotation/data/company.json';
 import catalog from '../../public/quotation/data/products.json';
-import { addressLine, money, nepalTime, totalRows } from './format.js';
+import { addressLine, idRow, money, nepalTime, totalRows } from './format.js';
 
 const A4 = [595.28, 841.89];
 const M = 48;
@@ -166,7 +166,7 @@ export async function quotePdf(quote, todayRates = null) {
   const details = [
     ['Customer type', business ? 'Business' : 'Personal'],
     [business ? 'Registered business name' : 'Full name', c.name],
-    ['PAN', c.pan],
+    idRow(c),
     ...(business ? [['Contact person', c.contactPerson]] : []),
     ['Contact number', c.phone],
     ['Address', addressLine(c)],

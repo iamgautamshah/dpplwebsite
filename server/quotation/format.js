@@ -25,6 +25,15 @@ export function nepalDateCode(iso) {
   return `${parts.year}${parts.month}${parts.day}`;
 }
 
+// Identity documents a personal customer can give; business customers give their PAN.
+export const ID_LABELS = { nid: 'National ID', citizenship: 'Citizenship', pan: 'PAN Number', license: 'License Number' };
+
+/** The identity row for a customer: [label, number]. Older quotations only have a PAN. */
+export const idRow = (c) => {
+  const type = c.idType && ID_LABELS[c.idType] ? c.idType : 'pan';
+  return [ID_LABELS[type], c.idNumber ?? c.pan];
+};
+
 export const addressLine = (c) => `${c.street}, Ward ${c.ward}, ${c.localLevel}, ${c.district}, ${c.province}`;
 
 export const qtyText = (l) => (l.unit === 'gram' ? `${Number(l.quantity).toLocaleString('en-IN')} g` : `x ${l.quantity}`);

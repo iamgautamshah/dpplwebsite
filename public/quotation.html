@@ -20,9 +20,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031e">
-  <script type="module" src="/quotation/assets/app.js?v=20261031e"></script>
-  <script src="/quotation/assets/site-nav.js?v=20261031e" defer></script>
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031f">
+  <script type="module" src="/quotation/assets/app.js?v=20261031f"></script>
+  <script src="/quotation/assets/site-nav.js?v=20261031f" defer></script>
 </head>
 <body>
   <header class="site-head">
@@ -58,7 +58,7 @@
     <header class="intro">
       <p class="eyebrow">Step 1 of 4 · Customer details</p>
       <h1>Request a quotation</h1>
-      <p class="lede">Tell us who the quotation is for. Enter your details as they appear on your PAN registration.</p>
+      <p class="lede">Tell us who the quotation is for. Enter your details as they appear on your ID document or PAN registration.</p>
       <ol class="steps" aria-label="Quotation progress">
         <li aria-current="step">Customer details</li>
         <li>Product selection</li>
@@ -92,16 +92,28 @@
           <label for="name"><span id="name-label">Full name</span> <span class="req" aria-hidden="true">*</span></label>
           <input id="name" name="name" type="text" autocomplete="name" required maxlength="120"
                  aria-describedby="name-hint name-error">
-          <p class="hint" id="name-hint">As it appears on your PAN registration.</p>
+          <p class="hint" id="name-hint">As it appears on your ID document.</p>
           <p class="error" id="name-error"></p>
         </div>
 
+        <div class="field" id="idType-field">
+          <label for="idType">ID type <span class="req" aria-hidden="true">*</span></label>
+          <select id="idType" name="idType" required aria-describedby="idType-error">
+            <option value="">Select ID type</option>
+            <option value="nid">National ID</option>
+            <option value="citizenship">Citizenship</option>
+            <option value="pan">PAN Number</option>
+            <option value="license">License Number</option>
+          </select>
+          <p class="error" id="idType-error"></p>
+        </div>
+
         <div class="field">
-          <label for="pan">PAN number <span class="req" aria-hidden="true">*</span></label>
-          <input id="pan" name="pan" type="text" inputmode="numeric" autocomplete="off" maxlength="20"
-                 pattern="\d{9}" required placeholder="9-digit PAN" aria-describedby="pan-hint pan-error">
-          <p class="hint" id="pan-hint">The 9-digit number on your PAN certificate.</p>
-          <p class="error" id="pan-error"></p>
+          <label for="idNumber"><span id="idNumber-label">ID number</span> <span class="req" aria-hidden="true">*</span></label>
+          <input id="idNumber" name="idNumber" type="text" autocomplete="off" maxlength="30" required
+                 aria-describedby="idNumber-hint idNumber-error">
+          <p class="hint" id="idNumber-hint">Choose an ID type first.</p>
+          <p class="error" id="idNumber-error"></p>
         </div>
 
         <div class="field" id="contactPerson-field" hidden>

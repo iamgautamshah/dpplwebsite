@@ -163,7 +163,7 @@ export function ContactPage() {
       <H2>Before you visit</H2>
       <ul className="mt-2 space-y-3 max-w-3xl text-[0.98rem] leading-relaxed text-silver/80 list-disc pl-5">
         <li>Check <A href="/rates">today’s rate</A>. The rate applied to a purchase is the one confirmed at the counter at the time of sale.</li>
-        <li>For a written price in advance, use the <A href="/quotation">quotation form</A>. It asks for your PAN number and contact details so the quotation can be prepared in your name.</li>
+        <li>For a written price in advance, use the <A href="/quotation">quotation form</A>. It asks for an ID number (National ID, citizenship, PAN or licence; PAN for businesses) and contact details so the quotation can be prepared in your name.</li>
         <li>Selling back? Bring the metal and the original invoice.</li>
         <li>For raw gold or larger silver orders for a business, call the counter first so the quantity can be arranged.</li>
       </ul>

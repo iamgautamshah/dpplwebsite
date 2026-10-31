@@ -1,6 +1,6 @@
-import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js?v=20261031e';
-import { $, getJSON, money, postJSON, store } from './common.js?v=20261031e';
-import { renderLines, renderTotals } from './quote-table.js?v=20261031e';
+import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js?v=20261031f';
+import { $, getJSON, money, postJSON, store } from './common.js?v=20261031f';
+import { renderLines, renderTotals } from './quote-table.js?v=20261031f';
 
 const customer = store.get('quote.customer');
 const items = store.get('quote.items');
@@ -31,12 +31,15 @@ function status(text, ok = true) {
   el.hidden = !text;
 }
 
+const ID_LABELS = { nid: 'National ID', citizenship: 'Citizenship', pan: 'PAN Number', license: 'License Number' };
+const idRow = (c) => [ID_LABELS[c.idType] || ID_LABELS.pan, c.idNumber ?? c.pan];
+
 function renderCustomer() {
   const business = customer.customerType === 'business';
   const rows = [
     ['Customer type', business ? 'Business' : 'Personal'],
     [business ? 'Registered business name' : 'Full name', customer.name],
-    ['PAN', customer.pan],
+    idRow(customer),
     ...(business ? [['Contact person', customer.contactPerson]] : []),
     ['Contact number', customer.phone],
     ['Address', `${customer.street}, Ward ${customer.ward}, ${customer.localLevel}, ${customer.district}, ${customer.province}`],
