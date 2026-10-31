@@ -20,9 +20,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031a">
-  <script type="module" src="/quotation/assets/app.js"></script>
-  <script src="/quotation/assets/site-nav.js?v=20261031a" defer></script>
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031e">
+  <script type="module" src="/quotation/assets/app.js?v=20261031e"></script>
+  <script src="/quotation/assets/site-nav.js?v=20261031e" defer></script>
 </head>
 <body>
   <header class="site-head">
@@ -89,19 +89,19 @@
         </div>
 
         <div class="field">
-          <label for="pan">PAN number <span class="req" aria-hidden="true">*</span></label>
-          <input id="pan" name="pan" type="text" inputmode="numeric" autocomplete="off" maxlength="20"
-                 pattern="\d{9}" required placeholder="9-digit PAN" aria-describedby="pan-hint pan-error">
-          <p class="hint" id="pan-hint">The 9-digit number on your PAN certificate.</p>
-          <p class="error" id="pan-error"></p>
-        </div>
-
-        <div class="field">
           <label for="name"><span id="name-label">Full name</span> <span class="req" aria-hidden="true">*</span></label>
           <input id="name" name="name" type="text" autocomplete="name" required maxlength="120"
                  aria-describedby="name-hint name-error">
           <p class="hint" id="name-hint">As it appears on your PAN registration.</p>
           <p class="error" id="name-error"></p>
+        </div>
+
+        <div class="field">
+          <label for="pan">PAN number <span class="req" aria-hidden="true">*</span></label>
+          <input id="pan" name="pan" type="text" inputmode="numeric" autocomplete="off" maxlength="20"
+                 pattern="\d{9}" required placeholder="9-digit PAN" aria-describedby="pan-hint pan-error">
+          <p class="hint" id="pan-hint">The 9-digit number on your PAN certificate.</p>
+          <p class="error" id="pan-error"></p>
         </div>
 
         <div class="field" id="contactPerson-field" hidden>

@@ -74,7 +74,8 @@ Bindings and variables are read at deploy time — after changing them, redeploy
   directly). Before the day's rate is published, customers are told the price
   isn't available yet.
 - Quotation numbers: `DPPL/<date>`, e.g. DPPL/20261031. Beneath it the PDF prints G<gold 1 tola>/<gold 10 g> and S<silver 1 tola>/<silver 10 g>, then the date and time.
-- Pricing rules (making charge: % per product, set in the admin; 0.5% skill
+- Pricing rules (making charge per product, set in the admin as % of the metal
+  value or a flat Rs amount per bar/piece, two linked boxes; 0.5% skill
   promotion fee for personal customers; rounding) live in `server/quotation/rates.js`; the
   catalogue lives in `public/quotation/data/products.json`.
 - The Nepal address list is MIT-licensed (`public/quotation/data/LICENSE-nepali-address`).

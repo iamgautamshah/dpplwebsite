@@ -89,7 +89,7 @@ function historyHtml(rows) {
     + `<td class="py-2 pr-4 text-right">${cell(r.silver[0])}</td><td class="py-2 text-right">${cell(r.silver[2])}</td></tr>`).join('');
   return '<div class="mt-5 overflow-x-auto"><table class="min-w-[640px] w-full text-[0.92rem]">'
     + '<caption class="sr-only">Daily gold and silver rates in Nepal, newest first, in rupees</caption>'
-    + '<thead><tr class="text-left text-silver/60 border-b border-silver/15"><th scope="col" class="py-2 pr-4 font-normal">Date</th><th scope="col" class="py-2 pr-4 font-normal text-right">Gold 24K / tola</th><th scope="col" class="py-2 pr-4 font-normal text-right">Gold 24K / 10 g</th><th scope="col" class="py-2 pr-4 font-normal text-right">Silver 999 / tola</th><th scope="col" class="py-2 font-normal text-right">Silver 999 / 10 g</th></tr></thead>'
+    + '<thead><tr class="text-left text-silver/60 border-b border-silver/15"><th scope="col" class="py-2 pr-4 font-normal">Date</th><th scope="col" class="py-2 pr-4 font-normal text-right">Gold 999.9 / tola</th><th scope="col" class="py-2 pr-4 font-normal text-right">Gold 999.9 / 10 g</th><th scope="col" class="py-2 pr-4 font-normal text-right">Silver 999 / tola</th><th scope="col" class="py-2 font-normal text-right">Silver 999 / 10 g</th></tr></thead>'
     + `<tbody class="tnum text-silver/85">${body}</tbody></table>`
     + '<p class="mt-3 text-xs text-silver/50">Selling rates in rupees, as published by the Kathmandu bullion market each day.</p></div>';
 }

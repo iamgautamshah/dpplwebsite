@@ -159,10 +159,13 @@ Dashboard → dppl.com.np zone → **Security → WAF → Rate limiting rules �
 2. Enter the admin password.
 3. Check **Today's rates**: the gold and silver 1 tola and 10 gram selling rates
    come from the website automatically. Nothing needs typing.
-4. Enter the making charge for every product as a **percentage** (0 for none).
-   The amount per bar or piece at today's rate appears beside each box. Click
-   **Save making charges**. All boxes must be filled; a product with no making
-   charge saved can't be quoted.
+4. Enter the making charge for every product (0 for none). Each product has two
+   linked boxes: **Percentage** and **Flat amount per bar** (per piece for
+   coins, per gram for grains). Type in either and the other fills in at
+   today's rate. The box you typed in last decides how it's charged:
+   - **Flat amount**: a fixed rupee amount per bar or piece. It stays the same when the rate moves.
+   - **Percentage**: a share of the metal value, so it moves with the rate.
+   Click **Save making charges**. A product with no making charge saved can't be quoted.
 5. Before the day's rate is published (or if both sources are down), customers
    see "Today's price isn't available yet" at the Price step, as the homepage
    does. Yesterday's rate is never used.
@@ -177,15 +180,16 @@ Tick each item after deploying. Use a private/incognito window for the
 **Public quotation flow**
 - [ ] `dppl.com.np` opens straight onto the page, with no intro screen. The menu shows QUOTATION, and Products has "Request a quotation".
 - [ ] `dppl.com.np/quotation` loads in the site's navy/gold style. `dppl.com.np/quotation/` redirects to it.
-- [ ] Step 1 refuses a PAN that isn't 9 digits, a phone number that isn't 10 digits, and a name in Nepali script.
-- [ ] Step 2: Personal customers don't see *Silver granules*; Business customers do.
-- [ ] Step 3 shows each line, one "Making charge" line (gold flat per piece plus silver %, added together; the rates are listed above the table), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
-- [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYMMDD-XXXX.pdf` with the right details.
+- [ ] Step 1 asks for the name, then the PAN. It refuses a PAN that isn't 9 digits, a phone number that isn't 10 digits, and a name in Nepali script.
+- [ ] Step 2: product names show the fineness, e.g. *Gold Bar - 10g (999.9)*, *Silver Bar - 100g (999)*. Personal customers don't see *Silver Grains*; Business customers do.
+- [ ] Step 3 shows each line, one "Making charge" line (the charge for each product is listed above the table as "Rs. … per bar (…%)"), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
+- [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYYYMMDD.pdf` with the right details.
 - [ ] Step 4: **Send on WhatsApp** opens WhatsApp to +977 9805617932 with the quotation number and a PDF link, and the link opens the PDF.
 
 **Price updates**
 - [ ] The admin's **Today's rates** match the homepage rate board (gold and silver, 1 tola and 10 grams).
-- [ ] Change a making charge % and save. The amount per piece updates as you type, and "Recent changes" shows it (with the staff email once Access is set up).
+- [ ] Type a % for one product: its flat amount box fills in. Type a flat amount for another: its % fills in. Save; "Recent changes" shows the flat one as "Rs. … per bar" (or per piece) and the other as a % (with the staff email once Access is set up).
+- [ ] Price step check for a flat charge: Silver Bar - 100g at Rs. 300 per bar, quantity 3, gives a making charge of Rs. 900.
 - [ ] Recalculate on the public Price step: the new making charge is used.
 - [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
 - [ ] The PDF shows `No. DPPL/<date>` with the day's gold and silver prices beneath it, and the columns Product, Quantity, Weight, Rate and Amount.

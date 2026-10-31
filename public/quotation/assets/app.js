@@ -1,5 +1,5 @@
-import { onStockChange, stock } from './gate.js';
-import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js';
+import { onStockChange, stock } from './gate.js?v=20261031e';
+import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261031e';
 
 const form = $('quote-form');
 const el = {
@@ -22,7 +22,7 @@ const el = {
 
 const LATIN_RE = /^[A-Za-z0-9\u00C0-\u00FF .,'&()\-\/#:]+$/;
 const LATIN_MSG = 'Use English letters only, as on your PAN certificate.';
-const FIELDS = ['customerType', 'pan', 'name', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'];
+const FIELDS = ['customerType', 'name', 'pan', 'contactPerson', 'phone', 'province', 'district', 'localLevel', 'ward', 'street'];
 let geo = null;
 
 const isBusiness = () => el.type.value === 'business';
@@ -95,10 +95,10 @@ function restore() {
 function validate() {
   const errors = {};
   if (!el.type.value) errors.customerType = 'Choose Personal or Business.';
-  if (!el.pan.value) errors.pan = 'Enter your PAN number.';
-  else if (!/^\d{9}$/.test(el.pan.value)) errors.pan = 'PAN must be exactly 9 digits.';
   if (el.name.value.trim().length < 2) errors.name = isBusiness() ? 'Enter the registered business name.' : 'Enter your full name.';
   else if (!LATIN_RE.test(el.name.value.trim())) errors.name = LATIN_MSG;
+  if (!el.pan.value) errors.pan = 'Enter your PAN number.';
+  else if (!/^\d{9}$/.test(el.pan.value)) errors.pan = 'PAN must be exactly 9 digits.';
   if (isBusiness() && el.contact.value.trim().length < 2) errors.contactPerson = 'Enter the name of the contact person.';
   else if (isBusiness() && !LATIN_RE.test(el.contact.value.trim())) errors.contactPerson = LATIN_MSG;
   if (!el.phone.value) errors.phone = 'Enter a contact number.';

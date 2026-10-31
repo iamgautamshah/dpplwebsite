@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031a">
-  <script type="module" src="/admin/admin.js"></script>
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031e">
+  <script type="module" src="/admin/admin.js?v=20261031e"></script>
 </head>
 <body>
   <header class="site-head">
@@ -77,7 +77,7 @@
           <table class="rates-table">
             <thead><tr><th scope="col">Metal</th><th scope="col" class="num">1 tola</th><th scope="col" class="num">10 grams</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Gold 24K (999.9)</th><td class="num" id="live-gold-tola">…</td><td class="num" id="live-gold-g10">…</td></tr>
+              <tr><th scope="row">Gold (999.9)</th><td class="num" id="live-gold-tola">…</td><td class="num" id="live-gold-g10">…</td></tr>
               <tr><th scope="row">Silver (999)</th><td class="num" id="live-silver-tola">…</td><td class="num" id="live-silver-g10">…</td></tr>
             </tbody>
           </table>
@@ -96,26 +96,36 @@
 
         <fieldset>
           <legend>Gold making charge</legend>
-          <p class="hint group-hint">A percentage of each bar’s gold value. The amount per bar at today’s rate is worked out for you. Enter 0 for none.</p>
+          <p class="hint group-hint">Enter a percentage of the bar’s gold value or a flat amount per bar; change either box and the other follows at today’s rate. Enter 0 for none.</p>
           <div class="making-grid" data-group="goldMaking"></div>
         </fieldset>
         <fieldset>
           <legend>Silver making charge</legend>
-          <p class="hint group-hint">A percentage of each product’s silver value. The amount per piece at today’s rate is worked out for you. Enter 0 for none.</p>
+          <p class="hint group-hint">Enter a percentage of the product’s silver value or a flat amount per piece; change either box and the other follows at today’s rate. Enter 0 for none.</p>
           <div class="making-grid" data-group="making"></div>
         </fieldset>
 
         <template id="rate-field">
-          <div class="field making-field">
-            <label><span class="label-text"></span> <span class="unit">(%)</span></label>
+          <fieldset class="field making-field">
+            <legend class="making-name"></legend>
             <div class="making-row">
-              <div class="money-input pct"><span aria-hidden="true">%</span>
-                <input type="text" inputmode="decimal" autocomplete="off" required>
-              </div>
-              <output class="making-amount" aria-live="polite"></output>
+              <label class="making-box">
+                <span class="making-label">Percentage</span>
+                <span class="money-input pct"><span aria-hidden="true">%</span>
+                  <input type="text" inputmode="decimal" autocomplete="off" data-kind="pct">
+                </span>
+              </label>
+              <span class="making-swap" aria-hidden="true">⇄</span>
+              <label class="making-box">
+                <span class="making-label">Flat amount</span>
+                <span class="money-input"><span aria-hidden="true">Rs.</span>
+                  <input type="text" inputmode="decimal" autocomplete="off" data-kind="flat">
+                </span>
+              </label>
             </div>
+            <output class="making-amount" aria-live="polite"></output>
             <p class="error"></p>
-          </div>
+          </fieldset>
         </template>
 
         <div class="actions">

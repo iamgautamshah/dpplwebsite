@@ -87,7 +87,7 @@ if (!shell.includes('"@type":"FAQPage"')) throw new Error('FAQ schema was not re
 console.log('prerendering:');
 const homeKeywords = (shell.match(/<meta name="keywords" content="([^"]*)"/) || [])[1];
 emit('dist/index.html', render(), {
-  title: "Gold & Silver Bullion in Kathmandu — 24K Gold Bars, 999 Silver | Today's Price | Diamond Palace Pvt. Ltd.",
+  title: "Gold & Silver Bullion in Kathmandu — 999.9 Gold Bars, 999 Silver | Today's Price | Diamond Palace Pvt. Ltd.",
   description: "24-carat gold bars and 999 fine silver bars, coins and grains from Diamond Palace Pvt. Ltd. (DPPL), a gold and silver bullion dealer on New Road, Kathmandu — weighed in front of you and invoiced to the gram. Today's gold and silver price per tola and 10 gram, and itemised quotations online. आजको सुन चाँदीको मूल्य।",
   canonical: `${SITE}/`,
   keywords: homeKeywords && homeKeywords.replace(/&amp;/g, '&'),
@@ -182,7 +182,7 @@ const PAGES = [
     'Contact & Directions | Diamond Palace Pvt. Ltd., Sasa Complex, New Road, Kathmandu',
     'Visit Diamond Palace Pvt. Ltd. at 5th Floor, Sasa Complex, New Road, Kathmandu. Open Sunday to Friday, 10:30 to 18:00. Call 01-5915052 or WhatsApp +977 9805617932.'],
   ['products', renderProducts, 'CollectionPage', 'Products',
-    'Gold & Silver Bullion — 24K Gold Bars, 999 Silver Bars, Coins & Grains | Diamond Palace Pvt. Ltd.',
+    'Gold & Silver Bullion — 999.9 Gold Bars, 999 Silver Bars, Coins & Grains | Diamond Palace Pvt. Ltd.',
     '24-carat gold bars of 5 g, 10 g and 1 tola, raw gold for business, and 999 fine silver bars of 100 g, 500 g and 1000 g, silver coins and grains, sold by weight at New Road, Kathmandu.'],
   ['rates', renderRates, 'WebPage', 'Today’s rate',
     'Today’s Gold & Silver Price in Nepal — Per Tola & 10 Gram | Diamond Palace Pvt. Ltd.',

@@ -1,6 +1,6 @@
-import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js';
-import { $, money, postJSON, store } from './common.js';
-import { pct, renderLines, renderTotals } from './quote-table.js';
+import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js?v=20261031e';
+import { $, money, postJSON, store } from './common.js?v=20261031e';
+import { pct, renderLines, renderTotals } from './quote-table.js?v=20261031e';
 
 const customer = store.get('quote.customer');
 const items = store.get('quote.items');
@@ -8,6 +8,12 @@ if (!customer) location.replace('/quotation');
 else if (!items?.length) location.replace('/quotation/products');
 
 const RATE_KEYS = ['goldPerTola', 'goldPer10g', 'silverPerTola', 'silverPer10g'];
+
+// Display helpers that skip an element the page doesn't have, so a page and
+// script from different releases can never stop the price being shown.
+const show = (id, visible) => { const el = $(id); if (el) el.hidden = !visible; };
+const fill = (id, nodes) => { const el = $(id); if (el) el.replaceChildren(...nodes); };
+const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
 const next = $('next');
 
 function blockNext(blocked) {
@@ -43,11 +49,17 @@ function renderMaking(data) {
   const shown = data.makingRates.filter((m) => ordered.has(m.product));
   const silver = shown.filter((m) => m.metal !== 'gold');
   const gold = shown.filter((m) => m.metal === 'gold');
-  $('making-group').hidden = silver.length === 0;
-  const shownAs = (m) => (m.percent == null ? 'Not set' : m.perUnit == null ? pct(m.percent) : `${pct(m.percent)} · ${money(m.perUnit)} ${m.unit === 'gram' ? 'per gram' : 'per piece'}`);
-  $('making-rates').replaceChildren(...silver.map((m) => makingRow(m.name, shownAs(m))));
-  $('gold-making-group').hidden = gold.length === 0;
-  $('gold-making-rates').replaceChildren(...gold.map((m) => makingRow(m.name, shownAs(m))));
+  show('making-group', silver.length > 0);
+  // the charge per bar/piece, with its percentage of today's value
+  const shownAs = (m) => {
+    if (m.percent == null && m.perUnit == null) return 'Not set';
+    if (m.perUnit == null) return pct(m.percent);
+    const per = `${money(m.perUnit)} per ${m.unit || 'piece'}`;
+    return m.percent == null ? per : `${per} (${pct(m.percent)})`;
+  };
+  fill('making-rates', silver.map((m) => makingRow(m.name, shownAs(m))));
+  show('gold-making-group', gold.length > 0);
+  fill('gold-making-rates', gold.map((m) => makingRow(m.name, shownAs(m))));
 }
 
 function forget() {
@@ -64,9 +76,9 @@ function stopIfBlocked() {
 
 function render(data) {
   const metals = new Set(data.lines.map((l) => l.metal));
-  $('gold-group').hidden = !metals.has('gold');
-  $('silver-group').hidden = !metals.has('silver');
-  for (const k of RATE_KEYS) $(k).textContent = data.rates[k] == null ? 'Not published yet' : money(data.rates[k]);
+  show('gold-group', metals.has('gold'));
+  show('silver-group', metals.has('silver'));
+  for (const k of RATE_KEYS) setText(k, data.rates[k] == null ? 'Not published yet' : money(data.rates[k]));
   renderMaking(data);
   renderLines($('lines'), data.lines);
   renderTotals($('totals'), data);
@@ -101,7 +113,10 @@ async function calculate() {
     }
     render(data);
   } catch (err) {
-    alertBox('Couldn’t calculate the price', err.message);
+    console.error(err);
+    alertBox('Couldn’t calculate the price', err instanceof TypeError || err instanceof ReferenceError
+      ? 'Please refresh the page and try again. If it keeps happening, call us on 01-5915052.'
+      : err.message);
     $('lines').replaceChildren();
   } finally {
     $('price-card').setAttribute('aria-busy', 'false');

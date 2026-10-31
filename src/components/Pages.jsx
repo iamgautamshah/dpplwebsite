@@ -226,8 +226,8 @@ export function HistoryTable({ rows }) {
         <thead>
           <tr className="text-left text-silver/60 border-b border-silver/15">
             <th scope="col" className="py-2 pr-4 font-normal">Date</th>
-            <th scope="col" className="py-2 pr-4 font-normal text-right">Gold 24K / tola</th>
-            <th scope="col" className="py-2 pr-4 font-normal text-right">Gold 24K / 10 g</th>
+            <th scope="col" className="py-2 pr-4 font-normal text-right">Gold 999.9 / tola</th>
+            <th scope="col" className="py-2 pr-4 font-normal text-right">Gold 999.9 / 10 g</th>
             <th scope="col" className="py-2 pr-4 font-normal text-right">Silver 999 / tola</th>
             <th scope="col" className="py-2 font-normal text-right">Silver 999 / 10 g</th>
           </tr>

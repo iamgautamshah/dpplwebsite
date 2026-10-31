@@ -4,13 +4,13 @@ import catalog from '../../public/quotation/data/products.json';
 
    Metal rates are not typed in: they are the same 1 tola and 10 gram selling
    rates the website publishes each morning (see live.js). Staff set only the
-   making charge, as a percentage for each gold and silver product; the rupee
-   amount per piece follows from today's rate.
+   making charge for each product, as a % of the metal value or as a flat
+   rupee amount per bar/piece (per gram for grains); admin shows both, linked.
 
    - A product weighed in tola is priced from the tola rate; one in grams from
      the 10 gram rate (unit price = 10 g rate × grams ÷ 10). This is how the
      associations publish the two figures and how the counter prices.
-   - Making charge = that product's % × its line amount.
+   - Making charge = % × line amount, or flat amount × quantity.
    - Personal customers only: skill promotion fee on (subtotal + making).
    - Amounts round half up to the paisa. */
 
@@ -47,7 +47,16 @@ const KEYS = Object.keys(RATE_FIELDS);
 
 // Rounds half up to the paisa; toPrecision removes float noise such as 4172.775 → 4172.7749999…
 export const round2 = (n) => Math.round(Number((n * 100).toPrecision(12))) / 100;
-const EMPTY = Object.fromEntries([...KEYS, 'updatedAt', 'by'].map((k) => [k, null]));
+const round4 = (n) => Math.round(Number((n * 10000).toPrecision(12))) / 10000;
+// For each product: its % (KEYS), and — when staff set a flat amount per bar or
+// piece — `basis[key] = 'flat'` with the amount in `perUnit[key]`. Whichever box
+// the staff typed in last is kept, so a flat charge stays fixed when the rate moves.
+const EMPTY = Object.fromEntries([...KEYS, 'basis', 'perUnit', 'updatedAt', 'by'].map((k) => [k, null]));
+export const MAX_PER_UNIT = 10_000_000;
+
+/** What one unit of a product is called: bar, piece, or gram (grains). */
+export const unitWord = (metalId, product) =>
+  product.unit === 'gram' ? 'gram' : metalId === 'gold' || /bar/i.test(product.name) ? 'bar' : 'piece';
 
 function store(env) {
   if (!env.QUOTE_RATES) throw new Error('QUOTE_RATES KV binding is missing.');
@@ -77,23 +86,56 @@ export async function saveRates(env, values, by = null) {
 
 export const metalOfField = (field) => field.metal;
 
-// Making charges for an out-of-stock metal are hidden on the admin page, so they are kept as they were.
+const number = (v) => {
+  const raw = String(v ?? '').replace(/,/g, '').replace(/%$/, '').trim();
+  return raw === '' ? NaN : Number(raw);
+};
+
+/* Body, for each product key: `${key}` (%), `${key}__perUnit` (flat Rs per bar/piece) and
+   `${key}__basis` ('pct' or 'flat' — the one the staff typed last).
+   Making charges for an out-of-stock metal are hidden on the admin page, so
+   they are kept as they were. */
 export function parseRates(body, current = {}, stock = { gold: true, silver: true }) {
-  const values = {};
+  const values = { basis: {}, perUnit: {} };
   const errors = {};
   for (const [key, field] of Object.entries(RATE_FIELDS)) {
     const { label, min, max } = field;
     if (stock[field.metal] === false) {
       values[key] = current[key] ?? null;
+      if (current.basis?.[key]) values.basis[key] = current.basis[key];
+      if (current.perUnit?.[key] != null) values.perUnit[key] = current.perUnit[key];
       continue;
     }
-    const raw = String(body?.[key] ?? '').replace(/,/g, '').replace(/%$/, '').trim();
-    const n = Number(raw);
-    if (raw === '' || !Number.isFinite(n) || n < min || n > max) {
-      errors[key] = `${label} must be between ${min}% and ${max}%.`;
-    } else values[key] = round2(n);
+    if (body?.[`${key}__basis`] === 'flat') {
+      const g = number(body[`${key}__perUnit`]);
+      if (!Number.isFinite(g) || g < 0 || g > MAX_PER_UNIT) {
+        errors[key] = `${label} must be between Rs. 0 and Rs. ${MAX_PER_UNIT.toLocaleString('en-IN')}.`;
+        continue;
+      }
+      values.basis[key] = 'flat';
+      values.perUnit[key] = round2(g);
+      // the % at the time of saving, for reference only; the flat amount is what is charged
+      const n = number(body[key]);
+      values[key] = Number.isFinite(n) && n >= 0 ? round4(n) : null;
+    } else {
+      const n = number(body?.[key]);
+      if (!Number.isFinite(n) || n < min || n > max) {
+        errors[key] = `${label} must be between ${min}% and ${max}%.`;
+        continue;
+      }
+      values.basis[key] = 'pct';
+      values[key] = round4(n);
+    }
   }
   return { values, errors };
+}
+
+/** How a product's making charge is set: { basis: 'pct'|'flat', percent, perUnit }. */
+export function makingSetting(making, key) {
+  if (making.basis?.[key] === 'flat' && making.perUnit?.[key] != null) {
+    return { basis: 'flat', percent: making[key] ?? null, perUnit: making.perUnit[key] };
+  }
+  return making[key] == null ? null : { basis: 'pct', percent: making[key], perUnit: null };
 }
 
 /** Price of one piece (or one gram, for products sold by the gram) at today's rate. */
@@ -121,14 +163,14 @@ export function priceItems(items, making, live, customerType) {
     const unit = unitPrice(product, rate);
     const total = unit == null ? null : round2(unit * item.quantity);
     const key = makingKey(m.id, product.id);
-    const makingPercent = making[key];
-    if (makingPercent == null) missing.add(RATE_FIELDS[key].label);
+    const setting = makingSetting(making, key);
+    if (!setting) missing.add(RATE_FIELDS[key].label);
     // weight follows from the quantity; the rate is the published one it is priced from
     const weightTola = product.tola ? product.tola * item.quantity : null;
     const weightGrams = product.tola ? Math.round(product.tola * GRAMS_PER_TOLA * item.quantity * 1000) / 1000 : product.grams * item.quantity;
     const rateUnit = product.tola ? 'tola' : '10 g';
     const rateValue = rate ? (product.tola ? rate.tola : rate.g10) : null;
-    return { ...item, unitPrice: unit, total, makingPercent, weightGrams, weightTola, rateUnit, rateValue };
+    return { ...item, unitPrice: unit, total, makingSetting: setting, weightGrams, weightTola, rateUnit, rateValue };
   });
 
   if (missing.size) {
@@ -138,13 +180,24 @@ export function priceItems(items, making, live, customerType) {
   const metalTotal = round2(lines.reduce((s, l) => s + l.total, 0));
   const byProduct = new Map();
   for (const l of lines) {
-    const g = byProduct.get(l.product) ?? { product: l.product, productName: l.productName, metal: l.metal, metalName: l.metalName, percent: l.makingPercent, base: 0, quantity: 0 };
+    const g = byProduct.get(l.product) ?? { product: l.product, productName: l.productName, metal: l.metal, metalName: l.metalName, setting: l.makingSetting, base: 0, quantity: 0, grams: 0 };
     g.base = round2(g.base + l.total);
     g.quantity += l.quantity;
+    g.grams += l.weightGrams;
     byProduct.set(l.product, g);
   }
+  // % of the line value, or a flat amount per bar/piece (per gram for grains)
   const makingLines = [...byProduct.values()]
-    .map((g) => ({ ...g, amount: round2((g.base * g.percent) / 100) }))
+    .map(({ setting, ...g }) => {
+      const amount = setting.basis === 'flat' ? round2(setting.perUnit * g.quantity) : round2((g.base * setting.percent) / 100);
+      return {
+        ...g,
+        basis: setting.basis,
+        amount,
+        percent: setting.basis === 'flat' ? (g.base ? round2((amount / g.base) * 100) : 0) : setting.percent,
+        perUnit: setting.basis === 'flat' ? setting.perUnit : (g.quantity ? round2(amount / g.quantity) : 0),
+      };
+    })
     .filter((g) => g.amount > 0);
   const makingTotal = makingLines.length ? { lines: makingLines, amount: round2(makingLines.reduce((s, g) => s + g.amount, 0)) } : null;
   const beforeFee = round2(metalTotal + (makingTotal?.amount ?? 0));

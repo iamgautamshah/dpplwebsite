@@ -1,10 +1,13 @@
-import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js';
+import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261031e';
 
 /* Quotation admin.
    - Today's gold and silver rates are shown read-only: they come from the
      rate the website publishes, and every quotation uses them.
-   - Staff set a making charge % for each product. Beside each box, the
-     amount it comes to per piece at today's rate is worked out as they type. */
+   - Staff set each product's making charge as a % of the metal value or as a
+     flat amount per bar/piece (per gram for grains). The two boxes are linked:
+     typing in one fills the other at today's rate. The box typed in last
+     decides how it is charged (a flat amount stays fixed when the rate moves;
+     a % follows it). */
 
 const login = $('login');
 const panel = $('panel');
@@ -16,11 +19,18 @@ let FIELDS = [];
 let KEYS = [];
 let live = null;
 let stockState = { gold: true, silver: true };
+const basis = {}; // key → 'pct' | 'flat', whichever box was typed in last
+const MAX_PER_UNIT = 10000000;
 const activeFields = () => FIELDS.filter((f) => stockState[f.metal] !== false);
 const num = (v) => Number(String(v).replace(/,/g, ''));
 const hasValue = (v) => String(v).trim() !== '' && Number.isFinite(num(v));
 const pct = (n) => `${Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 })}%`;
 const plainMoney = (n) => (n == null ? '—' : money(n));
+const round2 = (n) => Math.round(Number((n * 100).toPrecision(12))) / 100;
+const round4 = (n) => Math.round(Number((n * 10000).toPrecision(12))) / 10000;
+const flatId = (key) => `${key}__perUnit`;
+const unitWord = (f) => (f.unit === 'gram' ? 'gram' : f.metal === 'gold' || /bar/i.test(f.short) ? 'bar' : 'piece');
+const plainNum = (n, dp) => String(Number(n.toFixed(dp)));
 
 /** Price of one piece (or one gram for grains) at today's rate, as the server works it out. */
 function unitPrice(f) {
@@ -35,35 +45,63 @@ function buildForm(fields) {
   KEYS = FIELDS.map((f) => f.key);
   for (const f of FIELDS) {
     const node = tpl.content.firstElementChild.cloneNode(true);
-    const input = node.querySelector('input');
-    input.id = f.key;
-    input.setAttribute('aria-describedby', `${f.key}-amount ${f.key}-error`);
-    node.querySelector('label').htmlFor = f.key;
-    node.querySelector('.label-text').textContent = f.short;
+    const pctIn = node.querySelector('[data-kind="pct"]');
+    const flatIn = node.querySelector('[data-kind="flat"]');
+    pctIn.id = f.key;
+    flatIn.id = flatId(f.key);
+    const describedBy = `${f.key}-amount ${f.key}-error`;
+    pctIn.setAttribute('aria-describedby', describedBy);
+    flatIn.setAttribute('aria-describedby', describedBy);
+    pctIn.setAttribute('aria-label', `${f.short} making charge, percentage`);
+    flatIn.setAttribute('aria-label', `${f.short} making charge, flat rupees per ${unitWord(f)}`);
+    node.querySelector('.making-name').textContent = f.short;
+    node.querySelectorAll('.making-label')[1].textContent = `Flat amount per ${unitWord(f)}`;
     node.querySelector('.making-amount').id = `${f.key}-amount`;
-    node.querySelector('.making-amount').htmlFor = f.key;
     node.querySelector('.error').id = `${f.key}-error`;
     document.querySelector(`[data-group="${f.group}"]`).append(node);
-    input.addEventListener('input', () => {
-      const v = input.value.replace(/[^\d.,]/g, '');
-      if (v !== input.value) input.value = v;
-      amounts();
-    });
-    clearOnInput(input);
+    for (const [input, kind] of [[pctIn, 'pct'], [flatIn, 'flat']]) {
+      input.addEventListener('input', () => {
+        const v = input.value.replace(/[^\d.,]/g, '');
+        if (v !== input.value) input.value = v;
+        basis[f.key] = kind;
+        sync(f);
+        if (pctIn.getAttribute('aria-invalid') || flatIn.getAttribute('aria-invalid')) {
+          setError(f.key);
+          flatIn.removeAttribute('aria-invalid');
+        }
+      });
+    }
+    clearOnInput(pctIn);
   }
 }
 
-// The rupee amount each percentage comes to at today's rate.
-function amounts() {
-  for (const f of FIELDS) {
-    const out = $(`${f.key}-amount`);
-    const v = $(f.key).value;
-    const unit = unitPrice(f);
-    const per = f.unit === 'gram' ? 'per gram' : f.metal === 'gold' || /bar/i.test(f.short) ? 'per bar' : 'per piece';
-    if (!hasValue(v)) out.textContent = '';
-    else if (unit == null) out.textContent = 'Today’s rate not published yet';
-    else out.textContent = `= ${money(Math.round(unit * num(v)) / 100)} ${per}`;
+/* Fill the box the staff didn't type in from the one they did, at today's
+   rate, and show what the charge comes to per bar or piece. */
+function sync(f) {
+  const pctIn = $(f.key);
+  const flatIn = $(flatId(f.key));
+  const pg = unitPrice(f);
+  const kind = basis[f.key] || 'pct';
+  const src = kind === 'flat' ? flatIn : pctIn;
+  const other = kind === 'flat' ? pctIn : flatIn;
+  if (!hasValue(src.value)) {
+    other.value = '';
+  } else if (pg) {
+    other.value = kind === 'flat' ? plainNum(round4((num(src.value) / pg) * 100), 4) : plainNum(round2((pg * num(src.value)) / 100), 2);
   }
+  amount(f);
+}
+
+// The flat box already shows the rupee amount per bar or piece; this line
+// only speaks up when today's rate isn't there to link the two boxes.
+function amount(f) {
+  const out = $(`${f.key}-amount`);
+  const v = (basis[f.key] === 'flat' ? $(flatId(f.key)) : $(f.key)).value;
+  out.textContent = hasValue(v) && unitPrice(f) == null ? 'Today’s rate isn’t published yet, so the other box can’t be worked out.' : '';
+}
+
+function amounts() {
+  for (const f of FIELDS) sync(f);
 }
 
 function renderLive(r) {
@@ -98,9 +136,14 @@ function showLogin(message) {
   $('password').focus();
 }
 
+function makingText(h, f) {
+  if (h.basis?.[f.key] === 'flat' && h.perUnit?.[f.key] != null) return `${money(h.perUnit[f.key])} per ${unitWord(f)}`;
+  return h[f.key] == null ? null : pct(h[f.key]);
+}
+
 function makingList(h, metal) {
-  const rows = FIELDS.filter((f) => f.metal === metal && h[f.key] != null);
-  return rows.length ? rows.map((f) => `${f.short}: ${pct(h[f.key])}`).join('\n') : '—';
+  const rows = FIELDS.filter((f) => f.metal === metal).map((f) => [f, makingText(h, f)]).filter(([, t]) => t);
+  return rows.length ? rows.map(([f, t]) => `${f.short}: ${t}`).join('\n') : '—';
 }
 
 function render({ current, history, fields, live: r }) {
@@ -108,8 +151,18 @@ function render({ current, history, fields, live: r }) {
   $('updated').textContent = current.updatedAt
     ? `Making charges last saved ${nepalTime(current.updatedAt)}`
     : 'No making charges saved yet. Customers can’t get a price until you save them.';
-  for (const k of KEYS) if (current[k] != null) $(k).value = current[k];
-  renderLive(r);
+  for (const f of FIELDS) {
+    const k = f.key;
+    if (current.basis?.[k] === 'flat' && current.perUnit?.[k] != null) {
+      basis[k] = 'flat';
+      $(flatId(k)).value = plainNum(current.perUnit[k], 2);
+      $(k).value = current[k] != null ? plainNum(current[k], 4) : '';
+    } else {
+      basis[k] = 'pct';
+      $(k).value = current[k] != null ? plainNum(current[k], 4) : '';
+    }
+  }
+  renderLive(r); // fills the linked boxes at today's rate
 
   const body = $('history');
   if (!history.length) {
@@ -226,17 +279,32 @@ ratesForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const errors = {};
   for (const f of activeFields()) {
-    const v = $(f.key).value;
-    if (!(hasValue(v) && num(v) >= f.min && num(v) <= f.max)) errors[f.key] = `Enter a percentage between ${f.min}% and ${f.max}%.`;
+    if (basis[f.key] === 'flat') {
+      const v = $(flatId(f.key)).value;
+      if (!(hasValue(v) && num(v) >= 0 && num(v) <= MAX_PER_UNIT)) errors[f.key] = `${f.short}: enter a flat amount between Rs. 0 and Rs. ${MAX_PER_UNIT.toLocaleString('en-IN')}.`;
+    } else {
+      const v = $(f.key).value;
+      if (!(hasValue(v) && num(v) >= f.min && num(v) <= f.max)) errors[f.key] = `${f.short}: enter a percentage between ${f.min}% and ${f.max}%.`;
+    }
   }
   showErrors(summary, errors, KEYS);
+  // point the error at the box the staff typed in
+  for (const k of Object.keys(errors)) {
+    if (basis[k] === 'flat') { $(k).removeAttribute('aria-invalid'); $(flatId(k)).setAttribute('aria-invalid', 'true'); }
+  }
   if (Object.keys(errors).length) return;
 
   const save = $('save');
   save.disabled = true;
   save.querySelector('span').textContent = 'Saving…';
   try {
-    const { status, data } = await api('PUT', '/api/admin/rates', Object.fromEntries(activeFields().map((f) => [f.key, $(f.key).value])));
+    const body = {};
+    for (const f of activeFields()) {
+      body[f.key] = $(f.key).value;
+      body[`${f.key}__perUnit`] = $(flatId(f.key)).value;
+      body[`${f.key}__basis`] = basis[f.key] === 'flat' ? 'flat' : 'pct';
+    }
+    const { status, data } = await api('PUT', '/api/admin/rates', body);
     if (status === 401) return showLogin('Your session expired. Sign in again.');
     if (data.ok) {
       render({ ...data, fields: null });

@@ -10,7 +10,7 @@ const fmtNum = (n) =>
 const I18N = {
   en: {
     head: "Today's Gold & Silver Price",
-    gold: 'Gold 24K', silver: 'Silver 999',
+    gold: 'Gold 999.9', silver: 'Silver 999',
     thSale: 'SALE', thBuy: 'PURCHASE',
     rowTola: '1 Tola', rowG10: '10 Gram', fine: 'Fine Silver 999',
     live: 'LIVE', checking: 'CHECKING', offline: 'UNAVAILABLE',

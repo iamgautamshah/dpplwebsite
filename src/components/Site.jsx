@@ -286,7 +286,7 @@ function RateStrip() {
           <span className="text-silver/80">is published each morning.</span>
         ) : (
           <>
-            <span className="text-silver/85">Gold 24K <b className="tnum font-semibold text-gold">{gold ? rs(gold) : '…'}</b></span>
+            <span className="text-silver/85">Gold 999.9 <b className="tnum font-semibold text-gold">{gold ? rs(gold) : '…'}</b></span>
             <span className="text-silver/85">Silver 999 <b className="tnum font-semibold text-silverhi">{silver ? rs(silver) : '…'}</b></span>
           </>
         )}
