@@ -34,6 +34,32 @@ function lineRate(l) {
   return value == null ? '-' : money(value);
 }
 
+const num = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null);
+
+/* The day's rates for the header table. They are saved with each quotation;
+   anything missing is filled from the quotation's own lines (each line
+   carries the 1 tola or 10 gram rate it was priced from), then from
+   `fallback` (today's published rates, passed in for a quotation made today). */
+export function headerRates(quote, fallback = null) {
+  const saved = quote.rates || {};
+  const out = {
+    goldPerTola: num(saved.goldPerTola),
+    goldPer10g: num(saved.goldPer10g),
+    silverPerTola: num(saved.silverPerTola),
+    silverPer10g: num(saved.silverPer10g),
+  };
+  for (const l of quote.price?.lines ?? []) {
+    const p = productOf(l);
+    const value = num(l.rateValue) ?? (p && num(l.unitPrice) ? (p.tola ? l.unitPrice / p.tola : (l.unitPrice * 10) / p.grams) : null);
+    if (!value || (l.metal !== 'gold' && l.metal !== 'silver')) continue;
+    const isTola = l.rateUnit ? l.rateUnit === 'tola' : !!p?.tola;
+    const key = `${l.metal}${isTola ? 'PerTola' : 'Per10g'}`;
+    out[key] ??= Math.round(value * 100) / 100;
+  }
+  for (const k of Object.keys(out)) out[k] ??= num(fallback?.[k]);
+  return out;
+}
+
 const SMART = { '‘': "'", '’': "'", '“': '"', '”': '"', '–': '-', '—': '-', '·': '-', '×': 'x' };
 const safe = (s) => String(s ?? '').replace(/[‘’“”–—·×]/g, (c) => SMART[c]).replace(/[^\x20-\x7E -ÿ]/g, '');
 
@@ -53,7 +79,7 @@ function wrap(text, font, size, width) {
   return lines;
 }
 
-export async function quotePdf(quote) {
+export async function quotePdf(quote, todayRates = null) {
   const doc = await PDFDocument.create();
   doc.setTitle(`Quotation ${quote.number}`);
   doc.setAuthor(company.name);
@@ -85,12 +111,17 @@ export async function quotePdf(quote) {
 
   // Header: company on the left; on the right the number, a small table of the
   // day's gold and silver prices, then the date and time.
-  const r = quote.rates || {};
+  const r = headerRates(quote, todayRates);
   const fig = (n) => (n == null ? '-' : Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-  const rateRows = [
+  // The table is always printed; a metal with no figure at all is left out,
+  // unless neither has one, when both rows show "-".
+  let rateRows = [
     ['Gold (999.9)', r.goldPerTola, r.goldPer10g],
     ['Silver (999)', r.silverPerTola, r.silverPer10g],
-  ].filter(([, t, g]) => t != null || g != null).map(([m, t, g]) => [m, fig(t), fig(g)]);
+  ];
+  const withFigures = rateRows.filter(([, t, g]) => t != null || g != null);
+  if (withFigures.length) rateRows = withFigures;
+  rateRows = rateRows.map(([m, t, g]) => [m, fig(t), fig(g)]);
   text(company.name, M, y - 14, { size: 16, font: bold });
   text(company.address, M, y - 30, { size: 9, color: MUTED });
   text(`Phone / WhatsApp: ${company.whatsappDisplay}   Email: ${company.email}`, M, y - 43, { size: 9, color: MUTED });
