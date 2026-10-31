@@ -73,7 +73,7 @@ Bindings and variables are read at deploy time — after changing them, redeploy
   publishes (`server/quotation/live.js` calls the /api/silver function
   directly). Before the day's rate is published, customers are told the price
   isn't available yet.
-- Quotation numbers: `DPPL/<date>`, e.g. DPPL/20261031. Beneath it the PDF prints G<gold 1 tola>/<gold 10 g> and S<silver 1 tola>/<silver 10 g>, then the date and time.
+- Quotation numbers: `DPPL/<date>`, e.g. DPPL/20261031. Beneath it the PDF shows a small table of the day's gold and silver rates (1 tola and 10 grams), then the date and time.
 - Pricing rules (making charge per product, set in the admin as % of the metal
   value or a flat Rs amount per bar/piece, two linked boxes; 0.5% skill
   promotion fee for personal customers; rounding) live in `server/quotation/rates.js`; the

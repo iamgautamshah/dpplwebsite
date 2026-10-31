@@ -192,7 +192,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] Price step check for a flat charge: Silver Bar - 100g at Rs. 300 per bar, quantity 3, gives a making charge of Rs. 900.
 - [ ] Recalculate on the public Price step: the new making charge is used.
 - [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
-- [ ] The PDF shows `No. DPPL/<date>` with the day's gold and silver prices beneath it, and the columns Product, Quantity, Weight, Rate and Amount.
+- [ ] The PDF shows `No. DPPL/<date>` with a small table of the day's gold and silver rates (1 tola and 10 grams) beneath it, and the columns Product, Quantity, Weight, Rate and Amount, with nothing printed under the weight or rate.
 - [ ] Turn **Gold in stock** off: gold disappears from Products, and an open Price page with gold shows the out-of-stock message. Turn it back on.
 - [ ] Turn both metals off: every quotation page shows "We're out of stock". Turn both back on.
 

@@ -23,17 +23,15 @@ function lineWeight(l) {
   const p = productOf(l);
   const tola = l.weightTola ?? (p?.tola ? p.tola * l.quantity : null);
   const grams = l.weightGrams ?? (p ? (p.tola ? p.tola * GRAMS_PER_TOLA * l.quantity : p.grams * l.quantity) : null);
-  if (tola) return { main: `${Number(tola).toLocaleString('en-IN', { maximumFractionDigits: 3 })} tola`, sub: grams ? fmtG(grams) : '' };
-  return { main: grams == null ? '-' : fmtG(grams), sub: '' };
+  if (tola) return `${Number(tola).toLocaleString('en-IN', { maximumFractionDigits: 3 })} tola`;
+  return grams == null ? '-' : fmtG(grams);
 }
 
-// The published rate the line is priced from: per tola, or per 10 grams.
+// The published rate the line is priced from (per tola, or per 10 grams).
 function lineRate(l) {
   const p = productOf(l);
-  const unitIsTola = l.rateUnit ? l.rateUnit === 'tola' : !!p?.tola;
   const value = l.rateValue ?? (p && l.unitPrice != null ? (p.tola ? l.unitPrice / p.tola : (l.unitPrice * 10) / p.grams) : null);
-  if (value == null) return { main: '-', sub: '' };
-  return { main: money(value), sub: unitIsTola ? 'per tola' : 'per 10 g' };
+  return value == null ? '-' : money(value);
 }
 
 const SMART = { '‘': "'", '’': "'", '“': '"', '”': '"', '–': '-', '—': '-', '·': '-', '×': 'x' };
@@ -85,24 +83,49 @@ export async function quotePdf(quote) {
 
   newPage();
 
-  // Header: the number, and the day's gold and silver prices beneath it
+  // Header: company on the left; on the right the number, a small table of the
+  // day's gold and silver prices, then the date and time.
   const r = quote.rates || {};
-  // G<gold 1 tola>/<gold 10 g> and S<silver 1 tola>/<silver 10 g>, plain figures, e.g. S3650/3129.5
-  const plain = (n) => String(Number(n));
-  const rateLines = [
-    r.goldPerTola ? `G${plain(r.goldPerTola)}/${plain(r.goldPer10g)}` : null,
-    r.silverPerTola ? `S${plain(r.silverPerTola)}/${plain(r.silverPer10g)}` : null,
-  ].filter(Boolean);
+  const fig = (n) => (n == null ? '-' : Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  const rateRows = [
+    ['Gold (999.9)', r.goldPerTola, r.goldPer10g],
+    ['Silver (999)', r.silverPerTola, r.silverPer10g],
+  ].filter(([, t, g]) => t != null || g != null).map(([m, t, g]) => [m, fig(t), fig(g)]);
   text(company.name, M, y - 14, { size: 16, font: bold });
   text(company.address, M, y - 30, { size: 9, color: MUTED });
   text(`Phone / WhatsApp: ${company.whatsappDisplay}   Email: ${company.email}`, M, y - 43, { size: 9, color: MUTED });
   text('QUOTATION', A4[0] - M, y - 14, { size: 16, font: bold, color: GOLD, align: 'right' });
-  // No. DPPL/20261031, then the gold and silver prices, then the date and time
   text(`No. ${quote.number}`, A4[0] - M, y - 30, { size: 10, font: bold, align: 'right' });
-  rateLines.forEach((ln, k) => text(ln, A4[0] - M, y - 43 - k * 12, { size: 9, color: INK, align: 'right' }));
-  const dateY = y - 43 - rateLines.length * 12;
-  text(nepalTime(quote.createdAt), A4[0] - M, dateY, { size: 9, color: MUTED, align: 'right' });
-  y = Math.min(y - 58, dateY - 15);
+  let ry = y - 38;
+  if (rateRows.length) {
+    // Each column is as wide as its widest entry, so the table sizes itself to the figures.
+    const SIZE = 8.5;
+    const PAD = 6;
+    const ROW = 14;
+    const headRow = ['Rate (Rs.)', '1 tola', '10 grams'];
+    const widths = headRow.map((h, k) => Math.max(bold.widthOfTextAtSize(h, SIZE), ...rateRows.map((row) => (k ? reg : bold).widthOfTextAtSize(safe(row[k]), SIZE))) + 2 * PAD);
+    const tw = widths.reduce((a, b) => a + b, 0);
+    const x0 = A4[0] - M - tw;
+    const th = ROW * (rateRows.length + 1);
+    page.drawRectangle({ x: x0, y: ry - ROW, width: tw, height: ROW, color: SHADE });
+    page.drawRectangle({ x: x0, y: ry - th, width: tw, height: th, borderColor: LINE, borderWidth: 0.75 });
+    [headRow, ...rateRows].forEach((row, i) => {
+      const by = ry - i * ROW - 10;
+      if (i > 0) page.drawLine({ start: { x: x0, y: ry - i * ROW }, end: { x: x0 + tw, y: ry - i * ROW }, thickness: 0.5, color: LINE });
+      let x = x0;
+      row.forEach((cell, k) => {
+        const opts = { size: SIZE, font: i === 0 || k === 0 ? bold : reg, color: i === 0 ? MUTED : INK };
+        if (k === 0) text(cell, x + PAD, by, opts);
+        else text(cell, x + widths[k] - PAD, by, { ...opts, align: 'right' });
+        x += widths[k];
+      });
+    });
+    ry -= th + 12;
+  } else {
+    ry -= 5;
+  }
+  text(nepalTime(quote.createdAt), A4[0] - M, ry, { size: 9, color: MUTED, align: 'right' });
+  y = Math.min(y - 58, ry - 15);
   rule(y, GOLD, 1.5);
   y -= 26;
 
@@ -150,15 +173,13 @@ export async function quotePdf(quote) {
     const w = lineWeight(l);
     const rt = lineRate(l);
     const name = wrap(l.productName, reg, 10, col.qty - col.product - 52);
-    const h = Math.max(30, 14 + name.length * 13);
+    const h = Math.max(26, 12 + name.length * 13);
     ensure(h);
     text(String(i + 1), col.no, y - 17, { color: MUTED });
     name.forEach((ln, k) => text(ln, col.product, y - 17 - k * 13));
     text(l.unit === 'gram' ? `${Number(l.quantity).toLocaleString('en-IN')} g` : String(l.quantity), col.qty, y - 17, { align: 'right' });
-    text(w.main, col.weight, y - 17, { align: 'right' });
-    if (w.sub) text(w.sub, col.weight, y - 28, { size: 8, color: MUTED, align: 'right' });
-    text(rt.main, col.rate, y - 17, { align: 'right' });
-    if (rt.sub) text(rt.sub, col.rate, y - 28, { size: 8, color: MUTED, align: 'right' });
+    text(w, col.weight, y - 17, { align: 'right' });
+    text(rt, col.rate, y - 17, { align: 'right' });
     text(money(l.total), col.amount, y - 17, { align: 'right' });
     y -= h;
     rule(y);
