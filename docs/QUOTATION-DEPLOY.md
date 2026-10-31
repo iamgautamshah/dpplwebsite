@@ -157,13 +157,15 @@ Dashboard → dppl.com.np zone → **Security → WAF → Rate limiting rules �
 1. Open `https://admin.dppl.com.np`, enter your staff email, then type the
    one-time code from your inbox.
 2. Enter the admin password.
-3. Fill in today's gold and silver rates, each gold product's making charge
-   (a flat amount in rupees per piece, 0 for none) and each silver product's
-   making charge %, then **Save rates**. All boxes must be filled; a gold
-   product with no making charge saved can't be quoted.
-4. Quotation rates are separate from the live market rate on the homepage, and
-   staff update them by hand. Until rates are saved, customers see "Price not
-   available yet" at the Price step.
+3. Check **Today's rates**: the gold and silver 1 tola and 10 gram selling rates
+   come from the website automatically. Nothing needs typing.
+4. Enter the making charge for every product as a **percentage** (0 for none).
+   The amount per bar or piece at today's rate appears beside each box. Click
+   **Save making charges**. All boxes must be filled; a product with no making
+   charge saved can't be quoted.
+5. Before the day's rate is published (or if both sources are down), customers
+   see "Today's price isn't available yet" at the Price step, as the homepage
+   does. Yesterday's rate is never used.
 
 ---
 
@@ -182,9 +184,11 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] Step 4: **Send on WhatsApp** opens WhatsApp to +977 9805617932 with the quotation number and a PDF link, and the link opens the PDF.
 
 **Price updates**
-- [ ] Change a rate in the admin and save. "Recent changes" shows it (with the staff email once Access is set up).
-- [ ] Recalculate on the public Price step: the new rate is used.
-- [ ] Change a rate *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
+- [ ] The admin's **Today's rates** match the homepage rate board (gold and silver, 1 tola and 10 grams).
+- [ ] Change a making charge % and save. The amount per piece updates as you type, and "Recent changes" shows it (with the staff email once Access is set up).
+- [ ] Recalculate on the public Price step: the new making charge is used.
+- [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
+- [ ] The PDF shows `No. DPPL/<date>` with the day's gold and silver prices beneath it, and the columns Product, Quantity, Weight, Rate and Amount.
 - [ ] Turn **Gold in stock** off: gold disappears from Products, and an open Price page with gold shows the out-of-stock message. Turn it back on.
 - [ ] Turn both metals off: every quotation page shows "We're out of stock". Turn both back on.
 

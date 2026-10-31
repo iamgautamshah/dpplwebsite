@@ -7,7 +7,7 @@ const items = store.get('quote.items');
 if (!customer) location.replace('/quotation');
 else if (!items?.length) location.replace('/quotation/products');
 
-const RATE_KEYS = ['goldPerTola', 'goldPerGram', 'silverPerTola', 'silverPerGram'];
+const RATE_KEYS = ['goldPerTola', 'goldPer10g', 'silverPerTola', 'silverPer10g'];
 const next = $('next');
 
 function blockNext(blocked) {
@@ -44,9 +44,10 @@ function renderMaking(data) {
   const silver = shown.filter((m) => m.metal !== 'gold');
   const gold = shown.filter((m) => m.metal === 'gold');
   $('making-group').hidden = silver.length === 0;
-  $('making-rates').replaceChildren(...silver.map((m) => makingRow(m.name, m.percent == null ? 'Not set' : pct(m.percent))));
+  const shownAs = (m) => (m.percent == null ? 'Not set' : m.perUnit == null ? pct(m.percent) : `${pct(m.percent)} · ${money(m.perUnit)} ${m.unit === 'gram' ? 'per gram' : 'per piece'}`);
+  $('making-rates').replaceChildren(...silver.map((m) => makingRow(m.name, shownAs(m))));
   $('gold-making-group').hidden = gold.length === 0;
-  $('gold-making-rates').replaceChildren(...gold.map((m) => makingRow(m.name, m.flat == null ? 'Not set' : `${money(m.flat)} per piece`)));
+  $('gold-making-rates').replaceChildren(...gold.map((m) => makingRow(m.name, shownAs(m))));
 }
 
 function forget() {
@@ -65,13 +66,16 @@ function render(data) {
   const metals = new Set(data.lines.map((l) => l.metal));
   $('gold-group').hidden = !metals.has('gold');
   $('silver-group').hidden = !metals.has('silver');
-  for (const k of RATE_KEYS) $(k).textContent = data.rates[k] == null ? 'Not set' : money(data.rates[k]);
+  for (const k of RATE_KEYS) $(k).textContent = data.rates[k] == null ? 'Not published yet' : money(data.rates[k]);
   renderMaking(data);
   renderLines($('lines'), data.lines);
   renderTotals($('totals'), data);
 
   if (data.missing.length) {
-    alertBox('Price not available yet', `The following ${data.missing.length > 1 ? 'rates haven’t' : 'rate hasn’t'} been set: ${data.missing.join(', ')}. Please contact us or try again later.`);
+    const rateMissing = data.missing.some((m) => /rate$/.test(m));
+    alertBox('Price not available yet', rateMissing
+      ? 'Today’s gold and silver rate hasn’t been published yet. Please try again later, or call us on 01-5915052.'
+      : 'Making charges for some products haven’t been set yet. Please try again later, or call us on 01-5915052.');
     forget();
     blockNext(true);
     return;

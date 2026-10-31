@@ -6,6 +6,16 @@ export const pct = (n) => `${Number(n).toLocaleString('en-IN', { maximumFraction
 export const nepalTime = (iso) =>
   `${new Date(iso).toLocaleString('en-GB', { timeZone: 'Asia/Kathmandu', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} NPT`;
 
+/** Nepal date as YYYYMMDD. */
+export function nepalDate8(iso) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kathmandu', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .formatToParts(new Date(iso))
+      .map((p) => [p.type, p.value]),
+  );
+  return `${parts.year}${parts.month}${parts.day}`;
+}
+
 export function nepalDateCode(iso) {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kathmandu', year: '2-digit', month: '2-digit', day: '2-digit' })

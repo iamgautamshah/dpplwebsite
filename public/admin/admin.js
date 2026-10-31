@@ -1,7 +1,10 @@
 import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js';
 
-const GRAMS_PER_TOLA = 11.6638;
-const GROUP_NAME = { gold: 'Gold', goldMaking: 'Gold making charge', silver: 'Silver', making: 'Silver making charge' };
+/* Quotation admin.
+   - Today's gold and silver rates are shown read-only: they come from the
+     rate the website publishes, and every quotation uses them.
+   - Staff set a making charge % for each product. Beside each box, the
+     amount it comes to per piece at today's rate is worked out as they type. */
 
 const login = $('login');
 const panel = $('panel');
@@ -10,14 +13,21 @@ const summary = $('error-summary');
 const tpl = $('rate-field');
 
 let FIELDS = [];
-let stockState = { gold: true, silver: true };
-const metalOf = (f) => (f.group === 'gold' || f.group === 'goldMaking' ? 'gold' : 'silver');
-const isMaking = (f) => f.group === 'making' || f.group === 'goldMaking';
-const activeFields = () => FIELDS.filter((f) => stockState[metalOf(f)] !== false);
 let KEYS = [];
+let live = null;
+let stockState = { gold: true, silver: true };
+const activeFields = () => FIELDS.filter((f) => stockState[f.metal] !== false);
 const num = (v) => Number(String(v).replace(/,/g, ''));
 const hasValue = (v) => String(v).trim() !== '' && Number.isFinite(num(v));
 const pct = (n) => `${Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 })}%`;
+const plainMoney = (n) => (n == null ? '—' : money(n));
+
+/** Price of one piece (or one gram for grains) at today's rate, as the server works it out. */
+function unitPrice(f) {
+  const r = live && (f.metal === 'gold' ? { tola: live.goldPerTola, g10: live.goldPer10g } : { tola: live.silverPerTola, g10: live.silverPer10g });
+  if (!r || !(r.tola > 0) || !(r.g10 > 0)) return null;
+  return f.tola ? r.tola * f.tola : (r.g10 * f.grams) / 10;
+}
 
 function buildForm(fields) {
   if (FIELDS.length) return;
@@ -27,29 +37,47 @@ function buildForm(fields) {
     const node = tpl.content.firstElementChild.cloneNode(true);
     const input = node.querySelector('input');
     input.id = f.key;
-    input.setAttribute('aria-describedby', `${f.key}-hint ${f.key}-error`);
+    input.setAttribute('aria-describedby', `${f.key}-amount ${f.key}-error`);
     node.querySelector('label').htmlFor = f.key;
-    const prefix = document.createElement('span');
-    prefix.className = 'sr-only';
-    prefix.textContent = `${GROUP_NAME[f.group]} `;
-    node.querySelector('.label-text').append(prefix, f.short);
-    if (f.flat) node.querySelector('.unit').textContent = '(Rs. per piece)';
-    if (f.percent) {
-      node.querySelector('.unit').textContent = '(%)';
-      node.querySelector('.money-input').classList.add('pct');
-      node.querySelector('.money-input span').textContent = '%';
-    }
-    node.querySelector('.hint').id = `${f.key}-hint`;
+    node.querySelector('.label-text').textContent = f.short;
+    node.querySelector('.making-amount').id = `${f.key}-amount`;
+    node.querySelector('.making-amount').htmlFor = f.key;
     node.querySelector('.error').id = `${f.key}-error`;
     document.querySelector(`[data-group="${f.group}"]`).append(node);
-
     input.addEventListener('input', () => {
       const v = input.value.replace(/[^\d.,]/g, '');
       if (v !== input.value) input.value = v;
-      hints();
+      amounts();
     });
     clearOnInput(input);
   }
+}
+
+// The rupee amount each percentage comes to at today's rate.
+function amounts() {
+  for (const f of FIELDS) {
+    const out = $(`${f.key}-amount`);
+    const v = $(f.key).value;
+    const unit = unitPrice(f);
+    const per = f.unit === 'gram' ? 'per gram' : f.metal === 'gold' || /bar/i.test(f.short) ? 'per bar' : 'per piece';
+    if (!hasValue(v)) out.textContent = '';
+    else if (unit == null) out.textContent = 'Today’s rate not published yet';
+    else out.textContent = `= ${money(Math.round(unit * num(v)) / 100)} ${per}`;
+  }
+}
+
+function renderLive(r) {
+  live = r;
+  const set = (id, v) => { $(id).textContent = plainMoney(v); };
+  set('live-gold-tola', r?.goldPerTola);
+  set('live-gold-g10', r?.goldPer10g);
+  set('live-silver-tola', r?.silverPerTola);
+  set('live-silver-g10', r?.silverPer10g);
+  const src = r?.source === 'FENEGOSIDA' ? 'Federation of Nepal Gold and Silver Dealers’ Association (FENEGOSIDA)' : 'Kathmandu Gold and Silver Dealers’ Association (KAGOSIDA)';
+  $('live-status').textContent = r?.date
+    ? `Selling rates for ${new Date(`${r.date}T00:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}, source: ${src}.`
+    : 'Today’s rate has not been published yet, or both sources are unavailable. Customers are told the price isn’t available until it is.';
+  amounts();
 }
 
 async function api(method, url, body) {
@@ -70,81 +98,47 @@ function showLogin(message) {
   $('password').focus();
 }
 
-function hints() {
-  const v = Object.fromEntries(KEYS.map((k) => [k, num($(k).value)]));
-  for (const metal of ['gold', 'silver']) {
-    const tola = v[`${metal}PerTola`], gram = v[`${metal}PerGram`];
-    $(`${metal}PerTola-hint`).textContent = tola > 0 ? `Used for 1-tola products · ≈ ${money(tola / GRAMS_PER_TOLA)} per gram` : 'Used for tola products';
-    $(`${metal}PerGram-hint`).textContent = gram > 0 ? `Used for gram products · ≈ ${money(gram * GRAMS_PER_TOLA)} per tola` : 'Used for gram products';
-  }
-  // gold: show what the flat charge is as a share of one piece at today's price
-  for (const f of FIELDS.filter((x) => x.group === 'goldMaking')) {
-    const amount = $(f.key).value;
-    const piece = f.tola ? v.goldPerTola * f.tola : v.goldPerGram * f.grams;
-    $(`${f.key}-hint`).textContent = hasValue(amount) && piece > 0
-      ? `Per piece · ≈ ${pct((num(amount) / piece) * 100)} of a ${f.short} at today’s price`
-      : 'Per piece';
-  }
-  for (const f of FIELDS.filter((x) => x.group === 'making')) {
-    const p = $(f.key).value;
-    const perPiece = f.grams > 1 && v.silverPerGram > 0 && hasValue(p);
-    $(`${f.key}-hint`).textContent = perPiece
-      ? `${money((v.silverPerGram * f.grams * num(p)) / 100)} per piece at today’s price`
-      : f.grams === 1 && v.silverPerGram > 0 && hasValue(p)
-        ? `${money((v.silverPerGram * num(p)) / 100)} per gram at today’s price`
-        : '';
-  }
+function makingList(h, metal) {
+  const rows = FIELDS.filter((f) => f.metal === metal && h[f.key] != null);
+  return rows.length ? rows.map((f) => `${f.short}: ${pct(h[f.key])}`).join('\n') : '—';
 }
 
-function historyCell(h, f) {
-  return h[f.key] == null ? '—' : f.percent ? pct(h[f.key]) : money(h[f.key]);
-}
-
-function render({ current, history, fields }) {
+function render({ current, history, fields, live: r }) {
   buildForm(fields);
   $('updated').textContent = current.updatedAt
-    ? `Current rates set ${nepalTime(current.updatedAt)}`
-    : 'No rates set yet. Customers can’t get a price until you save rates.';
+    ? `Making charges last saved ${nepalTime(current.updatedAt)}`
+    : 'No making charges saved yet. Customers can’t get a price until you save them.';
   for (const k of KEYS) if (current[k] != null) $(k).value = current[k];
-  hints();
+  renderLive(r);
 
   const body = $('history');
   if (!history.length) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 6;
+    td.colSpan = 3;
     td.className = 'empty';
     td.textContent = 'No changes yet.';
     tr.append(td);
     return body.replaceChildren(tr);
   }
-  const priceFields = FIELDS.filter((f) => !isMaking(f));
-  const makingFields = FIELDS.filter(isMaking);
   body.replaceChildren(
     ...history.map((h) => {
       const tr = document.createElement('tr');
-      const cells = [[h.by ? `${nepalTime(h.updatedAt)}\n${h.by}` : nepalTime(h.updatedAt)], ...priceFields.map((f) => [historyCell(h, f), 'num'])];
-      cells.forEach(([t, cls]) => {
+      for (const [text, cls] of [[h.by ? `${nepalTime(h.updatedAt)}\n${h.by}` : nepalTime(h.updatedAt)], [makingList(h, 'gold'), 'making-cell'], [makingList(h, 'silver'), 'making-cell']]) {
         const td = document.createElement('td');
-        td.textContent = t;
+        td.textContent = text;
         if (cls) td.className = cls;
         tr.append(td);
-      });
-      const td = document.createElement('td');
-      td.className = 'making-cell';
-      td.textContent = makingFields.every((f) => h[f.key] == null)
-        ? '—'
-        : makingFields.filter((f) => h[f.key] != null).map((f) => `${f.short} ${historyCell(h, f)}`).join('\n');
-      tr.append(td);
+      }
       return tr;
     }),
   );
 }
 
 function syncRateSections() {
-  for (const group of ['gold', 'goldMaking', 'silver', 'making']) {
+  for (const group of ['goldMaking', 'making']) {
     const fieldset = document.querySelector(`[data-group="${group}"]`).closest('fieldset');
-    const off = stockState[group === 'gold' || group === 'goldMaking' ? 'gold' : 'silver'] === false;
+    const off = stockState[group === 'goldMaking' ? 'gold' : 'silver'] === false;
     fieldset.hidden = off;
     if (off) FIELDS.filter((f) => f.group === group).forEach((f) => setError(f.key));
   }
@@ -189,7 +183,7 @@ $('stock-silver').addEventListener('change', saveStock);
 async function load() {
   const { status, data } = await api('GET', '/api/admin/rates');
   if (status === 401) return showLogin();
-  if (status !== 200) return showLogin(data.message || 'Couldn’t load rates.');
+  if (status !== 200) return showLogin(data.message || 'Couldn’t load the settings.');
   login.hidden = true;
   panel.hidden = false;
   $('logout-top').hidden = false;
@@ -197,6 +191,18 @@ async function load() {
   const stock = await api('GET', '/api/admin/stock');
   if (stock.status === 200) renderStock(stock.data);
 }
+
+$('live-refresh').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    const { status, data } = await api('GET', '/api/admin/rates');
+    if (status === 401) return showLogin('Your session expired. Sign in again.');
+    if (status === 200) renderLive(data.live);
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 login.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -208,7 +214,7 @@ login.addEventListener('submit', async (e) => {
       $('password').value = '';
       setError('password');
       await load();
-      $('goldPerTola')?.focus();
+      activeFields()[0] && $(activeFields()[0].key).focus();
     } else showLogin(data.message || 'Couldn’t sign in.');
   } catch {
     showLogin('Couldn’t reach the server.');
@@ -221,8 +227,7 @@ ratesForm.addEventListener('submit', async (e) => {
   const errors = {};
   for (const f of activeFields()) {
     const v = $(f.key).value;
-    const ok = f.percent || f.flat ? hasValue(v) && num(v) >= f.min && num(v) <= f.max : num(v) > 0;
-    if (!ok) errors[f.key] = f.percent ? `Enter a percentage between ${f.min}% and ${f.max}%.` : f.flat ? 'Enter an amount in rupees (0 for none).' : 'Enter a price.';
+    if (!(hasValue(v) && num(v) >= f.min && num(v) <= f.max)) errors[f.key] = `Enter a percentage between ${f.min}% and ${f.max}%.`;
   }
   showErrors(summary, errors, KEYS);
   if (Object.keys(errors).length) return;
@@ -235,13 +240,13 @@ ratesForm.addEventListener('submit', async (e) => {
     if (status === 401) return showLogin('Your session expired. Sign in again.');
     if (data.ok) {
       render({ ...data, fields: null });
-      $('updated').textContent = `Saved. Rates set ${nepalTime(data.current.updatedAt)}`;
-    } else showErrors(summary, data.errors || { form: data.message || 'Couldn’t save rates.' }, KEYS);
+      $('updated').textContent = `Saved. Making charges set ${nepalTime(data.current.updatedAt)}`;
+    } else showErrors(summary, data.errors || { form: data.message || 'Couldn’t save making charges.' }, KEYS);
   } catch {
     showErrors(summary, { form: 'Couldn’t reach the server.' }, KEYS);
   } finally {
     save.disabled = false;
-    save.querySelector('span').textContent = 'Save rates';
+    save.querySelector('span').textContent = 'Save making charges';
   }
 });
 

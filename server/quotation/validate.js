@@ -74,6 +74,9 @@ export function validateCustomer(body) {
   return { errors, customer: { customerType, pan, name, contactPerson, phone, ...address, street } };
 }
 
+// What customers see: the product and its fineness, e.g. "Gold Bar - 10g (999.9)".
+export const displayName = (metal, product) => `${product.name} (${metal.fineness})`;
+
 export function findProduct(metalId, productId) {
   const metal = catalog.metals.find((m) => m.id === metalId);
   const product = metal?.products.find((p) => p.id === productId);
@@ -103,7 +106,7 @@ export function validateItems(input, customerType, stock = { gold: true, silver:
         ? `Enter a weight between 1 and ${QTY_LIMITS.gram.toLocaleString('en-IN')} grams.`
         : `Enter a quantity between 1 and ${QTY_LIMITS.piece}.`;
     } else {
-      items.push({ metal: metal.id, metalName: metal.name, product: product.id, productName: product.name, unit: product.unit, quantity: qty });
+      items.push({ metal: metal.id, metalName: metal.name, product: product.id, productName: displayName(metal, product), unit: product.unit, quantity: qty });
     }
   });
   return { items, errors };

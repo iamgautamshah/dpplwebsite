@@ -1,5 +1,5 @@
 import company from '../../public/quotation/data/company.json';
-import { money, nepalDateCode } from './format.js';
+import { money, nepalDate8 } from './format.js';
 
 export const ID_RE = /^[a-f0-9]{32}$/;
 const KEEP_DAYS = 180;
@@ -12,10 +12,19 @@ function kv(env) {
 
 const hex = (bytes) => [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
 
-export function newIds(createdAt) {
+/* Quotation number: DPPL and the Nepal date, e.g. DPPL/20261031. The day's
+   gold and silver prices are printed beneath it on the quotation. */
+export function quoteNumber(createdAt, live) {
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(live?.date || '') ? live.date.replace(/-/g, '') : nepalDate8(createdAt);
+  return `${company.shortName}/${date}`;
+}
+
+// "/" cannot appear in a file name
+export const fileSafe = (number) => String(number).replace(/[\\/]/g, '-');
+
+export function newIds(createdAt, live) {
   const id = hex(crypto.getRandomValues(new Uint8Array(16)));
-  const code = [...crypto.getRandomValues(new Uint8Array(4))].map((b) => CODE_CHARS[b % CODE_CHARS.length]).join('');
-  return { id, number: `${company.shortName}-${nepalDateCode(createdAt)}-${code}` };
+  return { id, number: quoteNumber(createdAt, live) };
 }
 
 export async function saveQuote(env, quote) {

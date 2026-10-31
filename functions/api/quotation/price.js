@@ -1,18 +1,30 @@
-import { allowedFor, findProduct, json, validateItems } from '../../../server/quotation/validate.js';
-import { RATE_FIELDS, getRates, priceItems } from '../../../server/quotation/rates.js';
+import { allowedFor, displayName, findProduct, json, validateItems } from '../../../server/quotation/validate.js';
+import { RATE_FIELDS, getRates, priceItems, publicRates, unitPrice } from '../../../server/quotation/rates.js';
+import { getLiveRates } from '../../../server/quotation/live.js';
 import { CLOSED_MESSAGE, getStock } from '../../../server/quotation/stock.js';
 
-// Making-charge rates shown on the Price page: silver as a %, gold as a flat amount per piece.
-function makingRates(rates, customerType) {
+// Making charges shown on the Price page: each product's % and what it comes
+// to per piece (or per gram, for grains) at today's rate.
+function makingRates(making, live, customerType) {
   return Object.entries(RATE_FIELDS)
-    .filter(([, f]) => f.group === 'making' || f.group === 'goldMaking')
-    .filter(([, f]) => allowedFor(findProduct(f.group === 'making' ? 'silver' : 'gold', f.productId).product, customerType))
-    .map(([key, f]) => (f.group === 'making'
-      ? { metal: 'silver', product: f.productId, name: f.short, percent: rates[key] }
-      : { metal: 'gold', product: f.productId, name: f.short, flat: rates[key] }));
+    .map(([key, f]) => ({ key, f, ...findProduct(f.metal, f.productId) }))
+    .filter(({ product }) => allowedFor(product, customerType))
+    .map(({ key, f, metal, product }) => {
+      const pct = making[key];
+      const unit = unitPrice(product, live?.[f.metal]);
+      return {
+        metal: f.metal,
+        product: f.productId,
+        name: displayName(metal, product),
+        percent: pct,
+        perUnit: pct == null || unit == null ? null : Math.round(unit * pct) / 100,
+        unit: product.unit,
+      };
+    });
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const { request, env } = context;
   const body = await request.json().catch(() => ({}));
   const stock = await getStock(env);
   if (!stock.open) return json({ ok: false, closed: true, message: CLOSED_MESSAGE }, 503);
@@ -22,12 +34,12 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    const rates = await getRates(env);
+    const [making, live] = await Promise.all([getRates(env), getLiveRates(context)]);
     return json({
       ok: true,
-      rates,
-      makingRates: makingRates(rates, body.customerType),
-      ...priceItems(items, rates, body.customerType),
+      rates: publicRates(live),
+      makingRates: makingRates(making, live, body.customerType),
+      ...priceItems(items, making, live, body.customerType),
       calculatedAt: new Date().toISOString(),
     });
   } catch (err) {

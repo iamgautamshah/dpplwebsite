@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261030b">
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031a">
   <script type="module" src="/admin/admin.js"></script>
 </head>
 <body>
@@ -32,8 +32,8 @@
   <main class="shell">
     <header class="intro">
       <p class="eyebrow">Staff only</p>
-      <h1>Today’s rates</h1>
-      <p class="lede">Rates entered here are used for every new price calculation on the public quotation form at dppl.com.np/quotation. They do not change the live rate shown on the homepage.</p>
+      <h1>Quotation settings</h1>
+      <p class="lede">Gold and silver rates come from the website automatically. Set the making charge for each product here; it applies to every new quotation at dppl.com.np/quotation.</p>
     </header>
 
     <form id="login" class="card" novalidate hidden>
@@ -67,6 +67,24 @@
         <p class="stock-state" id="stock-status" aria-live="polite"></p>
       </section>
 
+      <section class="card live-rates" aria-labelledby="live-h">
+        <div class="review-head">
+          <h2 id="live-h">Today’s rates</h2>
+          <button type="button" id="live-refresh" class="btn btn-link">Refresh</button>
+        </div>
+        <p class="hint">Taken automatically from the rate published on dppl.com.np. Every quotation uses these selling rates; nothing needs to be typed in.</p>
+        <div class="table-wrap">
+          <table class="rates-table">
+            <thead><tr><th scope="col">Metal</th><th scope="col" class="num">1 tola</th><th scope="col" class="num">10 grams</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Gold 24K (999.9)</th><td class="num" id="live-gold-tola">…</td><td class="num" id="live-gold-g10">…</td></tr>
+              <tr><th scope="row">Silver (999)</th><td class="num" id="live-silver-tola">…</td><td class="num" id="live-silver-g10">…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="status-line" id="live-status" aria-live="polite"></p>
+      </section>
+
       <form id="rates" class="card" novalidate>
         <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
           <h2>Please fix the following</h2>
@@ -74,41 +92,35 @@
         </div>
 
         <p class="status-line" id="updated" aria-live="polite"></p>
-        <p class="notice-line" id="rates-closed" hidden>Gold and silver are both switched off, so there are no rates to set. Switch a metal back on in Availability to edit its prices.</p>
+        <p class="notice-line" id="rates-closed" hidden>Gold and silver are both switched off, so there are no making charges to set. Switch a metal back on in Availability to edit them.</p>
 
         <fieldset>
-          <legend>Gold</legend>
-          <div class="grid grid-even" data-group="gold"></div>
-        </fieldset>
-        <fieldset>
           <legend>Gold making charge</legend>
-          <p class="hint group-hint">A flat amount in rupees added for each piece of that gold product. Enter 0 for none.</p>
-          <div class="grid grid-even" data-group="goldMaking"></div>
-        </fieldset>
-        <fieldset>
-          <legend>Silver</legend>
-          <div class="grid grid-even" data-group="silver"></div>
+          <p class="hint group-hint">A percentage of each bar’s gold value. The amount per bar at today’s rate is worked out for you. Enter 0 for none.</p>
+          <div class="making-grid" data-group="goldMaking"></div>
         </fieldset>
         <fieldset>
           <legend>Silver making charge</legend>
-          <p class="hint group-hint">Percentage of each product’s silver value. Enter 0 for none.</p>
-          <div class="grid grid-even" data-group="making"></div>
+          <p class="hint group-hint">A percentage of each product’s silver value. The amount per piece at today’s rate is worked out for you. Enter 0 for none.</p>
+          <div class="making-grid" data-group="making"></div>
         </fieldset>
 
         <template id="rate-field">
-          <div class="field">
-            <label><span class="label-text"></span> <span class="unit">(Rs.)</span></label>
-            <div class="money-input"><span aria-hidden="true">Rs.</span>
-              <input type="text" inputmode="decimal" autocomplete="off" required>
+          <div class="field making-field">
+            <label><span class="label-text"></span> <span class="unit">(%)</span></label>
+            <div class="making-row">
+              <div class="money-input pct"><span aria-hidden="true">%</span>
+                <input type="text" inputmode="decimal" autocomplete="off" required>
+              </div>
+              <output class="making-amount" aria-live="polite"></output>
             </div>
-            <p class="hint"></p>
             <p class="error"></p>
           </div>
         </template>
 
         <div class="actions">
           <button type="button" id="logout" class="btn btn-link">Log out</button>
-          <button type="submit" id="save" class="btn btn-primary"><span>Save rates</span></button>
+          <button type="submit" id="save" class="btn btn-primary"><span>Save making charges</span></button>
         </div>
       </form>
 
@@ -118,11 +130,8 @@
           <table>
             <thead><tr>
               <th scope="col">Updated</th>
-              <th scope="col" class="num">Gold / tola</th>
-              <th scope="col" class="num">Gold / g</th>
-              <th scope="col" class="num">Silver / tola</th>
-              <th scope="col" class="num">Silver / g</th>
-              <th scope="col">Making charge</th>
+              <th scope="col">Gold making charge</th>
+              <th scope="col">Silver making charge</th>
             </tr></thead>
             <tbody id="history"></tbody>
           </table>

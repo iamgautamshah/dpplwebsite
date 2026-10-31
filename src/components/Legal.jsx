@@ -195,12 +195,12 @@ export function Terms() {
       <Section heading="Online quotations">
         <p>
           A quotation from the online form is an estimate only. <b className="text-text font-medium">It is not a booking, an order confirmation or an invoice</b>,
-          and it does not reserve stock. It is calculated from the quotation rates our staff set for the day, which can differ
-          from the indicative market rate shown on the homepage and can change during the day. The price that applies to a
+          and it does not reserve stock. It is calculated from the day’s gold and silver selling rate published on this site,
+          plus the making charges our staff set, and the rate can change during the day. The price that applies to a
           purchase is the one confirmed at the counter at the time of sale.
         </p>
         <p>
-          Quotations list each product, the making charge on gold products (a fixed amount per piece) and on silver products (a percentage), and, for personal customers, a skill
+          Quotations list each product, the making charge (a percentage of each product’s value), and, for personal customers, a skill
           promotion fee where it applies. Products shown as out of stock cannot be quoted.
         </p>
       </Section>

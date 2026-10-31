@@ -51,7 +51,9 @@ function syncUnit(row) {
 
 function onMetal(row) {
   const metal = metalOf(row);
-  fillSelect(field(row, 'product'), (metal?.products ?? []).filter(allowed), metal ? `Select ${metal.name.toLowerCase()} product` : 'Select a metal first', { disabled: !metal });
+  // customers see the product with its fineness, e.g. "Gold Bar - 10g (999.9)"
+  const options = (metal?.products ?? []).filter(allowed).map((p) => ({ id: p.id, name: `${p.name} (${metal.fineness})` }));
+  fillSelect(field(row, 'product'), options, metal ? `Select ${metal.name.toLowerCase()} product` : 'Select a metal first', { disabled: !metal });
   syncUnit(row);
 }
 

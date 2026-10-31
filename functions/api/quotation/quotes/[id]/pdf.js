@@ -1,4 +1,4 @@
-import { loadQuote } from '../../../../../server/quotation/quotes.js';
+import { fileSafe, loadQuote } from '../../../../../server/quotation/quotes.js';
 import { quotePdf } from '../../../../../server/quotation/pdf.js';
 
 export async function onRequestGet({ params, env }) {
@@ -8,7 +8,7 @@ export async function onRequestGet({ params, env }) {
   return new Response(bytes, {
     headers: {
       'content-type': 'application/pdf',
-      'content-disposition': `inline; filename="Quotation-${quote.number}.pdf"`,
+      'content-disposition': `inline; filename="Quotation-${fileSafe(quote.number)}.pdf"`,
       'cache-control': 'private, no-store',
       'x-robots-tag': 'noindex',
     },

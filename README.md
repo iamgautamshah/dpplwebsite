@@ -69,11 +69,12 @@ Bindings and variables are read at deploy time — after changing them, redeploy
 ## Notes
 
 - `/api/silver?debug=1` shows which source supplied the live rate.
-- Quotation prices come from the rates staff save in the admin, not from the
-  live homepage rate. Until rates are saved, customers are told the price
+- Quotation prices use the same 1 tola and 10 gram selling rates the website
+  publishes (`server/quotation/live.js` calls the /api/silver function
+  directly). Before the day's rate is published, customers are told the price
   isn't available yet.
-- Pricing rules (gold making charge: flat rupees per piece for each gold product;
-  silver making charge: % per silver product; 0.5% skill promotion fee for
-  personal customers; rounding) live in `server/quotation/rates.js`; the
+- Quotation numbers: `DPPL/<date>`, e.g. DPPL/20261031. Beneath it the PDF prints G<gold 1 tola>/<gold 10 g> and S<silver 1 tola>/<silver 10 g>, then the date and time.
+- Pricing rules (making charge: % per product, set in the admin; 0.5% skill
+  promotion fee for personal customers; rounding) live in `server/quotation/rates.js`; the
   catalogue lives in `public/quotation/data/products.json`.
 - The Nepal address list is MIT-licensed (`public/quotation/data/LICENSE-nepali-address`).

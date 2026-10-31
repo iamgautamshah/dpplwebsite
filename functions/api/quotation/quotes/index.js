@@ -1,9 +1,11 @@
 import { json, validateCustomer, validateItems } from '../../../../server/quotation/validate.js';
-import { getRates, priceItems } from '../../../../server/quotation/rates.js';
+import { getRates, priceItems, publicRates } from '../../../../server/quotation/rates.js';
+import { getLiveRates } from '../../../../server/quotation/live.js';
 import { newIds, rateLimited, saveQuote, whatsappUrl } from '../../../../server/quotation/quotes.js';
 import { CLOSED_MESSAGE, getStock } from '../../../../server/quotation/stock.js';
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const { request, env } = context;
   if (!(request.headers.get('content-type') || '').includes('application/json')) return json({ ok: false, message: 'Unsupported request.' }, 415);
   const body = await request.json().catch(() => ({}));
 
@@ -18,13 +20,13 @@ export async function onRequestPost({ request, env }) {
     if (await rateLimited(env, request, 'quote', 20, 3600)) {
       return json({ ok: false, message: 'Too many quotation requests. Please try again later or call us.' }, 429);
     }
-    const rates = await getRates(env);
-    const { lines, metalTotal, making, skillFee, total, missing } = priceItems(items, rates, customer.customerType);
-    if (missing.length) return json({ ok: false, message: 'Prices are not available right now. Please contact us.' }, 409);
+    const [makingRates, live] = await Promise.all([getRates(env), getLiveRates(context)]);
+    const { lines, metalTotal, making, skillFee, total, missing } = priceItems(items, makingRates, live, customer.customerType);
+    if (missing.length) return json({ ok: false, message: 'Today’s price isn’t available yet. Please try again later or call us on 01-5915052.' }, 409);
 
     const createdAt = new Date().toISOString();
-    const { id, number } = newIds(createdAt);
-    const quote = { id, number, createdAt, customer, items, price: { lines, metalTotal, making, skillFee, total } };
+    const { id, number } = newIds(createdAt, live);
+    const quote = { id, number, createdAt, customer, items, rates: publicRates(live), price: { lines, metalTotal, making, skillFee, total } };
     await saveQuote(env, quote);
 
     const origin = new URL(request.url).origin;

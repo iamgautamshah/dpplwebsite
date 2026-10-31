@@ -136,7 +136,7 @@ $('download').addEventListener('click', () =>
     if (!q) return;
     const a = document.createElement('a');
     a.href = q.pdfUrl;
-    a.download = `Quotation-${q.number}.pdf`;
+    a.download = `Quotation-${q.number.replace(/[\\/]/g, '-')}.pdf`;
     document.body.append(a);
     a.click();
     a.remove();
