@@ -27,11 +27,15 @@ function lineWeight(l) {
   return grams == null ? '-' : fmtG(grams);
 }
 
-// The published rate the line is priced from (per tola, or per 10 grams).
+// The rate a line is priced at: the published tola rate for tola products;
+// for products weighed in grams, the published 10 gram rate ÷ 10, i.e. per gram.
 function lineRate(l) {
   const p = productOf(l);
-  const value = l.rateValue ?? (p && l.unitPrice != null ? (p.tola ? l.unitPrice / p.tola : (l.unitPrice * 10) / p.grams) : null);
-  return value == null ? '-' : money(value);
+  const isTola = l.rateUnit ? l.rateUnit === 'tola' : !!p?.tola;
+  let value = null;
+  if (l.rateValue != null) value = isTola ? l.rateValue : l.rateValue / 10;
+  else if (p && l.unitPrice != null) value = p.tola ? l.unitPrice / p.tola : l.unitPrice / p.grams;
+  return { unit: isTola ? 'tola' : 'gram', value };
 }
 
 const num = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null);
@@ -186,8 +190,28 @@ export async function quotePdf(quote, todayRates = null) {
   rule(y);
   y -= 30;
 
-  // Products: product, quantity, weight (from the quantity), rate and amount
-  const col = { no: M + 8, product: M + 26, qty: M + 232, weight: M + 312, rate: M + 404, amount: M + W - 8 };
+  // Products: product, quantity, weight (from the quantity), rate and amount.
+  // Rate: per tola for tola products, per gram for gram products. With only
+  // one kind the heading says so ("Rate" / "Rate/g"); with both, each rate is
+  // marked "(per tola)" or "(per gram)".
+  const lines = quote.price.lines.map((l) => ({ l, w: lineWeight(l), rt: lineRate(l) }));
+  const units = new Set(lines.map((x) => x.rt.unit));
+  const mixed = units.size > 1;
+  const rateHead = mixed || units.has('tola') ? 'Rate' : 'Rate/g';
+  const qtyText = (l) => (l.unit === 'gram' ? `${Number(l.quantity).toLocaleString('en-IN')} g` : String(l.quantity));
+  const rateMain = (rt) => (rt.value == null ? '-' : money(rt.value));
+  const rateNote = (rt) => (mixed && rt.value != null ? ` (per ${rt.unit})` : '');
+  const tw = (t, size = 10, font = reg) => font.widthOfTextAtSize(safe(t), size);
+  const GAP = 18;
+  const amountW = Math.max(tw('Amount', 9, bold), ...lines.map((x) => tw(money(x.l.total))), tw(money(quote.price.total), 12, bold));
+  const rateW = Math.max(tw(rateHead, 9, bold), ...lines.map((x) => tw(rateMain(x.rt)) + (rateNote(x.rt) ? tw(rateNote(x.rt), 8) : 0)));
+  const weightW = Math.max(tw('Weight', 9, bold), ...lines.map((x) => tw(x.w)));
+  const qtyW = Math.max(tw('Quantity', 9, bold), ...lines.map((x) => tw(qtyText(x.l))));
+  const col = { no: M + 8, product: M + 26, amount: M + W - 8 };
+  col.rate = col.amount - amountW - GAP;
+  col.weight = col.rate - rateW - GAP;
+  col.qty = col.weight - weightW - GAP;
+  const nameW = col.qty - qtyW - 14 - col.product;
   text('Products', M, y, { size: 11.5, font: bold });
   y -= 10;
   page.drawRectangle({ x: M, y: y - 22, width: W, height: 22, color: SHADE });
@@ -196,21 +220,25 @@ export async function quotePdf(quote, todayRates = null) {
   head('Product', col.product);
   head('Quantity', col.qty, 'right');
   head('Weight', col.weight, 'right');
-  head('Rate', col.rate, 'right');
+  head(rateHead, col.rate, 'right');
   head('Amount', col.amount, 'right');
   y -= 22;
 
-  quote.price.lines.forEach((l, i) => {
-    const w = lineWeight(l);
-    const rt = lineRate(l);
-    const name = wrap(l.productName, reg, 10, col.qty - col.product - 52);
+  lines.forEach(({ l, w, rt }, i) => {
+    const name = wrap(l.productName, reg, 10, nameW);
     const h = Math.max(26, 12 + name.length * 13);
     ensure(h);
     text(String(i + 1), col.no, y - 17, { color: MUTED });
     name.forEach((ln, k) => text(ln, col.product, y - 17 - k * 13));
-    text(l.unit === 'gram' ? `${Number(l.quantity).toLocaleString('en-IN')} g` : String(l.quantity), col.qty, y - 17, { align: 'right' });
+    text(qtyText(l), col.qty, y - 17, { align: 'right' });
     text(w, col.weight, y - 17, { align: 'right' });
-    text(rt, col.rate, y - 17, { align: 'right' });
+    const note = rateNote(rt);
+    if (note) {
+      text(note, col.rate, y - 17, { size: 8, color: MUTED, align: 'right' });
+      text(rateMain(rt), col.rate - tw(note, 8), y - 17, { align: 'right' });
+    } else {
+      text(rateMain(rt), col.rate, y - 17, { align: 'right' });
+    }
     text(money(l.total), col.amount, y - 17, { align: 'right' });
     y -= h;
     rule(y);
