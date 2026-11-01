@@ -1,7 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import company from '../../public/quotation/data/company.json';
 import catalog from '../../public/quotation/data/products.json';
-import { addressLine, idRow, money, nepalTime, totalRows } from './format.js';
+import { addressLine, idRow, money, nepalTime, nepalYMD, rateDayText, totalRows } from './format.js';
 
 const A4 = [595.28, 841.89];
 const M = 48;
@@ -47,6 +47,7 @@ const num = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : nu
 export function headerRates(quote, fallback = null) {
   const saved = quote.rates || {};
   const out = {
+    date: saved.date || fallback?.date || null,
     goldPerTola: num(saved.goldPerTola),
     goldPer10g: num(saved.goldPer10g),
     silverPerTola: num(saved.silverPerTola),
@@ -60,7 +61,7 @@ export function headerRates(quote, fallback = null) {
     const key = `${l.metal}${isTola ? 'PerTola' : 'Per10g'}`;
     out[key] ??= Math.round(value * 100) / 100;
   }
-  for (const k of Object.keys(out)) out[k] ??= num(fallback?.[k]);
+  for (const k of Object.keys(out)) if (k !== 'date') out[k] ??= num(fallback?.[k]);
   return out;
 }
 
@@ -138,18 +139,24 @@ export async function quotePdf(quote, todayRates = null) {
     const PAD = 6;
     const ROW = 14;
     const headRow = ['Rate (Rs.)', '1 tola', '10 grams'];
+    // the day the rates were published, as on the website's price card
+    const dateRow = `Date: ${rateDayText(r.date) || rateDayText(nepalYMD(quote.createdAt))}`;
     const widths = headRow.map((h, k) => Math.max(bold.widthOfTextAtSize(h, SIZE), ...rateRows.map((row) => (k ? reg : bold).widthOfTextAtSize(safe(row[k]), SIZE))) + 2 * PAD);
+    const need = bold.widthOfTextAtSize(safe(dateRow), SIZE) + 2 * PAD;
+    if (need > widths.reduce((a, b) => a + b, 0)) widths[0] += need - widths.reduce((a, b) => a + b, 0);
     const tw = widths.reduce((a, b) => a + b, 0);
     const x0 = A4[0] - M - tw;
-    const th = ROW * (rateRows.length + 1);
-    page.drawRectangle({ x: x0, y: ry - ROW, width: tw, height: ROW, color: SHADE });
+    const th = ROW * (rateRows.length + 2);
+    page.drawRectangle({ x: x0, y: ry - 2 * ROW, width: tw, height: 2 * ROW, color: SHADE });
     page.drawRectangle({ x: x0, y: ry - th, width: tw, height: th, borderColor: LINE, borderWidth: 0.75 });
-    [headRow, ...rateRows].forEach((row, i) => {
+    text(dateRow, x0 + PAD, ry - 10, { size: SIZE, font: bold, color: INK });
+    [headRow, ...rateRows].forEach((row, j) => {
+      const i = j + 1;
       const by = ry - i * ROW - 10;
-      if (i > 0) page.drawLine({ start: { x: x0, y: ry - i * ROW }, end: { x: x0 + tw, y: ry - i * ROW }, thickness: 0.5, color: LINE });
+      page.drawLine({ start: { x: x0, y: ry - i * ROW }, end: { x: x0 + tw, y: ry - i * ROW }, thickness: 0.5, color: LINE });
       let x = x0;
       row.forEach((cell, k) => {
-        const opts = { size: SIZE, font: i === 0 || k === 0 ? bold : reg, color: i === 0 ? MUTED : INK };
+        const opts = { size: SIZE, font: j === 0 || k === 0 ? bold : reg, color: j === 0 ? MUTED : INK };
         if (k === 0) text(cell, x + PAD, by, opts);
         else text(cell, x + widths[k] - PAD, by, { ...opts, align: 'right' });
         x += widths[k];
@@ -265,8 +272,10 @@ export async function quotePdf(quote, todayRates = null) {
   note.forEach((ln, k) => text(ln, M + 12, y - 18 - k * 12, { size: 9, font: bold }));
 
   const pages = doc.getPages();
+  const generated = `Generated ${nepalTime(new Date().toISOString())}`;
   pages.forEach((p, i) => {
     page = p;
+    text(generated, M, M - 18, { size: 8, color: MUTED });
     text(`${quote.number}   Page ${i + 1} of ${pages.length}`, A4[0] - M, M - 18, { size: 8, color: MUTED, align: 'right' });
   });
 

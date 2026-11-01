@@ -40,6 +40,7 @@ server/quotation/            shared server code: validation, pricing, PDF,
 | `RATE_CACHE` | KV | live market rate cache (existing) |
 | `QUOTE_RATES` | KV | quotation rates, stock switches, rate history, login brake, revoked sessions |
 | `QUOTES` | KV | saved quotations (deleted after 180 days) |
+| `QUOTE_DB` | D1 (optional, recommended) | quotation number counter, guaranteed unique |
 | `ADMIN_PASSWORD` | Secret | staff password, 12+ characters |
 | `SESSION_SECRET` | Secret | 64 hex characters (`openssl rand -hex 32`) |
 | `ACCESS_TEAM_DOMAIN` | Variable | e.g. `yourteam.cloudflareaccess.com` (after Access setup) |
@@ -73,7 +74,7 @@ Bindings and variables are read at deploy time — after changing them, redeploy
   publishes (`server/quotation/live.js` calls the /api/silver function
   directly). Before the day's rate is published, customers are told the price
   isn't available yet.
-- Quotation numbers: `DPPL/<date>`, e.g. DPPL/20261031. Beneath it the PDF shows a small table of the day's gold and silver rates (1 tola and 10 grams), then the date and time.
+- Quotation numbers: `DPPL/<n>`, one running count from DPPL/01 that never restarts. With the optional D1 binding `QUOTE_DB` the count is atomic (guaranteed unique); without it, it is kept in `QUOTES` (`seq:quote`) with a claim-and-check on each number. Beneath it the PDF shows a small table with the rate date (A.D. and B.S.) and the day's gold and silver rates (1 tola and 10 grams), then the quotation time; the footer shows when the PDF was generated.
 - Pricing rules (making charge per product, set in the admin as % of the metal
   value or a flat Rs amount per bar/piece, two linked boxes; 0.5% skill
   promotion fee for personal customers; rounding) live in `server/quotation/rates.js`; the

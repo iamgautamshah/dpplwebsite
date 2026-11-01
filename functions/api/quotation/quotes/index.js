@@ -25,7 +25,7 @@ export async function onRequestPost(context) {
     if (missing.length) return json({ ok: false, message: 'Today’s price isn’t available yet. Please try again later or call us on 01-5915052.' }, 409);
 
     const createdAt = new Date().toISOString();
-    const { id, number } = newIds(createdAt, live);
+    const { id, number } = await newIds(env);
     const quote = { id, number, createdAt, customer, items, rates: publicRates(live), price: { lines, metalTotal, making, skillFee, total } };
     await saveQuote(env, quote);
 

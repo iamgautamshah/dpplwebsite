@@ -63,6 +63,23 @@ If the project has separate **Production** and **Preview** settings, add the
 bindings to Production. For Preview, use separate namespaces such as
 `dppl-quote-rates-preview` if you want to test without touching real quotes.
 
+### A2b. (Recommended) Add a D1 database for quotation numbers
+
+Quotation numbers run DPPL/01, DPPL/02, DPPL/03 … and never restart. They work
+without this step. With a D1 database the number is handed out by the database
+itself, so two quotations can never share a number even if submitted at the
+same instant.
+
+1. Dashboard → **Storage & Databases → D1 SQL Database → Create database** → name `dppl-quotes-db` → Create. Leave the tables alone: the site creates the one it needs.
+2. Pages project → **Settings → Bindings → Add → D1 database**:
+
+| Variable name | D1 database |
+|---|---|
+| `QUOTE_DB` | `dppl-quotes-db` |
+
+3. Redeploy (Deployments → Retry deployment). Numbering carries on from
+   wherever it had reached, with no gap and no restart.
+
 ### A3. Add the secrets
 
 Same project → **Settings → Variables and Secrets → Add**. Choose type **Secret** (encrypted) for both:
@@ -185,7 +202,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] The Review step and the PDF show the chosen ID type and number (e.g. "Citizenship  27-01-71-05432").
 - [ ] Step 2: product names show the fineness, e.g. *Gold Bar - 10g (999.9)*, *Silver Bar - 100g (999)*. Personal customers don't see *Silver Grains*; Business customers do.
 - [ ] Step 3 shows each line, one "Making charge" line (the charge for each product is listed above the table as "Rs. … per bar (…%)"), the 0.5% skill promotion fee (Personal only) and a total. Check one total by hand.
-- [ ] Step 4: **Download PDF** saves `Quotation-DPPL-YYYYMMDD.pdf` with the right details.
+- [ ] Step 4: **Download PDF** saves `Quotation-DPPL-01.pdf` for the first quotation, then `-02`, `-03` … (the number keeps counting and never restarts) with the right details.
 - [ ] Step 4: **Send on WhatsApp** opens WhatsApp to +977 9805617932 with the quotation number and a PDF link, and the link opens the PDF.
 
 **Price updates**
@@ -194,7 +211,7 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] Price step check for a flat charge: Silver Bar - 100g at Rs. 300 per bar, quantity 3, gives a making charge of Rs. 900.
 - [ ] Recalculate on the public Price step: the new making charge is used.
 - [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
-- [ ] The PDF shows `No. DPPL/<date>` with a small table of the day's gold and silver rates (1 tola and 10 grams) beneath it, and the columns Product, Quantity, Weight, Rate and Amount, with nothing printed under the weight or rate.
+- [ ] The PDF shows `No. DPPL/<number>` with a small table beneath it: the rate date (as on the homepage price card) and the day's gold and silver rates (1 tola and 10 grams). The footer shows "Generated <date, time> NPT". It has the columns Product, Quantity, Weight, Rate and Amount, with nothing printed under the weight or rate.
 - [ ] Turn **Gold in stock** off: gold disappears from Products, and an open Price page with gold shows the out-of-stock message. Turn it back on.
 - [ ] Turn both metals off: every quotation page shows "We're out of stock". Turn both back on.
 

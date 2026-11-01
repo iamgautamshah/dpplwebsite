@@ -7,6 +7,23 @@ export const nepalTime = (iso) =>
   `${new Date(iso).toLocaleString('en-GB', { timeZone: 'Asia/Kathmandu', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} NPT`;
 
 /** Nepal date as YYYYMMDD. */
+import { toBS } from '../../src/lib/nepaliDate.js';
+
+const BS_MONTHS_LATIN = ['Baisakh', 'Jestha', 'Asar', 'Shrawan', 'Bhadra', 'Asoj', 'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra'];
+
+/** "Sun, 1 Nov 2026 (15 Kartik 2083 B.S.)" for a Nepal calendar day given as YYYY-MM-DD, as the price card shows it. */
+export function rateDayText(ymd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd || '');
+  if (!m) return null;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const ad = new Date(Date.UTC(y, mo - 1, d)).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  const bs = toBS(new Date(y, mo - 1, d)); // the converter counts local-calendar days
+  return bs ? `${ad} (${bs.day} ${BS_MONTHS_LATIN[bs.month]} ${bs.year} B.S.)` : ad;
+}
+
+/** Today's Nepal date as YYYY-MM-DD. */
+export const nepalYMD = (iso) => nepalDate8(iso).replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3');
+
 export function nepalDate8(iso) {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kathmandu', year: 'numeric', month: '2-digit', day: '2-digit' })
