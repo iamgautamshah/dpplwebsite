@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261031f">
-  <script type="module" src="/admin/admin.js?v=20261031f"></script>
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261104a">
+  <script type="module" src="/admin/admin.js?v=20261104a"></script>
 </head>
 <body>
   <header class="site-head">
@@ -51,18 +51,26 @@
     <div id="panel" hidden>
       <section class="card availability" aria-labelledby="stock-h">
         <h2 id="stock-h">Availability</h2>
-        <p class="hint">Switch a metal off when it’s out of stock. With both off, the quotation form closes and customers see an out-of-stock message.</p>
-        <div class="switches">
-          <label class="switch">
-            <input type="checkbox" id="stock-gold" role="switch">
-            <span class="track" aria-hidden="true"></span>
-            <span>Gold in stock</span>
-          </label>
-          <label class="switch">
-            <input type="checkbox" id="stock-silver" role="switch">
-            <span class="track" aria-hidden="true"></span>
-            <span>Silver in stock</span>
-          </label>
+        <p class="hint">Switch a product off when it’s out of stock: customers see it greyed out and can’t quote it. Switching a metal off takes all its products off at once. With nothing in stock, the quotation form closes and customers see an out-of-stock message.</p>
+        <div class="stock-grid">
+          <fieldset class="stock-metal">
+            <legend class="visually-hidden">Gold</legend>
+            <label class="switch">
+              <input type="checkbox" id="stock-gold" role="switch">
+              <span class="track" aria-hidden="true"></span>
+              <span>Gold in stock</span>
+            </label>
+            <div class="product-switches" id="stock-products-gold"></div>
+          </fieldset>
+          <fieldset class="stock-metal">
+            <legend class="visually-hidden">Silver</legend>
+            <label class="switch">
+              <input type="checkbox" id="stock-silver" role="switch">
+              <span class="track" aria-hidden="true"></span>
+              <span>Silver in stock</span>
+            </label>
+            <div class="product-switches" id="stock-products-silver"></div>
+          </fieldset>
         </div>
         <p class="stock-state" id="stock-status" aria-live="polite"></p>
       </section>

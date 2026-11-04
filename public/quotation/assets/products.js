@@ -1,5 +1,5 @@
-import { onStockChange, stock } from './gate.js?v=20261031f';
-import { $, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261031f';
+import { onStockChange, stock } from './gate.js?v=20261104a';
+import { $, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261104a';
 
 const customer = store.get('quote.customer');
 if (!customer) location.replace('/quotation');
@@ -20,10 +20,29 @@ $('for-customer').textContent = customer ? `Quotation for ${customer.name}` : ''
 
 const rows = () => [...list.querySelectorAll('.item')];
 const field = (row, name) => row.querySelector(`[data-field="${name}"]`);
-const inStock = (m) => stock[m.id] !== false;
+const productOut = (p) => (stock.out ?? []).includes(p.id);
+// a metal is offered when it is switched on and has a product this customer can have in stock
+const inStock = (m) => stock[m.id] !== false && m.products.some((p) => allowed(p) && !productOut(p));
 const outOfStock = (name) => `Sorry, ${name.toLowerCase()} is currently out of stock.`;
+const productName = (metal, p) => `${p.name} (${metal.fineness})`;
+const productOutMsg = (name) => `Sorry, ${name} is currently out of stock. Choose another product.`;
 const metalOf = (row) => catalog.metals.filter(inStock).find((m) => m.id === field(row, 'metal').value);
-const productOf = (row) => metalOf(row)?.products.find((p) => p.id === field(row, 'product').value);
+const productOf = (row) => {
+  const p = metalOf(row)?.products.find((x) => x.id === field(row, 'product').value);
+  return p && !productOut(p) ? p : undefined;
+};
+
+// Out-of-stock products stay in the list, greyed out and marked, so customers can see them.
+function fillProducts(select, metal) {
+  const opts = (metal?.products ?? []).filter(allowed).map((p) => {
+    const out = productOut(p);
+    const o = new Option(`${productName(metal, p)}${out ? ' — out of stock' : ''}`, p.id);
+    o.disabled = out;
+    return o;
+  });
+  select.replaceChildren(new Option(metal ? `Select ${metal.name.toLowerCase()} product` : 'Select a metal first', ''), ...opts);
+  select.disabled = !metal;
+}
 
 function renumber() {
   const all = rows();
@@ -52,8 +71,7 @@ function syncUnit(row) {
 function onMetal(row) {
   const metal = metalOf(row);
   // customers see the product with its fineness, e.g. "Gold Bar - 10g (999.9)"
-  const options = (metal?.products ?? []).filter(allowed).map((p) => ({ id: p.id, name: `${p.name} (${metal.fineness})` }));
-  fillSelect(field(row, 'product'), options, metal ? `Select ${metal.name.toLowerCase()} product` : 'Select a metal first', { disabled: !metal });
+  fillProducts(field(row, 'product'), metal);
   syncUnit(row);
 }
 
@@ -64,23 +82,35 @@ function addRow(item) {
   onMetal(row);
   let removedProduct = null;
   let removedMetal = null;
-  if (item && stock[item.metal] === false) removedMetal = item.metalName;
+  let soldOut = null;
+  const savedMetal = item && catalog.metals.find((m) => m.id === item.metal);
+  if (item && (!savedMetal || !inStock(savedMetal))) removedMetal = item.metalName;
   else if (item) {
     field(row, 'metal').value = item.metal;
     onMetal(row);
-    field(row, 'product').value = item.product;
-    if (field(row, 'product').value !== item.product) removedProduct = item.productName;
-    else field(row, 'quantity').value = item.quantity;
+    const p = savedMetal.products.find((x) => x.id === item.product);
+    if (p && productOut(p)) {
+      soldOut = item.productName;
+      row.dataset.productWas = p.id;
+    }
+    else {
+      field(row, 'product').value = item.product;
+      if (field(row, 'product').value !== item.product) removedProduct = item.productName;
+      else field(row, 'quantity').value = item.quantity;
+    }
     syncUnit(row);
   }
 
   field(row, 'metal').addEventListener('change', () => {
     delete row.dataset.metalRestricted;
     delete row.dataset.metalWas;
+    delete row.dataset.productWas;
+    delete row.dataset.restricted;
     onMetal(row);
   });
   field(row, 'product').addEventListener('change', () => {
     delete row.dataset.restricted;
+    delete row.dataset.productWas;
     syncUnit(row);
   });
   field(row, 'quantity').addEventListener('input', (e) => {
@@ -100,6 +130,10 @@ function addRow(item) {
     row.dataset.metalRestricted = `${outOfStock(removedMetal)} Choose another product.`;
     setError(field(row, 'metal').id, row.dataset.metalRestricted);
   }
+  if (soldOut) {
+    row.dataset.restricted = productOutMsg(soldOut);
+    setError(field(row, 'product').id, row.dataset.restricted);
+  }
   if (removedProduct) {
     row.dataset.restricted = `${removedProduct} ${removedProduct.endsWith('s') ? 'are' : 'is'} available for business customers only. Choose another product.`;
     setError(field(row, 'product').id, row.dataset.restricted);
@@ -109,10 +143,12 @@ function addRow(item) {
 
 function stockNotice() {
   const out = catalog.metals.filter((m) => !inStock(m)).map((m) => m.name);
-  $('stock-notice').hidden = !out.length;
-  $('stock-notice').textContent = out.length
-    ? `${outOfStock(out.join(' and '))} You can still request a quotation for ${catalog.metals.filter(inStock).map((m) => m.name.toLowerCase()).join(' and ')}.`
-    : '';
+  const products = catalog.metals.filter(inStock).flatMap((m) => m.products.filter((p) => allowed(p) && productOut(p)).map((p) => productName(m, p)));
+  const parts = [];
+  if (out.length) parts.push(`${outOfStock(out.join(' and '))} You can still request a quotation for ${catalog.metals.filter(inStock).map((m) => m.name.toLowerCase()).join(' and ')}.`);
+  if (products.length) parts.push(`Currently out of stock: ${products.join(', ')}.`);
+  $('stock-notice').hidden = !parts.length;
+  $('stock-notice').textContent = parts.join(' ');
 }
 
 // Called when the admin changes availability while this page is open.
@@ -124,14 +160,30 @@ function applyStock() {
     fillSelect(select, catalog.metals.filter(inStock), 'Select metal');
     const metal = catalog.metals.find((m) => m.id === wanted);
     if (metal && inStock(metal)) {
-      const product = field(row, 'product').value;
+      const product = field(row, 'product').value || row.dataset.productWas || '';
       select.value = wanted;
       if (row.dataset.metalWas) {
         delete row.dataset.metalWas;
         delete row.dataset.metalRestricted;
         setError(select.id);
         onMetal(row);
-      } else field(row, 'product').value = product;
+      } else {
+        fillProducts(field(row, 'product'), metal);
+        const p = metal.products.find((x) => x.id === product);
+        if (p && productOut(p)) {
+          row.dataset.productWas = p.id;
+          row.dataset.restricted = productOutMsg(productName(metal, p));
+          setError(field(row, 'product').id, row.dataset.restricted);
+        } else {
+          field(row, 'product').value = product;
+          if (row.dataset.productWas) {
+            delete row.dataset.productWas;
+            delete row.dataset.restricted;
+            setError(field(row, 'product').id);
+          }
+        }
+        syncUnit(row);
+      }
     } else if (metal) {
       row.dataset.metalWas = metal.id;
       row.dataset.metalRestricted = `${outOfStock(metal.name)} Choose another product.`;

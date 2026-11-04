@@ -126,8 +126,9 @@ export function validateItems(input, customerType, stock = { gold: true, silver:
     const { metal, product } = findProduct(row?.metal, row?.product);
     const qty = Number(row?.quantity);
     if (!metal) errors[`item-${i}-metal`] = 'Choose Gold or Silver.';
-    else if (stock[metal.id] === false) errors[`item-${i}-metal`] = `Sorry, ${metal.name.toLowerCase()} is currently out of stock.`;
+    else if ((stock.available ?? stock)[metal.id] === false) errors[`item-${i}-metal`] = `Sorry, ${metal.name.toLowerCase()} is currently out of stock.`;
     else if (!product) errors[`item-${i}-product`] = 'Choose a product.';
+    else if (stock.out?.includes(product.id)) errors[`item-${i}-product`] = `Sorry, ${displayName(metal, product)} is currently out of stock. Choose another product.`;
     else if (CUSTOMER_TYPES.includes(customerType) && !allowedFor(product, customerType)) errors[`item-${i}-product`] = restrictionMessage(product);
     else if (!Number.isInteger(qty) || qty < 1 || qty > QTY_LIMITS[product.unit]) {
       errors[`item-${i}-quantity`] = product.unit === 'gram'

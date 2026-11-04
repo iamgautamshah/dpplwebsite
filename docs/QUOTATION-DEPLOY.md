@@ -6,7 +6,7 @@ already serves dppl.com.np):
 | Address | What it is | Who can reach it |
 |---|---|---|
 | `https://dppl.com.np/quotation` | public 4-step quotation form | everyone |
-| `https://admin.dppl.com.np` | staff page: rates, making charges, stock | approved staff only |
+| `https://admin.dppl.com.np` | staff page: rates, making charges, stock for each metal and product | approved staff only |
 
 Both run from the **same** Pages project and the same GitHub repository. You
 do not create a second project.
@@ -212,6 +212,8 @@ Tick each item after deploying. Use a private/incognito window for the
 - [ ] Recalculate on the public Price step: the new making charge is used.
 - [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.
 - [ ] The PDF shows `No. DPPL/<number>` with a small table beneath it: the rate date (as on the homepage price card) and the day's gold and silver rates (1 tola and 10 grams). The footer shows "Generated <date, time> NPT". It has the columns Product, Quantity, Weight, Rate and Amount, with nothing printed under the weight or rate.
+- [ ] Under **Availability**, switch one product off (e.g. Gold Bar - 5g). On the Products step it shows greyed out as "— out of stock" and can't be chosen, and the notice lists it. A customer who already chose it is asked to choose another product. Switch it back on.
+- [ ] Switch every gold product off: gold is then shown as out of stock, the same as switching **Gold in stock** off.
 - [ ] Turn **Gold in stock** off: gold disappears from Products, and an open Price page with gold shows the out-of-stock message. Turn it back on.
 - [ ] Turn both metals off: every quotation page shows "We're out of stock". Turn both back on.
 

@@ -509,3 +509,16 @@ legend.making-name { float: none; width: auto; margin: 0 0 8px; font: 500 15px/1
 .making-swap { flex: 0 0 auto; padding-bottom: 13px; color: var(--muted); }
 .making-amount { display: block; margin-top: 6px; color: var(--gold-ink); font-size: 13.5px; font-variant-numeric: tabular-nums; }
 .making-amount:empty { display: none; }
+
+/* Admin availability: a switch per metal, with its products beneath */
+.stock-grid { display: grid; gap: 18px 28px; margin: 16px 0 12px; }
+@media (min-width: 640px) { .stock-grid { grid-template-columns: 1fr 1fr; } }
+.stock-metal { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin: 0; min-width: 0; }
+.product-switches { display: grid; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.product-switches .switch { font-weight: 400; font-size: 14px; gap: 10px; }
+.product-switches .switch input { width: 38px; height: 22px; }
+.product-switches .switch .track { width: 38px; height: 22px; }
+.product-switches .switch .track::after { width: 16px; height: 16px; }
+.product-switches .switch input:checked + .track::after { transform: translateX(16px); }
+.product-switches .switch.is-off-metal { opacity: .55; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

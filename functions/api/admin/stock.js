@@ -10,5 +10,8 @@ export async function onRequestPut({ request, env }) {
   if (typeof body.gold !== 'boolean' || typeof body.silver !== 'boolean') {
     return json({ ok: false, message: 'Send gold and silver as true or false.' }, 422);
   }
+  if (body.products != null && (typeof body.products !== 'object' || Array.isArray(body.products) || Object.values(body.products).some((v) => typeof v !== 'boolean'))) {
+    return json({ ok: false, message: 'Send each product as true or false.' }, 422);
+  }
   return json({ ok: true, ...(await saveStock(env, body)) });
 }

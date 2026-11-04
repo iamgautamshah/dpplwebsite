@@ -1,4 +1,4 @@
-import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261031f';
+import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261104a';
 
 /* Quotation admin.
    - Today's gold and silver rates are shown read-only: they come from the
@@ -201,32 +201,76 @@ function syncRateSections() {
   $('save').hidden = none;
 }
 
+// One switch per product, under its metal. Names come from the making-charge fields.
+const productSwitch = (id) => document.querySelector(`[data-product-switch="${id}"]`);
+function buildProductSwitches(products) {
+  if (document.querySelector('[data-product-switch]')) return;
+  for (const f of FIELDS) {
+    if (!(f.productId in products)) continue;
+    const label = document.createElement('label');
+    label.className = 'switch';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.setAttribute('role', 'switch');
+    input.dataset.productSwitch = f.productId;
+    input.dataset.metal = f.metal;
+    const track = document.createElement('span');
+    track.className = 'track';
+    track.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span');
+    name.textContent = f.short;
+    label.append(input, track, name);
+    $(`stock-products-${f.metal}`).append(label);
+    input.addEventListener('change', saveStock);
+  }
+}
+
 function renderStock(s) {
   stockState = { gold: s.gold, silver: s.silver };
   syncRateSections();
   $('stock-gold').checked = s.gold;
   $('stock-silver').checked = s.silver;
+  buildProductSwitches(s.products || {});
+  for (const [id, on] of Object.entries(s.products || {})) {
+    const input = productSwitch(id);
+    if (!input) continue;
+    input.checked = on;
+    const metalOn = s[input.dataset.metal];
+    input.disabled = !metalOn; // a metal switched off takes all its products with it
+    input.closest('.switch').classList.toggle('is-off-metal', !metalOn);
+  }
+  const nameOf = (id) => FIELDS.find((f) => f.productId === id)?.short ?? id;
+  const productsOff = Object.entries(s.products || {})
+    .filter(([id, on]) => !on && s[productSwitch(id)?.dataset.metal] !== false)
+    .map(([id]) => nameOf(id));
+  const metalsOut = ['gold', 'silver'].filter((m) => !(s.available ? s.available[m] : s[m]));
   const el = $('stock-status');
-  el.dataset.state = s.gold && s.silver ? 'open' : s.open ? 'partial' : 'closed';
-  el.textContent = s.gold && s.silver
-    ? 'Quotation form is open for gold and silver.'
-    : s.open
-      ? `Quotation form is open for ${s.gold ? 'gold' : 'silver'} only. ${s.gold ? 'Silver' : 'Gold'} is shown as out of stock.`
-      : 'Quotation form is closed. Customers see the out-of-stock message.';
+  el.dataset.state = !s.open ? 'closed' : metalsOut.length || productsOff.length ? 'partial' : 'open';
+  const parts = [];
+  if (!s.open) parts.push('Quotation form is closed. Customers see the out-of-stock message.');
+  else if (metalsOut.length) parts.push(`Quotation form is open for ${metalsOut.includes('gold') ? 'silver' : 'gold'} only. ${metalsOut.includes('gold') ? 'Gold' : 'Silver'} is shown as out of stock.`);
+  else parts.push('Quotation form is open for gold and silver.');
+  if (s.open && productsOff.length) parts.push(`Out of stock: ${productsOff.join(', ')}.`);
+  el.textContent = parts.join(' ');
 }
 
 async function saveStock() {
-  const inputs = [$('stock-gold'), $('stock-silver')];
+  const productInputs = [...document.querySelectorAll('[data-product-switch]')];
+  const inputs = [$('stock-gold'), $('stock-silver'), ...productInputs];
   inputs.forEach((i) => (i.disabled = true));
   try {
-    const { status, data } = await api('PUT', '/api/admin/stock', { gold: inputs[0].checked, silver: inputs[1].checked });
+    const products = Object.fromEntries(productInputs.map((i) => [i.dataset.productSwitch, i.checked]));
+    const { status, data } = await api('PUT', '/api/admin/stock', { gold: inputs[0].checked, silver: inputs[1].checked, products });
     if (status === 401) return showLogin('Your session expired. Sign in again.');
     if (data.ok) renderStock(data);
     else $('stock-status').textContent = data.message || 'Couldn’t save availability.';
   } catch {
     $('stock-status').textContent = 'Couldn’t reach the server. Availability wasn’t changed.';
   } finally {
-    inputs.forEach((i) => (i.disabled = false));
+    // metal switches back on; a product switch only while its metal is on
+    $('stock-gold').disabled = false;
+    $('stock-silver').disabled = false;
+    productInputs.forEach((i) => { i.disabled = !$(`stock-${i.dataset.metal}`).checked; });
   }
 }
 

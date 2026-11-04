@@ -1,6 +1,6 @@
 // Loaded first by every customer page. Checks stock on load and then every few seconds, so a
 // customer part-way through a quotation sees the sorry message as soon as the admin switches a metal off.
-const FALLBACK = { gold: true, silver: true, open: true, message: null };
+const FALLBACK = { gold: true, silver: true, out: [], open: true, message: null };
 const POLL_MS = 10000;
 const METAL_NAMES = { gold: 'Gold', silver: 'Silver' };
 const listeners = [];
@@ -59,15 +59,19 @@ function orderItems() {
   }
 }
 
-// Metals in the customer's saved order that are now out of stock.
+// What in the customer's saved order is now out of stock: a whole metal
+// ("gold"), or single products ("Gold Bar - 5g (999.9)").
 export function blockedMetals(s = stock) {
-  return [...new Set(orderItems().map((i) => i.metal))].filter((m) => s[m] === false).map((m) => METAL_NAMES[m] ?? m);
+  const items = orderItems();
+  const metals = [...new Set(items.map((i) => i.metal))].filter((m) => s[m] === false);
+  const products = items.filter((i) => !metals.includes(i.metal) && (s.out ?? []).includes(i.product)).map((i) => i.productName);
+  return [...metals.map((m) => (METAL_NAMES[m] ?? m).toLowerCase()), ...new Set(products)];
 }
 
 // Used by the Price and Review pages: replace the quotation with a sorry message.
 export function showMetalOut(names) {
   view = 'metal-out';
-  const what = names.join(' and ').toLowerCase();
+  const what = names.join(' and ');
   const card = document.querySelector('main > .card');
   const sorry = sorryCard(
     'Sorry, out of stock',
@@ -101,7 +105,7 @@ async function recheck(force = false) {
     return;
   }
   if (!next.open) return showClosed(next.message);
-  const changed = next.gold !== stock.gold || next.silver !== stock.silver;
+  const changed = next.gold !== stock.gold || next.silver !== stock.silver || (next.out ?? []).join() !== (stock.out ?? []).join();
   Object.assign(stock, next);
   if (view === 'metal-out' && !blockedMetals().length) return location.reload();
   if (changed) listeners.forEach((fn) => fn(stock));
