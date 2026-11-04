@@ -20,15 +20,23 @@ export const GRAMS_PER_TOLA = 11.6638;
 // Gold making keys end in _pct: before this change gold making charges were
 // stored as flat rupee amounts under making_gold_*, and an old 1000 must never
 // be read as 1000%.
-export const makingKey = (metalId, productId) =>
-  `making_${productId.replace(/-/g, '_')}${metalId === 'gold' ? '_pct' : ''}`;
+// Personal and business customers each have their own making charge per
+// product. The personal key is the original one; business adds `_biz`. Until a
+// business charge is saved, business customers are charged the personal one.
+export const CUSTOMERS = ['personal', 'business'];
+const CUSTOMER_NAME = { personal: 'Personal', business: 'Business' };
+export const makingKey = (metalId, productId, customer = 'personal') =>
+  `making_${productId.replace(/-/g, '_')}${metalId === 'gold' ? '_pct' : ''}${customer === 'business' ? '_biz' : ''}`;
+
+const offeredTo = (p, customer) => !p.customerTypes || p.customerTypes.includes(customer);
 
 export const RATE_FIELDS = Object.fromEntries(
-  catalog.metals.flatMap((m) => m.products.map((p) => [
-    makingKey(m.id, p.id),
+  catalog.metals.flatMap((m) => m.products.flatMap((p) => CUSTOMERS.filter((c) => offeredTo(p, c)).map((c) => [
+    makingKey(m.id, p.id, c),
     {
-      label: `${p.name} making charge`,
+      label: `${p.name} making charge (${CUSTOMER_NAME[c]})`,
       short: p.name,
+      customer: c,
       group: m.id === 'gold' ? 'goldMaking' : 'making',
       metal: m.id,
       min: 0,
@@ -39,8 +47,13 @@ export const RATE_FIELDS = Object.fromEntries(
       tola: p.tola ?? null,
       unit: p.unit,
     },
-  ])),
+  ]))),
 );
+
+// Personal keys of business-only products (Silver Grains). Their charge was
+// saved before charges were split by customer type; it is kept and used for
+// business customers until a business charge is saved.
+const LEGACY_KEYS = catalog.metals.flatMap((m) => m.products.filter((p) => !offeredTo(p, 'personal')).map((p) => makingKey(m.id, p.id, 'personal')));
 
 export const SKILL_FEE = { rate: 0.005, label: 'Skill promotion fee', appliesTo: 'personal' };
 const KEYS = Object.keys(RATE_FIELDS);
@@ -51,7 +64,7 @@ const round4 = (n) => Math.round(Number((n * 10000).toPrecision(12))) / 10000;
 // For each product: its % (KEYS), and — when staff set a flat amount per bar or
 // piece — `basis[key] = 'flat'` with the amount in `perUnit[key]`. Whichever box
 // the staff typed in last is kept, so a flat charge stays fixed when the rate moves.
-const EMPTY = Object.fromEntries([...KEYS, 'basis', 'perUnit', 'updatedAt', 'by'].map((k) => [k, null]));
+const EMPTY = Object.fromEntries([...KEYS, ...LEGACY_KEYS, 'basis', 'perUnit', 'updatedAt', 'by'].map((k) => [k, null]));
 export const MAX_PER_UNIT = 10_000_000;
 
 /** What one unit of a product is called: bar, piece, or gram (grains). */
@@ -100,7 +113,9 @@ export function parseRates(body, current = {}, stock = { gold: true, silver: tru
   const errors = {};
   for (const [key, field] of Object.entries(RATE_FIELDS)) {
     const { label, min, max } = field;
-    if (stock[field.metal] === false) {
+    const sent = [key, `${key}__basis`, `${key}__perUnit`].some((k) => body?.[k] != null);
+    // metal switched off, or a business charge an older admin page didn't send: keep as it was
+    if (stock[field.metal] === false || (field.customer === 'business' && !sent)) {
       values[key] = current[key] ?? null;
       if (current.basis?.[key]) values.basis[key] = current.basis[key];
       if (current.perUnit?.[key] != null) values.perUnit[key] = current.perUnit[key];
@@ -127,7 +142,20 @@ export function parseRates(body, current = {}, stock = { gold: true, silver: tru
       values[key] = round4(n);
     }
   }
+  for (const key of LEGACY_KEYS) {
+    const n = number(body?.[key]);
+    values[key] = Number.isFinite(n) && n >= 0 && n <= 50 ? round4(n) : current[key] ?? null;
+    if (current.basis?.[key] && values[key] === current[key]) values.basis[key] = current.basis[key];
+    if (current.perUnit?.[key] != null && values[key] === current[key]) values.perUnit[key] = current.perUnit[key];
+  }
   return { values, errors };
+}
+
+/** A product's making charge for a customer type, with the business → personal fallback. */
+export function settingFor(making, metalId, productId, customer) {
+  const own = makingSetting(making, makingKey(metalId, productId, customer));
+  if (own || customer !== 'business') return own;
+  return makingSetting(making, makingKey(metalId, productId, 'personal'));
 }
 
 /** How a product's making charge is set: { basis: 'pct'|'flat', percent, perUnit }. */
@@ -162,9 +190,9 @@ export function priceItems(items, making, live, customerType) {
     if (!rate) missing.add(RATE_LABEL[m.id]);
     const unit = unitPrice(product, rate);
     const total = unit == null ? null : round2(unit * item.quantity);
-    const key = makingKey(m.id, product.id);
-    const setting = makingSetting(making, key);
-    if (!setting) missing.add(RATE_FIELDS[key].label);
+    const key = makingKey(m.id, product.id, customerType === 'business' ? 'business' : 'personal');
+    const setting = settingFor(making, m.id, product.id, customerType);
+    if (!setting) missing.add(RATE_FIELDS[key]?.label ?? `${product.name} making charge`);
     // weight follows from the quantity; the rate is the published one it is priced from
     const weightTola = product.tola ? product.tola * item.quantity : null;
     const weightGrams = product.tola ? Math.round(product.tola * GRAMS_PER_TOLA * item.quantity * 1000) / 1000 : product.grams * item.quantity;

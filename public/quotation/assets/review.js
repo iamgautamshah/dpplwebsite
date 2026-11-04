@@ -1,6 +1,6 @@
-import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js?v=20261104a';
-import { $, getJSON, money, postJSON, store } from './common.js?v=20261104a';
-import { renderLines, renderTotals } from './quote-table.js?v=20261104a';
+import { blockedMetals, onStockChange, refreshStock, showMetalOut } from './gate.js?v=20261104b';
+import { $, getJSON, money, postJSON, store } from './common.js?v=20261104b';
+import { renderLines, renderTotals } from './quote-table.js?v=20261104b';
 
 const customer = store.get('quote.customer');
 const items = store.get('quote.items');

@@ -1,5 +1,5 @@
-import { onStockChange, stock } from './gate.js?v=20261104a';
-import { $, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261104a';
+import { onStockChange, stock } from './gate.js?v=20261104b';
+import { $, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261104b';
 
 const customer = store.get('quote.customer');
 if (!customer) location.replace('/quotation');

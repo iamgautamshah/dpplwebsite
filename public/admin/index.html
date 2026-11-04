@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261104a">
-  <script type="module" src="/admin/admin.js?v=20261104a"></script>
+  <link rel="stylesheet" href="/quotation/assets/styles.css?v=20261104b">
+  <script type="module" src="/admin/admin.js?v=20261104b"></script>
 </head>
 <body>
   <header class="site-head">
@@ -104,18 +104,27 @@
 
         <fieldset>
           <legend>Gold making charge</legend>
-          <p class="hint group-hint">Enter a percentage of the bar’s gold value or a flat amount per bar; change either box and the other follows at today’s rate. Enter 0 for none.</p>
+          <p class="hint group-hint">Personal and business customers each have their own charge. Enter a percentage of the bar’s gold value or a flat amount per bar; change either box and the other follows at today’s rate. Enter 0 for none.</p>
+          <button type="button" class="btn-copy" data-copy="goldMaking">Copy personal charges to business</button>
           <div class="making-grid" data-group="goldMaking"></div>
         </fieldset>
         <fieldset>
           <legend>Silver making charge</legend>
-          <p class="hint group-hint">Enter a percentage of the product’s silver value or a flat amount per piece; change either box and the other follows at today’s rate. Enter 0 for none.</p>
+          <p class="hint group-hint">Personal and business customers each have their own charge. Enter a percentage of the product’s silver value or a flat amount per piece; change either box and the other follows at today’s rate. Enter 0 for none.</p>
+          <button type="button" class="btn-copy" data-copy="making">Copy personal charges to business</button>
           <div class="making-grid" data-group="making"></div>
         </fieldset>
 
-        <template id="rate-field">
-          <fieldset class="field making-field">
+        <template id="rate-product">
+          <fieldset class="making-product">
             <legend class="making-name"></legend>
+            <div class="making-customers"></div>
+          </fieldset>
+        </template>
+
+        <template id="rate-field">
+          <div class="field making-field">
+            <p class="making-customer"></p>
             <div class="making-row">
               <label class="making-box">
                 <span class="making-label">Percentage</span>
@@ -133,7 +142,7 @@
             </div>
             <output class="making-amount" aria-live="polite"></output>
             <p class="error"></p>
-          </fieldset>
+          </div>
         </template>
 
         <div class="actions">

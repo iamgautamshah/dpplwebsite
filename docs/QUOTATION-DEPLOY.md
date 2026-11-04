@@ -176,7 +176,7 @@ Dashboard → dppl.com.np zone → **Security → WAF → Rate limiting rules �
 2. Enter the admin password.
 3. Check **Today's rates**: the gold and silver 1 tola and 10 gram selling rates
    come from the website automatically. Nothing needs typing.
-4. Enter the making charge for every product (0 for none). Each product has two
+4. Enter the making charge for every product (0 for none), once for **Personal** and once for **Business** customers (Silver Grains: business only). Until a business charge is saved, business customers pay the personal one; **Copy personal charges to business** fills the business boxes in one click. Each product has two
    linked boxes: **Percentage** and **Flat amount per bar** (per piece for
    coins, per gram for grains). Type in either and the other fills in at
    today's rate. The box you typed in last decides how it's charged:
@@ -208,6 +208,7 @@ Tick each item after deploying. Use a private/incognito window for the
 **Price updates**
 - [ ] The admin's **Today's rates** match the homepage rate board (gold and silver, 1 tola and 10 grams).
 - [ ] Type a % for one product: its flat amount box fills in. Type a flat amount for another: its % fills in. Save; "Recent changes" shows the flat one as "Rs. … per bar" (or per piece) and the other as a % (with the staff email once Access is set up).
+- [ ] Give one product a different business charge, save, then price it as a Personal and as a Business customer: each gets its own making charge, and the Price step lists the one that applies.
 - [ ] Price step check for a flat charge: Silver Bar - 100g at Rs. 300 per bar, quantity 3, gives a making charge of Rs. 900.
 - [ ] Recalculate on the public Price step: the new making charge is used.
 - [ ] Change a making charge *while* a customer is on the Review step, then press Download PDF. The customer is told prices changed and shown the new total before anything is saved.

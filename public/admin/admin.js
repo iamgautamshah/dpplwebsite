@@ -1,4 +1,4 @@
-import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261104a';
+import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261104b';
 
 /* Quotation admin.
    - Today's gold and silver rates are shown read-only: they come from the
@@ -7,13 +7,17 @@ import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotat
      flat amount per bar/piece (per gram for grains). The two boxes are linked:
      typing in one fills the other at today's rate. The box typed in last
      decides how it is charged (a flat amount stays fixed when the rate moves;
-     a % follows it). */
+     a % follows it).
+   - Personal and business customers each have their own charge per product
+     (Silver Grains are sold to businesses only). */
 
 const login = $('login');
 const panel = $('panel');
 const ratesForm = $('rates');
 const summary = $('error-summary');
 const tpl = $('rate-field');
+const productTpl = $('rate-product');
+const CUSTOMER_NAME = { personal: 'Personal', business: 'Business' };
 
 let FIELDS = [];
 let KEYS = [];
@@ -43,7 +47,15 @@ function buildForm(fields) {
   if (FIELDS.length) return;
   FIELDS = Object.entries(fields).map(([key, f]) => ({ key, ...f }));
   KEYS = FIELDS.map((f) => f.key);
+  const cards = {};
   for (const f of FIELDS) {
+    // one card per product, holding a row per customer type
+    if (!cards[f.productId]) {
+      const card = productTpl.content.firstElementChild.cloneNode(true);
+      card.querySelector('.making-name').textContent = f.short;
+      document.querySelector(`[data-group="${f.group}"]`).append(card);
+      cards[f.productId] = card.querySelector('.making-customers');
+    }
     const node = tpl.content.firstElementChild.cloneNode(true);
     const pctIn = node.querySelector('[data-kind="pct"]');
     const flatIn = node.querySelector('[data-kind="flat"]');
@@ -52,13 +64,13 @@ function buildForm(fields) {
     const describedBy = `${f.key}-amount ${f.key}-error`;
     pctIn.setAttribute('aria-describedby', describedBy);
     flatIn.setAttribute('aria-describedby', describedBy);
-    pctIn.setAttribute('aria-label', `${f.short} making charge, percentage`);
-    flatIn.setAttribute('aria-label', `${f.short} making charge, flat rupees per ${unitWord(f)}`);
-    node.querySelector('.making-name').textContent = f.short;
+    pctIn.setAttribute('aria-label', `${f.short}, ${CUSTOMER_NAME[f.customer]} customers, making charge percentage`);
+    flatIn.setAttribute('aria-label', `${f.short}, ${CUSTOMER_NAME[f.customer]} customers, making charge flat rupees per ${unitWord(f)}`);
+    node.querySelector('.making-customer').textContent = f.productId === 'silver-granules' ? 'Business (only)' : CUSTOMER_NAME[f.customer];
     node.querySelectorAll('.making-label')[1].textContent = `Flat amount per ${unitWord(f)}`;
     node.querySelector('.making-amount').id = `${f.key}-amount`;
     node.querySelector('.error').id = `${f.key}-error`;
-    document.querySelector(`[data-group="${f.group}"]`).append(node);
+    cards[f.productId].append(node);
     for (const [input, kind] of [[pctIn, 'pct'], [flatIn, 'flat']]) {
       input.addEventListener('input', () => {
         const v = input.value.replace(/[^\d.,]/g, '');
@@ -141,9 +153,32 @@ function makingText(h, f) {
   return h[f.key] == null ? null : pct(h[f.key]);
 }
 
+// e.g. "Gold Bar - 5g: Personal 3%, Business Rs. 2,000.00 per bar"
 function makingList(h, metal) {
-  const rows = FIELDS.filter((f) => f.metal === metal).map((f) => [f, makingText(h, f)]).filter(([, t]) => t);
-  return rows.length ? rows.map(([f, t]) => `${f.short}: ${t}`).join('\n') : '—';
+  const byProduct = new Map();
+  for (const f of FIELDS.filter((x) => x.metal === metal)) {
+    const t = makingText(h, f);
+    if (!t) continue;
+    if (!byProduct.has(f.productId)) byProduct.set(f.productId, { short: f.short, parts: [] });
+    byProduct.get(f.productId).parts.push(`${CUSTOMER_NAME[f.customer]} ${t}`);
+  }
+  return byProduct.size ? [...byProduct.values()].map((p) => `${p.short}: ${p.parts.join(', ')}`).join('\n') : '—';
+}
+
+// The personal field for the same product (business charges start from it).
+const personalOf = (f) => FIELDS.find((x) => x.productId === f.productId && x.customer === 'personal');
+
+function fillField(f, source, from) {
+  const k = f.key;
+  if (source.basis?.[from] === 'flat' && source.perUnit?.[from] != null) {
+    basis[k] = 'flat';
+    $(flatId(k)).value = plainNum(source.perUnit[from], 2);
+    $(k).value = source[from] != null ? plainNum(source[from], 4) : '';
+  } else {
+    basis[k] = 'pct';
+    $(k).value = source[from] != null ? plainNum(source[from], 4) : '';
+    $(flatId(k)).value = '';
+  }
 }
 
 function render({ current, history, fields, live: r }) {
@@ -152,15 +187,10 @@ function render({ current, history, fields, live: r }) {
     ? `Making charges last saved ${nepalTime(current.updatedAt)}`
     : 'No making charges saved yet. Customers can’t get a price until you save them.';
   for (const f of FIELDS) {
-    const k = f.key;
-    if (current.basis?.[k] === 'flat' && current.perUnit?.[k] != null) {
-      basis[k] = 'flat';
-      $(flatId(k)).value = plainNum(current.perUnit[k], 2);
-      $(k).value = current[k] != null ? plainNum(current[k], 4) : '';
-    } else {
-      basis[k] = 'pct';
-      $(k).value = current[k] != null ? plainNum(current[k], 4) : '';
-    }
+    const own = current[f.key] != null || current.perUnit?.[f.key] != null;
+    // a business charge never saved shows the personal one, which is what business customers pay until then
+    const legacyKey = f.key.replace(/_biz$/, '');
+    fillField(f, current, own || f.customer !== 'business' ? f.key : legacyKey);
   }
   renderLive(r); // fills the linked boxes at today's rate
 
@@ -289,6 +319,20 @@ async function load() {
   if (stock.status === 200) renderStock(stock.data);
 }
 
+document.querySelectorAll('[data-copy]').forEach((btn) => btn.addEventListener('click', () => {
+  for (const f of FIELDS.filter((x) => x.group === btn.dataset.copy && x.customer === 'business')) {
+    const p = personalOf(f);
+    if (!p) continue;
+    basis[f.key] = basis[p.key] || 'pct';
+    $(f.key).value = $(p.key).value;
+    $(flatId(f.key)).value = $(flatId(p.key)).value;
+    setError(f.key);
+    sync(f);
+  }
+  btn.textContent = 'Copied. Save to keep it.';
+  setTimeout(() => { btn.textContent = 'Copy personal charges to business'; }, 2500);
+}));
+
 $('live-refresh').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
   btn.disabled = true;
@@ -325,10 +369,10 @@ ratesForm.addEventListener('submit', async (e) => {
   for (const f of activeFields()) {
     if (basis[f.key] === 'flat') {
       const v = $(flatId(f.key)).value;
-      if (!(hasValue(v) && num(v) >= 0 && num(v) <= MAX_PER_UNIT)) errors[f.key] = `${f.short}: enter a flat amount between Rs. 0 and Rs. ${MAX_PER_UNIT.toLocaleString('en-IN')}.`;
+      if (!(hasValue(v) && num(v) >= 0 && num(v) <= MAX_PER_UNIT)) errors[f.key] = `${f.short} (${CUSTOMER_NAME[f.customer]}): enter a flat amount between Rs. 0 and Rs. ${MAX_PER_UNIT.toLocaleString('en-IN')}.`;
     } else {
       const v = $(f.key).value;
-      if (!(hasValue(v) && num(v) >= f.min && num(v) <= f.max)) errors[f.key] = `${f.short}: enter a percentage between ${f.min}% and ${f.max}%.`;
+      if (!(hasValue(v) && num(v) >= f.min && num(v) <= f.max)) errors[f.key] = `${f.short} (${CUSTOMER_NAME[f.customer]}): enter a percentage between ${f.min}% and ${f.max}%.`;
     }
   }
   showErrors(summary, errors, KEYS);
