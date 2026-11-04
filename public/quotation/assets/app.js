@@ -1,5 +1,5 @@
-import { onStockChange, stock } from './gate.js?v=20261104b';
-import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261104b';
+import { onStockChange, stock } from './gate.js?v=20261104c';
+import { $, API_MISSING, clearOnInput, fillSelect, getJSON, postJSON, setError, showErrors, store } from './common.js?v=20261104c';
 
 const form = $('quote-form');
 const el = {

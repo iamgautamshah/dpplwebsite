@@ -1,4 +1,4 @@
-import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261104b';
+import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261104c';
 
 /* Quotation admin.
    - Today's gold and silver rates are shown read-only: they come from the
@@ -235,8 +235,10 @@ function syncRateSections() {
 const productSwitch = (id) => document.querySelector(`[data-product-switch="${id}"]`);
 function buildProductSwitches(products) {
   if (document.querySelector('[data-product-switch]')) return;
+  const seen = new Set(); // FIELDS has a personal and a business entry per product: one switch each
   for (const f of FIELDS) {
-    if (!(f.productId in products)) continue;
+    if (!(f.productId in products) || seen.has(f.productId)) continue;
+    seen.add(f.productId);
     const label = document.createElement('label');
     label.className = 'switch';
     const input = document.createElement('input');

@@ -1,4 +1,4 @@
-import { money } from './common.js?v=20261104b';
+import { money } from './common.js?v=20261104c';
 
 export const pct = (n) => `${Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 })}%`;
 const grams = (n) => `${Number(n).toLocaleString('en-IN')} g`;
