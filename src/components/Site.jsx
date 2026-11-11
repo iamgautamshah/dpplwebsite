@@ -121,112 +121,76 @@ const Ledger = ({ children, light = false }) => (
   </p>
 );
 
-/* Fireworks for 7 seconds when someone arrives on the site: once per visit
-   (browser session), skipped for visitors who ask for reduced motion. A
-   canvas over the page that never takes clicks and removes itself after. */
-const FW_COLOURS = ['#E9C46A', '#F6DFA0', '#D4A63A', '#EEF1F6', '#C9D1DD', '#FFB35C', '#FF6F7D', '#7FE0C2'];
-export function Fireworks({ duration = 7000 }) {
-  const ref = useRef(null);
+/* Chhath Parva greeting: a sun rising over the river with floating diyas,
+   for about 7 seconds when someone arrives on the site. Once per visit
+   (browser session), skipped for visitors who ask for reduced motion, never
+   in the way of clicks, and switched off automatically from 17 November 2026
+   (Nepal time), so nothing needs removing afterwards. */
+const CHHATH_ENDS = Date.parse('2026-11-17T00:00:00+05:45');
+const DIYAS = [
+  { left: '8%', delay: '0.9s', drift: '-14px', size: 34 },
+  { left: '22%', delay: '1.3s', drift: '12px', size: 28 },
+  { left: '37%', delay: '1.1s', drift: '-10px', size: 32 },
+  { left: '61%', delay: '1.5s', drift: '14px', size: 30 },
+  { left: '76%', delay: '1.0s', drift: '-12px', size: 34 },
+  { left: '90%', delay: '1.4s', drift: '10px', size: 26 },
+];
+
+function Diya({ size }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true">
+      <defs>
+        <radialGradient id="dppl-flame" cx="50%" cy="70%" r="60%">
+          <stop offset="0%" stopColor="#FFF6C9" />
+          <stop offset="55%" stopColor="#FFC24A" />
+          <stop offset="100%" stopColor="#FF7A1A" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle className="chhath-glow" cx="20" cy="15" r="12" fill="#FFB347" opacity="0.28" />
+      <path className="chhath-flame" d="M20 4 C24 10 25 14 20 19 C15 14 16 10 20 4 Z" fill="url(#dppl-flame)" />
+      <path d="M4 21 C8 31 32 31 36 21 Z" fill="#B5542B" />
+      <path d="M4 21 C10 24 30 24 36 21" stroke="#E08A4E" strokeWidth="1.6" fill="none" />
+      <path d="M9 26 C15 28 25 28 31 26" stroke="#8A3A1C" strokeWidth="1" fill="none" opacity="0.7" />
+    </svg>
+  );
+}
+
+export function ChhathGreeting({ duration = 7000 }) {
   const [on, setOn] = useState(false);
-  const [fading, setFading] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   useEffect(() => {
+    if (Date.now() >= CHHATH_ENDS) return undefined;
     try {
-      if (sessionStorage.getItem('dppl-fireworks')) return;
-      sessionStorage.setItem('dppl-fireworks', '1');
-    } catch { /* storage blocked: show them anyway */ }
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (sessionStorage.getItem('dppl-chhath')) return undefined;
+      sessionStorage.setItem('dppl-chhath', '1');
+    } catch { /* storage blocked: show it anyway */ }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
     setOn(true);
-  }, []);
-  useEffect(() => {
-    if (!on) return undefined;
-    const canvas = ref.current;
-    const ctx = canvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let W = 0;
-    let H = 0;
-    const size = () => {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    size();
-    window.addEventListener('resize', size);
-    const rnd = (a, b) => a + Math.random() * (b - a);
-    const rockets = [];
-    const sparks = [];
-    const start = performance.now();
-    let nextLaunch = start + 150;
-    let raf = 0;
-    const launch = () => {
-      const x = rnd(W * 0.12, W * 0.88);
-      rockets.push({ x, y: H + 10, vx: rnd(-0.6, 0.6), vy: -rnd(H * 0.0105, H * 0.0135) - 6, targetY: rnd(H * 0.12, H * 0.45), colour: FW_COLOURS[(Math.random() * FW_COLOURS.length) | 0] });
-    };
-    const burst = (r) => {
-      const n = W < 640 ? 46 : 70;
-      const second = Math.random() < 0.35 ? FW_COLOURS[(Math.random() * FW_COLOURS.length) | 0] : r.colour;
-      for (let i = 0; i < n; i++) {
-        const a = (Math.PI * 2 * i) / n + rnd(-0.05, 0.05);
-        const speed = rnd(1.6, W < 640 ? 4.2 : 5.4);
-        sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, life: 1, decay: rnd(0.011, 0.02), colour: i % 2 ? r.colour : second });
-      }
-    };
-    const frame = (now) => {
-      const t = now - start;
-      // fade what is already drawn, leaving short trails, without darkening the page
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0,0,0,0.22)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'lighter';
-      if (t < duration - 1600 && now >= nextLaunch) {
-        launch();
-        if (Math.random() < 0.3) launch();
-        nextLaunch = now + rnd(260, 520);
-      }
-      for (let i = rockets.length - 1; i >= 0; i--) {
-        const r = rockets[i];
-        r.x += r.vx;
-        r.y += r.vy;
-        r.vy *= 0.985;
-        ctx.fillStyle = r.colour;
-        ctx.beginPath();
-        ctx.arc(r.x, r.y, 2, 0, Math.PI * 2);
-        ctx.fill();
-        if (r.y <= r.targetY || r.vy > -1.5) {
-          burst(r);
-          rockets.splice(i, 1);
-        }
-      }
-      for (let i = sparks.length - 1; i >= 0; i--) {
-        const s = sparks[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vx *= 0.975;
-        s.vy = s.vy * 0.975 + 0.045;
-        s.life -= s.decay;
-        if (s.life <= 0) { sparks.splice(i, 1); continue; }
-        ctx.globalAlpha = s.life;
-        ctx.fillStyle = s.colour;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, 1.7, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      if (t < duration) raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-    const fadeTimer = setTimeout(() => setFading(true), duration - 900);
-    const endTimer = setTimeout(() => setOn(false), duration);
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(fadeTimer);
-      clearTimeout(endTimer);
-      window.removeEventListener('resize', size);
-    };
-  }, [on, duration]);
+    const fade = setTimeout(() => setLeaving(true), duration - 1100);
+    const end = setTimeout(() => setOn(false), duration);
+    return () => { clearTimeout(fade); clearTimeout(end); };
+  }, [duration]);
   if (!on) return null;
-  return <canvas ref={ref} className={`fireworks${fading ? ' is-fading' : ''}`} aria-hidden="true" />;
+  return (
+    <div className={`chhath${leaving ? ' is-leaving' : ''}`} aria-hidden="true">
+      <div className="chhath-sky" />
+      <div className="chhath-sun"><span className="chhath-rays" /><span className="chhath-disc" /></div>
+      <div className="chhath-river">
+        <span className="chhath-reflection" />
+        <span className="chhath-shimmer" />
+        <span className="chhath-shimmer chhath-shimmer-2" />
+      </div>
+      {DIYAS.map((d, i) => (
+        <div key={i} className="chhath-diya" style={{ left: d.left, '--delay': d.delay, '--drift': d.drift }}>
+          <Diya size={d.size} />
+        </div>
+      ))}
+      <p className="chhath-wish">
+        <span lang="ne">छठ पर्वको हार्दिक मङ्गलमय शुभकामना</span>
+        <span className="chhath-wish-en">Happy Chhath Parva from Diamond Palace</span>
+      </p>
+    </div>
+  );
 }
 
 export function Nav({ current = null }) {
@@ -277,7 +241,7 @@ export function Nav({ current = null }) {
 
   return (
     <>
-    <Fireworks />
+    <ChhathGreeting />
     <nav className={`sticky top-0 z-40 bg-[#0A0E16]/95 backdrop-blur-sm border-b border-silver/10 transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : ''}`}>
       <div ref={bar} className="absolute top-0 left-0 h-[2px] w-full bg-gold origin-left will-change-transform" style={{ transform: 'scaleX(0)' }} aria-hidden="true" />
       <div className="flex items-center justify-between gap-4 px-4 md:px-12 py-3">
