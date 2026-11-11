@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { formatAD, formatBS, toNepaliDigits } from '../lib/nepaliDate.js';
+import { formatBS, toNepaliDigits } from '../lib/nepaliDate.js';
+
+// short enough to sit on one line in its tab at every screen width
+const shortAD = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 import { getSilver } from '../lib/ui.jsx';
 
 const fmtNum = (n) =>
@@ -22,7 +25,7 @@ const I18N = {
   },
   np: {
     head: 'आजको सुन र चाँदीको मूल्य',
-    gold: 'सुन २४ क्यारेट', silver: 'चाँदी ९९९',
+    gold: 'सुन ९९९.९', silver: 'चाँदी ९९९',
     thSale: 'बिक्री', thBuy: 'खरिद',
     rowTola: '१ तोला', rowG10: '१० ग्राम', fine: 'शुद्ध चाँदी ९९९',
     live: 'लाइभ', checking: 'जाँच हुँदै', offline: 'उपलब्ध छैन',
@@ -52,13 +55,13 @@ const Tab = ({ id, label, ne, lang, setLang }) => (
     aria-selected={lang === id}
     onClick={() => setLang(id)}
     lang={ne ? 'ne' : undefined}
-    className={`rounded-xl px-2 py-1.5 text-center transition-all duration-300 border ${
+    className={`min-w-0 h-10 flex items-center justify-center rounded-xl px-2 text-center transition-all duration-300 border ${
       lang === id
         ? 'bg-gold/15 border-gold/80'
         : 'bg-silver/5 border-silver/20 hover:border-silver/40'
     }`}
   >
-    <span className={`block font-medium text-silverhi leading-snug whitespace-nowrap text-[0.7rem] min-[400px]:text-[0.76rem] sm:text-[0.8rem] ${ne ? 'font-np' : ''}`}>{label}</span>
+    <span className={`block max-w-full truncate font-medium text-silverhi leading-snug whitespace-nowrap text-[0.7rem] min-[400px]:text-[0.76rem] sm:text-[0.8rem] ${ne ? 'font-np' : ''}`}>{label}</span>
   </button>
 );
 
@@ -161,7 +164,6 @@ export default function PriceCard() {
             <div className="plate drop-shade relative">
         <div className="plate-in relative p-3.5 sm:p-5 overflow-hidden" lang={np ? 'ne' : 'en'}>
           <span className="sheen" aria-hidden="true" />
-          <span className="absolute -bottom-3 -right-3 w-11 h-11 rounded-full border border-gold/25 hidden sm:flex items-center justify-center font-mono text-[0.5rem] tracking-[0.2em] text-gold/45 -rotate-12 select-none" aria-hidden="true">999</span>
 
                     <div className="flex items-center justify-between gap-3 mb-3">
             <div>
@@ -175,8 +177,8 @@ export default function PriceCard() {
             </span>
           </div>
 
-                    <div className="grid grid-cols-2 gap-2 mb-3" role="tablist" aria-label="Choose date and language">
-            <Tab id="en" label={formatAD(now)} lang={lang} setLang={setLang} />
+                    <div className="grid grid-cols-2 gap-2 mb-3 [&>*]:min-w-0" role="tablist" aria-label="Choose date and language">
+            <Tab id="en" label={shortAD(now)} lang={lang} setLang={setLang} />
             <Tab id="np" label={formatBS(now)} ne lang={lang} setLang={setLang} />
           </div>
 

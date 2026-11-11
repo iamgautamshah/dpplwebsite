@@ -187,7 +187,6 @@ export function ChhathGreeting({ duration = 7000 }) {
       ))}
       <p className="chhath-wish">
         <span lang="ne">छठ पर्वको हार्दिक मङ्गलमय शुभकामना</span>
-        <span className="chhath-wish-en">Happy Chhath Parva from Diamond Palace</span>
       </p>
     </div>
   );
@@ -454,7 +453,7 @@ function WhenVisible({ children, minHeight }) {
 function RatesSection() {
   return (
     <section id="rates" className="px-3 sm:px-6 md:px-12 py-8 sm:py-14">
-      <div className="frame grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-14 items-center max-w-6xl mx-auto p-5 sm:p-8 md:p-10">
+      <div className="frame grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-14 items-center max-w-7xl mx-auto p-5 sm:p-8 md:p-12">
         <div>
           <h2 className="engraved font-display text-silverhi text-[clamp(1.6rem,3.4vw,2.3rem)]">Today’s gold and silver rate</h2>
           <p className="prose-justify mt-4 max-w-lg text-[0.98rem] leading-relaxed text-silver/80">
