@@ -79,4 +79,6 @@ Bindings and variables are read at deploy time — after changing them, redeploy
   value or a flat Rs amount per bar/piece, two linked boxes; 0.5% skill
   promotion fee for personal customers; rounding) live in `server/quotation/rates.js`; the
   catalogue lives in `public/quotation/data/products.json`.
+- Fonts (Cinzel, Manrope, IBM Plex Mono, Mukta) are self-hosted in `public/fonts/` (SIL OFL, from Fontsource) so they are ready at first paint on every page; no Google Fonts requests.
+- `public/fx/page.css` + `page.js`: cross-fade between pages (View Transitions) and a soft fade-in on refresh; `public/fx/sparks.js`: the click sparks. Each page also prefetches menu links on hover (speculation rules).
 - The Nepal address list is MIT-licensed (`public/quotation/data/LICENSE-nepali-address`).

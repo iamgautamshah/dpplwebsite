@@ -418,11 +418,15 @@ body {
 html { background: #0A1120; }
 ::selection { background: #D8B36A; color: #050810; }
 .card {
-  border: 1px solid rgba(216, 179, 106, 0.32);
+  /* the same frame as the live rate box on the website */
+  border: 1px solid transparent;
   border-radius: 20px;
-  background: var(--card);
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(14px);
+  background:
+    linear-gradient(180deg, #0F1522 0%, #080D17 100%) padding-box,
+    linear-gradient(155deg, rgba(233, 202, 133, 0.9) 0%, rgba(216, 179, 106, 0.3) 20%, rgba(216, 179, 106, 0.12) 50%, rgba(216, 179, 106, 0.3) 80%, rgba(233, 202, 133, 0.75) 100%) border-box;
+  box-shadow:
+    0 28px 56px -28px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 4px rgba(7, 12, 22, 0.6), inset 0 0 0 5px rgba(216, 179, 106, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .btn { font-weight: 600; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 10px; }
 .btn-link, .btn-ghost, .btn-remove { text-transform: none; letter-spacing: 0; font-size: 15px; }

@@ -37,11 +37,12 @@
     <link rel="preload" as="image" href="/images/bar-gold-9999-v2.webp" type="image/webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/images/bar-fine-999.webp" type="image/webp" />
     <link rel="preload" as="image" href="/images/coin-silver-lakshmi-ganesh.webp" type="image/webp" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Manrope:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap" /></noscript>
+    <link rel="preload" href="/fonts/manrope-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/cinzel-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/fonts/fonts.css?v=20261112a">
+    <link rel="stylesheet" href="/fx/page.css?v=20261112a">
+    <script src="/fx/page.js?v=20261112a"></script>
+    <script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/api/*"}},{"not":{"href_matches":"/admin*"}},{"not":{"href_matches":"/cdn-cgi/*"}},{"not":{"selector_matches":"[download], [target=_blank], [rel~=nofollow]"}}]},"eagerness":"moderate"}]}</script>
     <script>
       // load AdSense once the page is idle; the google-adsense-account meta tag
       // and ads.txt are what verification actually reads
@@ -87,7 +88,7 @@
         <p>Please enable JavaScript to view today's live silver price.</p>
       </div>
     </noscript>
-    <script src="/fx/sparks.js?v=20261111a" defer></script>
+    <script src="/fx/sparks.js?v=20261112a" defer></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261111a';
+import { $, clearOnInput, money, nepalTime, setError, showErrors } from '/quotation/assets/common.js?v=20261112a';
 
 /* Quotation admin.
    - Today's gold and silver rates are shown read-only: they come from the

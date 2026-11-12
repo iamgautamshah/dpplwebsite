@@ -13,14 +13,16 @@ export function Page({ current = null, title, intro, before = null, meta = null,
       <a href="#content" className="skip-link">Skip to content</a>
       <Nav current={current} />
       <header className="vault border-b border-gold/15">
-        <div className={`${narrow ? 'max-w-3xl' : 'max-w-5xl'} mx-auto px-5 sm:px-8 md:px-12 pt-12 sm:pt-16 pb-10 sm:pb-12`}>
+        <div className={`${narrow ? 'max-w-4xl' : 'max-w-6xl'} mx-auto px-8 sm:px-14 md:px-[4.5rem] pt-12 sm:pt-16 pb-10 sm:pb-12`}>
           {before}
           <h1 className="engraved font-display text-silverhi leading-[1.1] text-[clamp(1.9rem,4.6vw,3.1rem)]">{title}</h1>
           {intro && <p className="mt-5 max-w-2xl text-[1.02rem] leading-relaxed text-silver/80">{intro}</p>}
           {meta}
         </div>
       </header>
-      <div id="content" className={`${narrow ? 'max-w-3xl' : 'max-w-5xl'} mx-auto px-5 sm:px-8 md:px-12 py-10 sm:py-14`}>{children}</div>
+      <div id="content" className={`${narrow ? 'max-w-4xl' : 'max-w-6xl'} mx-auto px-3 sm:px-6 py-8 sm:py-12`}>
+        <div className="frame p-5 sm:p-8 md:p-12">{children}</div>
+      </div>
       <Footer />
     </main>
   );
